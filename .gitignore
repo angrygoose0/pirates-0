@@ -1,0 +1,67 @@
+# This .gitignore file should be placed at the root of your Unity project directory
+
+# Unity generated folders
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+
+# Avoid crash reports
+*.pidb
+*.pidb.meta
+*.pdb
+*.mdb
+*.so
+*.dylib
+*.a
+*.dll
+
+# Auto-generated VS/MD solution and project files
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+
+# Unity3D generated file
+*.unitypackage
+
+# Crashlytics generated file
+crashlytics-build.properties
+
+# Packed Addressables
+/[Aa]sset[Bb]undles/
+
+# Do not ignore specific file types
+!Assets/**/*.meta
+!Assets/**/*.png
+!Assets/**/*.jpg
+!Assets/**/*.shader
+!Assets/**/*.txt
+!Assets/**/*.json
+!Assets/**/*.prefab
+!Assets/**/*.mat
+!Assets/**/*.fbx
+!Assets/**/*.anim
+!Assets/**/*.controller
+!Assets/**/*.physicMaterial
+!Assets/**/*.unity
+!Assets/**/*.asset
+!Assets/**/*.cs
+!Assets/**/*.cginc
+!Assets/**/*.hlsl
+!Assets/**/*.compute
+!Assets/**/*.shader
+!Assets/**/*.uxml
+!Assets/**/*.uss
+!Assets/**/*.cs
+!Assets/**/*.uxml
+!Assets/**/*.uss
+!Assets/**/*.tga
