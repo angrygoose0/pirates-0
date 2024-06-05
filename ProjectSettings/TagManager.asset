@@ -41,11 +41,11 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: platform
-    uniqueID: 3043669347
-    locked: 0
-  - name: turrets
+  - name: world
     uniqueID: 2957908791
+    locked: 0
+  - name: ship
+    uniqueID: 3043669347
     locked: 0
   - name: player
     uniqueID: 1126429351
