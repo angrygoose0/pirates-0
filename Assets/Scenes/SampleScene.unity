@@ -340,9 +340,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seaTilemap: {fileID: 170296654}
-  seaTile: {fileID: 11400000, guid: 15eb20dcf9a763e43b36433eec9072ec, type: 2}
-  radius: 50
+  chunkSize: 16
+  radius: 3
   moveSpeed: 1
+  depthScale: 0.1
+  temperatureScale: 0.1
+  tileObjects:
+  - {fileID: 11400000, guid: 73b4bf7cd19501a4580b897f670f30c6, type: 2}
+  - {fileID: 11400000, guid: c0fd3993589b1c74b9b503ceeab7717a, type: 2}
+  - {fileID: 11400000, guid: 9d2e189dd83f6474b9402c2cd9cfade1, type: 2}
+  - {fileID: 11400000, guid: 4644b4adc60c7fd4082540ee18b3eed3, type: 2}
+  - {fileID: 11400000, guid: 6aeadef27f5b9b44983d33fd3d7bd2e3, type: 2}
+  - {fileID: 11400000, guid: aa70ae66bf1326b45944d84398c9c61c, type: 2}
+  - {fileID: 11400000, guid: 6d37cea8ef493954dad7fd51728ec47a, type: 2}
+  - {fileID: 11400000, guid: e80830384f7d6a84a8fd064da9000105, type: 2}
+  - {fileID: 11400000, guid: eadc8badce69ab04a822a91819f02627, type: 2}
 --- !u!1 &485961737
 GameObject:
   m_ObjectHideFlags: 0
