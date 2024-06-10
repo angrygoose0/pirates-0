@@ -438,6 +438,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 81ec3bf63d3117d4e909c207d24a545a, type: 2}
   - {fileID: 11400000, guid: c133c3e063115c94fb5a3c29ed4211da, type: 2}
   - {fileID: 11400000, guid: ed0e3fc2729aefa42a12bb54c203c74e, type: 2}
+  mastBlocks: []
 --- !u!114 &383585317
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -511,10 +512,7 @@ MonoBehaviour:
   shipGenerator: {fileID: 383585316}
   tilemap: {fileID: 170296652}
   maxSpeed: 5
-  mass: 1
-  mastBlocks: []
-  mastBlockObjects:
-  - {fileID: 11400000, guid: ed0e3fc2729aefa42a12bb54c203c74e, type: 2}
+  mass: 200
 --- !u!1 &485961737
 GameObject:
   m_ObjectHideFlags: 0
