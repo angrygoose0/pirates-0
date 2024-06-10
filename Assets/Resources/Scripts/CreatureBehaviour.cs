@@ -131,7 +131,7 @@ public class CreatureBehaviour : MonoBehaviour
             {
                 Vector3Int randomTile = surroundingTiles[Random.Range(0, surroundingTiles.Count)];
                 targetPosition = tilemap.GetCellCenterLocal(randomTile);
-                Debug.Log("Random surrounding tile: " + randomTile);
+                //Debug.Log("Random surrounding tile: " + randomTile);
             }
 
             // Wait for the idle delay before picking a new target

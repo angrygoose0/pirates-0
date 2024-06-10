@@ -14,12 +14,13 @@ public class ShipGenerator : MonoBehaviour
     {
         { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f },
         { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f },
-        { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f },
+        { 1.0f, 1.0f, 3.0f, 1.0f, 1.0f },
         { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f },
         { 0.0f, 1.0f, 1.0f, 2.0f, 2.1f }
     };
 
     private Dictionary<Vector3Int, GameObject> tileToBlockPrefabMap;
+    public List<GameObject> mastBlocks; // List to store blocks of type Mast
 
     public enum Direction
     {
@@ -29,14 +30,17 @@ public class ShipGenerator : MonoBehaviour
     void Start()
     {
         tileToBlockPrefabMap = new Dictionary<Vector3Int, GameObject>();
+        mastBlocks = new List<GameObject>();
         GenerateTilemap(ship);
         CenterGhostOnShip();
+        FindMastBlocks(); // Find all mast blocks after generating the ship
     }
 
     public void GenerateTilemap(float[,] ship)
     {
         tilemap.ClearAllTiles();
         tileToBlockPrefabMap.Clear();
+        mastBlocks.Clear(); // Clear the list in case of regeneration
 
         int rows = ship.GetLength(0);
         int cols = ship.GetLength(1);
@@ -160,5 +164,25 @@ public class ShipGenerator : MonoBehaviour
         }
 
         return interactableNeighbors;
+    }
+
+    private void FindMastBlocks()
+    {
+        mastBlocks.Clear();
+        foreach (var entry in tileToBlockPrefabMap)
+        {
+            GameObject blockInstance = entry.Value;
+            blockPrefabScript blockScript = blockInstance.GetComponent<blockPrefabScript>();
+            if (blockScript != null && blockScript.blockObject != null && blockScript.blockObject.blockType == BlockType.Mast)
+            {
+                mastBlocks.Add(blockInstance);
+            }
+        }
+    }
+
+    // Method to get the list of mast blocks for testing or other purposes
+    public List<GameObject> GetMastBlocks()
+    {
+        return mastBlocks;
     }
 }

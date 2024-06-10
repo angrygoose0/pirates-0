@@ -38,7 +38,11 @@ public class PlayerMovement : MonoBehaviour
         // Check if the player presses the "E" key to interact with a block
         if (Input.GetKeyDown(KeyCode.E))
         {
-            InteractWithBlock();
+            InteractWithBlock(0);
+        }
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            InteractWithBlock(1);
         }
     }
 
@@ -230,7 +234,7 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
-    void InteractWithBlock()
+    void InteractWithBlock(int interaction)
     {
         if (previousInteractableTilePosition.HasValue)
         {
@@ -239,8 +243,8 @@ public class PlayerMovement : MonoBehaviour
 
             if (blockPrefab != null)
             {
-                interactionManager.InteractWithBlock(blockPrefab);
-                
+                interactionManager.InteractWithBlock(blockPrefab, interaction);
+
             }
         }
     }

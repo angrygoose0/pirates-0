@@ -395,6 +395,7 @@ GameObject:
   - component: {fileID: 383585317}
   - component: {fileID: 383585318}
   - component: {fileID: 383585319}
+  - component: {fileID: 383585320}
   m_Layer: 0
   m_Name: ghost
   m_TagString: Untagged
@@ -436,6 +437,7 @@ MonoBehaviour:
   blockObjects:
   - {fileID: 11400000, guid: 81ec3bf63d3117d4e909c207d24a545a, type: 2}
   - {fileID: 11400000, guid: c133c3e063115c94fb5a3c29ed4211da, type: 2}
+  - {fileID: 11400000, guid: ed0e3fc2729aefa42a12bb54c203c74e, type: 2}
 --- !u!114 &383585317
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -494,6 +496,25 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6d37cea8ef493954dad7fd51728ec47a, type: 2}
   - {fileID: 11400000, guid: e80830384f7d6a84a8fd064da9000105, type: 2}
   - {fileID: 11400000, guid: eadc8badce69ab04a822a91819f02627, type: 2}
+--- !u!114 &383585320
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 383585313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c25b8c749cfe75e47bcabdcbecdba3fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shipGenerator: {fileID: 383585316}
+  tilemap: {fileID: 170296652}
+  maxSpeed: 5
+  mass: 1
+  mastBlocks: []
+  mastBlockObjects:
+  - {fileID: 11400000, guid: ed0e3fc2729aefa42a12bb54c203c74e, type: 2}
 --- !u!1 &485961737
 GameObject:
   m_ObjectHideFlags: 0

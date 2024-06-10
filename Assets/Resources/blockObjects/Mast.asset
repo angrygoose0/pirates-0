@@ -12,7 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efe342bfdcfb68e4d9576d87e47ef183, type: 3}
   m_Name: Mast
   m_EditorClassIdentifier: 
-  id: 0
-  blockSprite: {fileID: 0}
-  selectedSprite: {fileID: 0}
-  isCannon: 0
+  id: 3
+  blockSprite: {fileID: 1396972908, guid: 30dd56da6797516429984f0fdae20496, type: 3}
+  selectedSprite: {fileID: 21300000, guid: 77ed4a733b77802499e75529268bb4e7, type: 3}
+  blockType: 2
+  blockValues:
+  - name: 
+    value: 0

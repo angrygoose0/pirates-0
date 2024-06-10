@@ -162,7 +162,7 @@ public class WorldGenerator : MonoBehaviour
             int depth = tileDepths[tilePosition];
             int temperature = tileTemperatures[tilePosition];
             int hostility = tileHostility[tilePosition];
-            Debug.Log($"Tile Position: {tilePosition} - Depth: {depth}, Temperature: {temperature}, Hostility: {hostility}");
+            //Debug.Log($"Tile Position: {tilePosition} - Depth: {depth}, Temperature: {temperature}, Hostility: {hostility}");
         }
     }
 }
