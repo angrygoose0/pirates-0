@@ -396,6 +396,7 @@ GameObject:
   - component: {fileID: 383585318}
   - component: {fileID: 383585319}
   - component: {fileID: 383585320}
+  - component: {fileID: 383585321}
   m_Layer: 0
   m_Name: ghost
   m_TagString: Untagged
@@ -469,6 +470,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   equippedCannon: {fileID: 0}
+  cannonBehaviour: {fileID: 383585321}
 --- !u!114 &383585319
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -484,9 +486,8 @@ MonoBehaviour:
   seaTilemap: {fileID: 170296654}
   chunkSize: 16
   radius: 3
-  moveSpeed: 0
-  depthScale: 0.001
-  temperatureScale: 0.0005
+  depthScale: 0.1
+  temperatureScale: 0.05
   tileObjects:
   - {fileID: 11400000, guid: 73b4bf7cd19501a4580b897f670f30c6, type: 2}
   - {fileID: 11400000, guid: c0fd3993589b1c74b9b503ceeab7717a, type: 2}
@@ -511,8 +512,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shipGenerator: {fileID: 383585316}
   tilemap: {fileID: 170296652}
-  maxSpeed: 5
+  maxSpeed: 20
   mass: 200
+--- !u!114 &383585321
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 383585313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fdf73217bda40d42a7e6438e19de148, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactionManager: {fileID: 383585318}
+  tilemap: {fileID: 170296654}
+  selectorPrefab: {fileID: 7750116874504110355, guid: 8125282e50bc4d140bb095b063c6e2e3, type: 3}
+  explosionEffectPrefab: {fileID: 1024876700175561445, guid: 3860df99372c4d1468862cc566aa603a, type: 3}
+  currentMouseTileCoordinate: {x: 0, y: 0, z: 0}
 --- !u!1 &485961737
 GameObject:
   m_ObjectHideFlags: 0

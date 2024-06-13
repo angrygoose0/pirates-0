@@ -17,5 +17,5 @@ MonoBehaviour:
   selectedSprite: {fileID: 21300000, guid: 77ed4a733b77802499e75529268bb4e7, type: 3}
   blockType: 2
   blockValues:
-  - name: 
-    value: 0
+  - name: mastForce
+    value: 5

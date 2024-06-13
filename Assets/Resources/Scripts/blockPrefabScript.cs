@@ -7,6 +7,19 @@ public class blockPrefabScript : MonoBehaviour
     public BlockObject blockObject; // Variable to store block objects
     public Vector2 blockDirection = Vector2.up; // Variable to store the direction as a Vector2
 
+    private List<BlockValue> GetBlockValues()
+    {
+        if (blockObject != null)
+        {
+            return blockObject.blockValues;
+        }
+        else
+        {
+            Debug.LogWarning("BlockObject is not assigned.");
+            return null;
+        }
+    }
+
     void Start()
     {
         // Ensure the sprite renderer is set up with the correct sprite
@@ -22,12 +35,31 @@ public class blockPrefabScript : MonoBehaviour
         {
             Debug.LogWarning("BlockObject is not assigned.");
         }
-
     }
 
-    // Method to get the force vector based on the block direction
-    public Vector2 GetForceVector(float force)
+    public float GetBlockValueByName(string name)
     {
-        return blockDirection.normalized * force;
+        if (blockObject != null)
+        {
+            foreach (BlockValue blockValue in blockObject.blockValues)
+            {
+                if (blockValue.name == name)
+                {
+                    return blockValue.value;
+                }
+            }
+            Debug.LogWarning($"BlockValue with name {name} not found.");
+            return float.NaN;
+        }
+        else
+        {
+            Debug.LogWarning("BlockObject is not assigned.");
+            return float.NaN;
+        }
+
     }
+
+
+    //blockDirection.normalized * GetBlockValueByName(mastForce);
+
 }

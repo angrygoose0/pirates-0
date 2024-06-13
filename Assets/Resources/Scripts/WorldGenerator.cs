@@ -7,7 +7,6 @@ public class WorldGenerator : MonoBehaviour
     public Tilemap seaTilemap;
     public int chunkSize = 16;
     public int radius = 50;  // Radius in chunks
-    public float moveSpeed = 1f;
     public float depthScale = 0.1f;
     public float temperatureScale = 0.1f;
     public List<TileObject> tileObjects; // List of TileObjects
@@ -31,8 +30,6 @@ public class WorldGenerator : MonoBehaviour
 
     void Update()
     {
-        // Move the sea tilemap to simulate the ship's movement
-        seaTilemap.transform.position += Vector3.down * moveSpeed * Time.deltaTime;
         MaintainChunkRadius();
         DetectTileHover();
     }

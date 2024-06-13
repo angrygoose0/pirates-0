@@ -12,13 +12,6 @@ public class ShipMovement : MonoBehaviour
     private Vector2 currentVelocity; // The current velocity of the ship
     private Vector2 totalForce; // The total force exerted by the mast blocks
 
-    void Start()
-    {
-
-        // Call the method to collect all mast blocks
-        CollectMastBlocks();
-    }
-
     void Update()
     {
         // Calculate the total force from mast blocks
@@ -31,22 +24,17 @@ public class ShipMovement : MonoBehaviour
         MoveTilemap();
     }
 
-    void CollectMastBlocks()
-    {
-        // left blank for now.
-    }
 
     void CalculateTotalForce()
     {
         totalForce = Vector2.zero;
-        float mastForce = 5f; // Each mast block gives off a force of 5
 
         foreach (GameObject mastBlock in shipGenerator.mastBlocks)
         {
             blockPrefabScript blockScript = mastBlock.GetComponent<blockPrefabScript>();
             if (blockScript != null)
             {
-                totalForce += blockScript.GetForceVector(mastForce);
+                totalForce += blockScript.blockDirection.normalized * blockScript.GetBlockValueByName("mastForce");
             }
         }
     }
@@ -82,4 +70,11 @@ public class ShipMovement : MonoBehaviour
         tilemap.position -= movement;
     }
 
+    public void ApplyRecoilForce(Vector2 recoilForce)
+    {
+        // Apply the recoil force to the current velocity
+        currentVelocity += recoilForce / mass;
+        // Ensure the velocity doesn't exceed the maximum speed
+        currentVelocity = Vector2.ClampMagnitude(currentVelocity, maxSpeed);
+    }
 }
