@@ -397,6 +397,7 @@ GameObject:
   - component: {fileID: 383585319}
   - component: {fileID: 383585320}
   - component: {fileID: 383585321}
+  - component: {fileID: 383585322}
   m_Layer: 0
   m_Name: ghost
   m_TagString: Untagged
@@ -530,7 +531,29 @@ MonoBehaviour:
   tilemap: {fileID: 170296654}
   selectorPrefab: {fileID: 7750116874504110355, guid: 8125282e50bc4d140bb095b063c6e2e3, type: 3}
   explosionEffectPrefab: {fileID: 1024876700175561445, guid: 3860df99372c4d1468862cc566aa603a, type: 3}
+  cannonballPrefab: {fileID: 3258447280453129342, guid: fa707123ad2c9244da06a6adc4df02dd, type: 3}
+  shipMovement: {fileID: 383585320}
+  explosionScript: {fileID: 383585322}
+  cannonForce: 10
+  cannonballMass: 1
+  gravity: -9.81
   currentMouseTileCoordinate: {x: 0, y: 0, z: 0}
+--- !u!114 &383585322
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 383585313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0e9e81dcdcc6094c83aab46bfba0e41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  explosionForce: 50
+  raycastCount: 36
+  forceDissipationRate: 10
+  raySpeed: 10
 --- !u!1 &485961737
 GameObject:
   m_ObjectHideFlags: 0

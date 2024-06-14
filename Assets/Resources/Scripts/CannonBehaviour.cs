@@ -11,6 +11,7 @@ public class CannonBehaviour : MonoBehaviour
     public GameObject explosionEffectPrefab;
     public GameObject cannonballPrefab; // Add a prefab for the cannonball
     public ShipMovement shipMovement; // Reference to the ShipMovement script
+    public Explosions explosionScript; // Reference to the Explosions script
 
     public float cannonForce = 20f; // Adjust the force applied to the cannonball
     public float cannonballMass = 1f; // Mass of the cannonball
@@ -130,8 +131,8 @@ public class CannonBehaviour : MonoBehaviour
         Vector3 finalPosition = tilemap.GetCellCenterWorld(endTile);
         finalPosition.z = 0;
 
-        // Instantiate the explosion effect at the final position
-        Instantiate(explosionEffectPrefab, finalPosition, Quaternion.identity);
+        // Simulate explosion using raycasts
+        explosionScript.Explode(finalPosition);
     }
 
     public Vector3 GetSelectorPosition()
@@ -153,3 +154,4 @@ public class CannonBehaviour : MonoBehaviour
         return tilemap.WorldToCell(worldPosition);
     }
 }
+
