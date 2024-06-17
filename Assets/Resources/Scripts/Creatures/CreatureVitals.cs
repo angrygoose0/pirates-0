@@ -11,64 +11,89 @@ public class CreatureVitals : MonoBehaviour
     private float currentDamage;
     private float currentForce;
 
+    private SpriteRenderer spriteRenderer;
+    private Color originalColor;
+
     // Update is called once per frame
     void Start()
     {
         isDamaged = false;
         currentDamage = 0f;
         currentForce = 0f;
-    }
 
-    public void TakeDamage(float damage)
-    {
-        if (isDamaged)
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        if (spriteRenderer != null)
         {
-            if (damage > currentDamage)
-            {
-                currentDamage = damage;
-                StopCoroutine(DamageCoroutine());
-                StartCoroutine(DamageCoroutine());
-            }
+            originalColor = spriteRenderer.color;
         }
         else
         {
-            currentDamage = damage;
-            StartCoroutine(DamageCoroutine());
+            Debug.LogError("SpriteRenderer component is missing from this game object.");
         }
     }
 
-    public void ApplyForce(Vector2 force, float forceMagnitude)
+
+    public void ApplyImpact(Vector2 force, float forceMagnitude, float damageMagnitude)
     {
         if (isDamaged)
         {
             if (forceMagnitude > currentForce)
             {
                 currentForce = forceMagnitude;
-                StopCoroutine(DamageCoroutine());
-                StartCoroutine(DamageCoroutine());
-                GetComponent<Rigidbody2D>().AddForce(force, ForceMode2D.Impulse);
+                StopCoroutine(DamageCoroutine(Vector2.zero)); // Pass default Vector2
+                StartCoroutine(DamageCoroutine(force));
+            }
+            if (damageMagnitude > currentDamage)
+            {
+                currentDamage = damageMagnitude;
+                StopCoroutine(DamageCoroutine(Vector2.zero)); // Pass default Vector2
+                StartCoroutine(DamageCoroutine(force));
             }
         }
         else
         {
+            currentDamage = damageMagnitude;
             currentForce = forceMagnitude;
-            StartCoroutine(DamageCoroutine());
-            GetComponent<Rigidbody2D>().AddForce(force, ForceMode2D.Impulse);
+            StartCoroutine(DamageCoroutine(force));
         }
     }
 
-    private IEnumerator DamageCoroutine()
+    private IEnumerator DamageCoroutine(Vector2 force)
     {
         isDamaged = true;
         // Apply the damage to health, considering armor if needed
         ApplyDamage(currentDamage);
-        // Change color to red
-        GetComponent<Renderer>().material.color = Color.red;
 
-        yield return new WaitForSeconds(0.5f);
+        if (spriteRenderer != null)
+        {
+            // Change color to red
+            spriteRenderer.color = Color.red;
+        }
 
-        // Revert the color back to the original (assuming white, change if necessary)
-        GetComponent<Renderer>().material.color = Color.white;
+        // Apply knockback effect
+        GetComponent<Rigidbody2D>().AddForce(force, ForceMode2D.Impulse);
+
+        // Jerk effect
+        Vector3 originalPosition = transform.position;
+        float jerkDuration = 0.1f;
+        int jerkIterations = 10;
+        float jerkAmount = 0.1f;
+
+        for (int i = 0; i < jerkIterations; i++)
+        {
+            transform.position = originalPosition + (Vector3)Random.insideUnitCircle * jerkAmount;
+            yield return new WaitForSeconds(jerkDuration / jerkIterations);
+        }
+
+        transform.position = originalPosition; // Ensure it returns to original position
+
+        yield return new WaitForSeconds(0.4f);
+
+        if (spriteRenderer != null)
+        {
+            // Revert the color back to the original
+            spriteRenderer.color = originalColor;
+        }
 
         isDamaged = false;
         currentDamage = 0f;

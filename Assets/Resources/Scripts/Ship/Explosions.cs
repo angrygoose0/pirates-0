@@ -44,7 +44,8 @@ public class Explosions : MonoBehaviour
                     {
                         Vector2 forceDirection = ((Vector2)hit.point - (Vector2)startPosition).normalized;
                         float appliedForce = currentRayForce * itemObject.explosionMultiplier;
-                        creatureVitals.ApplyForce(forceDirection * appliedForce, appliedForce);
+                        float appliedDamage = currentRayForce * itemObject.damageMultiplier;
+                        creatureVitals.ApplyImpact(forceDirection * appliedForce, appliedForce, appliedDamage);
                         Debug.Log("hit");
                     }
 
