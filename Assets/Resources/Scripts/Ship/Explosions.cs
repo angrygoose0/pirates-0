@@ -1,15 +1,12 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Explosions : MonoBehaviour
 {
-    public float explosionForce = 50f; // Initial explosion force
     public int raycastCount = 36; // Number of raycasts
-    public float forceDissipationRate = 5f; // Rate at which force dissipates per unit distance
     public float raySpeed = 10f; // Speed at which rays progress
 
-    public void Explode(Vector3 explosionPosition)
+    public void Explode(Vector3 explosionPosition, ItemObject itemObject)
     {
         float angleStep = 360f / raycastCount;
 
@@ -21,38 +18,41 @@ public class Explosions : MonoBehaviour
             // Adjust for isometric perspective by scaling the y component
             rayDirection = new Vector3(rayDirection.x, rayDirection.y * 0.5f, rayDirection.z);
 
-            StartCoroutine(CastRayUntilDissipated(explosionPosition, rayDirection));
+            StartCoroutine(CastRayUntilDissipated(explosionPosition, rayDirection, itemObject));
         }
     }
 
-    private IEnumerator CastRayUntilDissipated(Vector3 startPosition, Vector3 direction)
+    private IEnumerator CastRayUntilDissipated(Vector3 startPosition, Vector3 direction, ItemObject itemObject)
     {
-        float currentForce = explosionForce;
+        float dissipationRate = 1 / itemObject.explosionRange;
+        float currentRayForce = 1f; // Start the ray force at 1
         Vector3 currentPosition = startPosition;
 
-        while (currentForce > 0)
+        while (currentRayForce > 0)
         {
             RaycastHit2D hit = Physics2D.Raycast(currentPosition, direction, raySpeed * Time.deltaTime);
 
             if (hit.collider != null)
             {
                 float distance = Vector2.Distance(currentPosition, hit.point);
-                currentForce = Mathf.Max(currentForce - distance * forceDissipationRate, 0);
+                currentRayForce = Mathf.Max(currentRayForce - distance * dissipationRate, 0);
 
-                if (currentForce > 0)
+                if (currentRayForce > 0)
                 {
-                    Rigidbody2D rb = hit.collider.GetComponent<Rigidbody2D>();
-                    if (rb != null)
+                    CreatureVitals creatureVitals = hit.collider.GetComponent<CreatureVitals>();
+                    if (creatureVitals != null)
                     {
-                        Vector2 forceDirection = ((Vector2)hit.point - (Vector2)currentPosition).normalized;
-                        rb.AddForce(forceDirection * currentForce, ForceMode2D.Impulse);
+                        Vector2 forceDirection = ((Vector2)hit.point - (Vector2)startPosition).normalized;
+                        float appliedForce = currentRayForce * itemObject.explosionMultiplier;
+                        creatureVitals.ApplyForce(forceDirection * appliedForce, appliedForce);
+                        Debug.Log("hit");
                     }
-
-                    // Move to the next position and continue casting the ray
-                    currentPosition = (Vector2)hit.point + (Vector2)(direction * 0.1f); // Move a bit forward to avoid re-hitting the same collider
 
                     // Draw the ray in the scene view for visualization
                     Debug.DrawRay(startPosition, direction * distance, Color.red, 0.1f);
+
+                    // Break out of the loop to stop casting the ray
+                    break;
                 }
                 else
                 {
@@ -61,15 +61,18 @@ public class Explosions : MonoBehaviour
             }
             else
             {
-                // No collider hit, just reduce the force based on the dissipation rate over distance
+                // No collider hit, just reduce the ray force based on the dissipation rate over distance
                 currentPosition += direction * raySpeed * Time.deltaTime;
-                currentForce -= forceDissipationRate * raySpeed * Time.deltaTime;
+                currentRayForce -= dissipationRate * raySpeed * Time.deltaTime;
 
                 // Draw the ray in the scene view for visualization
-                Debug.DrawRay(startPosition, direction * (explosionForce - currentForce) / forceDissipationRate, Color.red, 0.1f);
+                Debug.DrawRay(startPosition, direction * (1 - currentRayForce) / dissipationRate, Color.red, 0.1f);
             }
 
             yield return null;
         }
     }
 }
+
+
+

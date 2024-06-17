@@ -255,6 +255,8 @@ GameObject:
   - component: {fileID: 364215581}
   - component: {fileID: 364215579}
   - component: {fileID: 364215582}
+  - component: {fileID: 364215583}
+  - component: {fileID: 364215584}
   m_Layer: 0
   m_Name: Circle
   m_TagString: Untagged
@@ -350,6 +352,68 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!50 &364215583
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 364215578}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 10
+  m_LinearDrag: 7
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!70 &364215584
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 364215578}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 1, y: 1}
+  m_Direction: 0
 --- !u!1 &380298091
 GameObject:
   m_ObjectHideFlags: 0
@@ -513,7 +577,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shipGenerator: {fileID: 383585316}
   tilemap: {fileID: 170296652}
-  maxSpeed: 20
+  maxSpeed: 0
   mass: 200
 --- !u!114 &383585321
 MonoBehaviour:
@@ -550,10 +614,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0e9e81dcdcc6094c83aab46bfba0e41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  explosionForce: 50
   raycastCount: 36
-  forceDissipationRate: 10
-  raySpeed: 10
+  dissipationRate: 10
+  explosionMultiplier: 50
+  raySpeed: 100
 --- !u!1 &485961737
 GameObject:
   m_ObjectHideFlags: 0
@@ -833,7 +897,7 @@ LineRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 872312777}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1

@@ -6,6 +6,7 @@ public class blockPrefabScript : MonoBehaviour
 {
     public BlockObject blockObject; // Variable to store block objects
     public Vector2 blockDirection = Vector2.up; // Variable to store the direction as a Vector2
+    public ItemObject itemObject; // Variable to store item scriptable objects
 
     private List<BlockValue> GetBlockValues()
     {
@@ -56,10 +57,19 @@ public class blockPrefabScript : MonoBehaviour
             Debug.LogWarning("BlockObject is not assigned.");
             return float.NaN;
         }
-
     }
 
-
-    //blockDirection.normalized * GetBlockValueByName(mastForce);
-
+    public void DisplayItemInfo()
+    {
+        if (itemObject != null)
+        {
+            Debug.Log($"Item Name: {itemObject.itemName}");
+            Debug.Log($"Mass: {itemObject.mass}");
+            Debug.Log($"Damage Multiplier: {itemObject.damageMultiplier}");
+        }
+        else
+        {
+            Debug.LogWarning("ItemScriptableObject is not assigned.");
+        }
+    }
 }

@@ -1,0 +1,25 @@
+using UnityEngine;
+using System.Collections.Generic;
+
+
+[System.Serializable]
+public class CreatureValue
+{
+    public string name;
+    public float value;
+
+    public CreatureValue(string name, float value)
+    {
+        this.name = name;
+        this.value = value;
+    }
+}
+
+[CreateAssetMenu(fileName = "Block", menuName = "Creature", order = 1)]
+public class CreatureObject : ScriptableObject
+{
+    public float id;
+    public float hp;
+    public float armor;
+    public List<CreatureValue> creatureValues;
+}

@@ -11,6 +11,9 @@ public class InteractionManager : MonoBehaviour
         blockPrefabScript blockScript = blockPrefab.GetComponent<blockPrefabScript>();
         BlockObject blockObject = blockScript.blockObject;
 
+        ItemObject itemObject = blockScript.itemObject;
+
+
         if (blockScript != null && blockObject != null)
         {
             if (blockObject.blockType == BlockType.Cannon)
@@ -19,11 +22,14 @@ public class InteractionManager : MonoBehaviour
                 {
                     if (equippedCannon)
                     {
+                        Debug.Log("a");
                         Vector3 blockPosition = blockPrefab.transform.position;
+                        Debug.Log("b");
                         Vector3 selectorPosition = cannonBehaviour.GetSelectorPosition();
+                        Debug.Log("c");
                         Vector3Int selectorTilePosition = cannonBehaviour.WorldToCell(selectorPosition);
-
-                        cannonBehaviour.FireInTheHole(blockPosition, selectorTilePosition);
+                        Debug.Log("d");
+                        cannonBehaviour.FireInTheHole(blockPosition, selectorTilePosition, itemObject);
                     }
                     else
                     {

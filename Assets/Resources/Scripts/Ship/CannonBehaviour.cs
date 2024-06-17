@@ -13,6 +13,7 @@ public class CannonBehaviour : MonoBehaviour
     public ShipMovement shipMovement; // Reference to the ShipMovement script
     public Explosions explosionScript; // Reference to the Explosions script
 
+
     public float cannonForce = 20f; // Adjust the force applied to the cannonball
     public float cannonballMass = 1f; // Mass of the cannonball
     public float gravity = -9.81f; // Gravity affecting the cannonball
@@ -57,8 +58,9 @@ public class CannonBehaviour : MonoBehaviour
         }
     }
 
-    public void FireInTheHole(Vector3 startCoordinate, Vector3Int endTileCoordinate)
+    public void FireInTheHole(Vector3 startCoordinate, Vector3Int endTileCoordinate, ItemObject itemObject)
     {
+        Debug.Log("de");
         // Calculate the direction of the shot
         Vector3 end = tilemap.GetCellCenterWorld(endTileCoordinate);
         Vector3 shotDirection = (end - startCoordinate).normalized;
@@ -67,7 +69,7 @@ public class CannonBehaviour : MonoBehaviour
         ApplyRecoil(shotDirection);
 
         // Start the coroutine to move the cannonball and show explosion
-        StartCoroutine(MoveCannonball(startCoordinate, endTileCoordinate));
+        StartCoroutine(MoveCannonball(startCoordinate, endTileCoordinate, itemObject));
     }
 
     private void ApplyRecoil(Vector3 shotDirection)
@@ -79,7 +81,7 @@ public class CannonBehaviour : MonoBehaviour
         shipMovement.ApplyRecoilForce(new Vector2(recoilForce.x, recoilForce.y));
     }
 
-    private IEnumerator MoveCannonball(Vector3 start, Vector3Int endTile)
+    private IEnumerator MoveCannonball(Vector3 start, Vector3Int endTile, ItemObject itemObject)
     {
         // Instantiate the cannonball at the start position
         GameObject cannonball = Instantiate(cannonballPrefab, start, Quaternion.identity);
@@ -87,7 +89,7 @@ public class CannonBehaviour : MonoBehaviour
         rb.gravityScale = 0; // We'll handle gravity manually
 
         float initialDistance = Vector3.Distance(start, tilemap.GetCellCenterWorld(endTile));
-        float timeToTarget = Mathf.Sqrt(2 * initialDistance / (cannonForce / cannonballMass));
+        float timeToTarget = Mathf.Sqrt(2 * initialDistance / (cannonForce / itemObject.mass));
 
         // Calculate initial velocity components
         Vector3 initialEnd = tilemap.GetCellCenterWorld(endTile);
@@ -132,7 +134,7 @@ public class CannonBehaviour : MonoBehaviour
         finalPosition.z = 0;
 
         // Simulate explosion using raycasts
-        explosionScript.Explode(finalPosition);
+        explosionScript.Explode(finalPosition, itemObject);
     }
 
     public Vector3 GetSelectorPosition()
@@ -154,4 +156,3 @@ public class CannonBehaviour : MonoBehaviour
         return tilemap.WorldToCell(worldPosition);
     }
 }
-
