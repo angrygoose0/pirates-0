@@ -5,9 +5,16 @@ using UnityEngine;
 public class blockPrefabScript : MonoBehaviour
 {
     public BlockObject blockObject; // Variable to store block objects
-    public Vector2 blockDirection = Vector2.up; // Variable to store the direction as a Vector2
-    public ItemObject itemObject; // Variable to store item scriptable objects
+    public Vector2 blockDirection = Vector2.up; // Variable to store the direction as a Vector2                                  
+    public GameObject itemPrefabObject;
+    private ItemObject itemObject;
+    public GameObject player;
 
+
+    void Update()
+    {
+        DisplayItemInfo();
+    }
     private List<BlockValue> GetBlockValues()
     {
         if (blockObject != null)
@@ -61,15 +68,14 @@ public class blockPrefabScript : MonoBehaviour
 
     public void DisplayItemInfo()
     {
-        if (itemObject != null)
+        if (itemPrefabObject != null)
         {
-            Debug.Log($"Item Name: {itemObject.itemName}");
-            Debug.Log($"Mass: {itemObject.mass}");
-            Debug.Log($"Damage Multiplier: {itemObject.damageMultiplier}");
-        }
-        else
-        {
-            Debug.LogWarning("ItemScriptableObject is not assigned.");
+            ItemScript itemScript = itemPrefabObject.GetComponent<ItemScript>();
+            if (itemScript != null)
+            {
+                itemObject = itemScript.itemObject;
+
+            }
         }
     }
 }

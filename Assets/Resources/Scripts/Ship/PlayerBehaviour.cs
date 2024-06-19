@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Collections.Generic;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerBehaviour : MonoBehaviour
 {
     public float moveSpeed = 5f;
     public float acceleration = 10f;
@@ -20,7 +20,8 @@ public class PlayerMovement : MonoBehaviour
     private Vector3Int? previousInteractableTilePosition; // Store the previous interactable tile position
 
     public InteractionManager interactionManager; // Reference to the InteractionManager script
-    // Use ShipGenerator's Direction enum
+    public GameObject equippedItem;
+    public GameObject equippedBlock;
     public ShipGenerator.Direction currentDirection;
 
     void Update()
@@ -43,6 +44,21 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Q))
         {
             InteractWithBlock(1);
+        }
+
+        if (equippedItem != null)
+        {
+            // Attach the equipped item to the player
+            equippedItem.transform.SetParent(this.transform);
+
+            // Set the equipped item's position to the player's position
+            equippedItem.transform.localPosition = Vector3.zero;
+
+            ItemScript itemScript = equippedItem.GetComponent<ItemScript>();
+            if (itemScript != null)
+            {
+                itemScript.isEquipped = true;
+            }
         }
     }
 
@@ -243,7 +259,7 @@ public class PlayerMovement : MonoBehaviour
 
             if (blockPrefab != null)
             {
-                interactionManager.InteractWithBlock(blockPrefab, interaction);
+                interactionManager.InteractWithBlock(blockPrefab, interaction, gameObject);
 
             }
         }

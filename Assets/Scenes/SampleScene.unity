@@ -257,6 +257,7 @@ GameObject:
   - component: {fileID: 364215582}
   - component: {fileID: 364215583}
   - component: {fileID: 364215584}
+  - component: {fileID: 364215585}
   m_Layer: 0
   m_Name: Circle
   m_TagString: Untagged
@@ -414,6 +415,21 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 1, y: 1}
   m_Direction: 0
+--- !u!114 &364215585
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 364215578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f794321ed1689345844bbdaf7484447, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: 0
+  armor: 0
+  creatureObject: {fileID: 11400000, guid: 7f9693fa9cac6954684e38dfebcd0f51, type: 2}
 --- !u!1 &380298091
 GameObject:
   m_ObjectHideFlags: 0
@@ -460,8 +476,8 @@ GameObject:
   - component: {fileID: 383585318}
   - component: {fileID: 383585319}
   - component: {fileID: 383585320}
-  - component: {fileID: 383585321}
   - component: {fileID: 383585322}
+  - component: {fileID: 383585323}
   m_Layer: 0
   m_Name: ghost
   m_TagString: Untagged
@@ -535,7 +551,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   equippedCannon: {fileID: 0}
-  cannonBehaviour: {fileID: 383585321}
+  cannonBehaviour: {fileID: 383585323}
 --- !u!114 &383585319
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -579,29 +595,6 @@ MonoBehaviour:
   tilemap: {fileID: 170296652}
   maxSpeed: 0
   mass: 200
---- !u!114 &383585321
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 383585313}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4fdf73217bda40d42a7e6438e19de148, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  interactionManager: {fileID: 383585318}
-  tilemap: {fileID: 170296654}
-  selectorPrefab: {fileID: 7750116874504110355, guid: 8125282e50bc4d140bb095b063c6e2e3, type: 3}
-  explosionEffectPrefab: {fileID: 1024876700175561445, guid: 3860df99372c4d1468862cc566aa603a, type: 3}
-  cannonballPrefab: {fileID: 3258447280453129342, guid: fa707123ad2c9244da06a6adc4df02dd, type: 3}
-  shipMovement: {fileID: 383585320}
-  explosionScript: {fileID: 383585322}
-  cannonForce: 10
-  cannonballMass: 1
-  gravity: -9.81
-  currentMouseTileCoordinate: {x: 0, y: 0, z: 0}
 --- !u!114 &383585322
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -615,9 +608,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   raycastCount: 36
-  dissipationRate: 10
-  explosionMultiplier: 50
   raySpeed: 100
+--- !u!114 &383585323
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 383585313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93cd2303b2cf62944b856469021f4ba8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactionManager: {fileID: 383585318}
+  tilemap: {fileID: 170296654}
+  selectorPrefab: {fileID: 7750116874504110355, guid: 8125282e50bc4d140bb095b063c6e2e3, type: 3}
+  explosionEffectPrefab: {fileID: 1024876700175561445, guid: 3860df99372c4d1468862cc566aa603a, type: 3}
+  cannonballPrefab: {fileID: 3258447280453129342, guid: fa707123ad2c9244da06a6adc4df02dd, type: 3}
+  shipMovement: {fileID: 383585320}
+  explosionScript: {fileID: 383585322}
+  cannonForce: 20
+  cannonballMass: 1
+  gravity: -9.81
+  currentMouseTileCoordinate: {x: 0, y: 0, z: 0}
 --- !u!1 &485961737
 GameObject:
   m_ObjectHideFlags: 0
@@ -855,6 +869,103 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawnTilePosition: {x: 5, y: 5}
   tilemap: {fileID: 170296654}
+--- !u!1 &762235064
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 762235066}
+  - component: {fileID: 762235065}
+  - component: {fileID: 762235067}
+  m_Layer: 0
+  m_Name: itemPrefab
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!212 &762235065
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 762235064}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
+--- !u!4 &762235066
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 762235064}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 26.388092, y: -11.476416, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &762235067
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 762235064}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fee9fc16ee4fc9468393b4201f27797, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &872312777
 GameObject:
   m_ObjectHideFlags: 0
@@ -1580,3 +1691,4 @@ SceneRoots:
   - {fileID: 1291744410}
   - {fileID: 1722425498}
   - {fileID: 707101568}
+  - {fileID: 762235066}
