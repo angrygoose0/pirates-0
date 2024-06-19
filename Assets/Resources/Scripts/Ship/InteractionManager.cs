@@ -5,6 +5,9 @@ public class InteractionManager : MonoBehaviour
     public GameObject equippedCannon;
     public CannonBehaviour cannonBehaviour;
 
+    private Dictionary<GameObject, GameObject> playerBlockRelations = new Dictionary<GameObject, GameObject>(); // adds two instances where block/players are swapped key/value to make it more efficient when searching.
+
+
     public void InteractWithBlock(GameObject blockPrefab, int interaction, GameObject player) // 0=primary 1=secondary interaction
     {
         PlayerBehaviour playerScript = player.GetComponent<PlayerBehaviour>();
