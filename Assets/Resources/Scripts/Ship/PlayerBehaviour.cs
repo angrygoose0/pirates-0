@@ -18,6 +18,7 @@ public class PlayerBehaviour : MonoBehaviour
     private Vector2 currentVelocity;
     private Vector3Int facingTilePosition; // Variable to store the tile position the player is facing
     private Vector3Int? previousInteractableTilePosition; // Store the previous interactable tile position
+    public GameObject selectedBlockPrefab;
 
     public InteractionManager interactionManager; // Reference to the InteractionManager script
     public GameObject equippedItem;
@@ -255,13 +256,9 @@ public class PlayerBehaviour : MonoBehaviour
         if (previousInteractableTilePosition.HasValue)
         {
             Vector3Int tilePosition = previousInteractableTilePosition.Value;
-            GameObject blockPrefab = shipGenerator.GetBlockPrefabAtTile(tilePosition);
+            selectedBlockPrefab = shipGenerator.GetBlockPrefabAtTile(tilePosition);
+            interactionManager.InteractWithBlock(interaction, gameObject);
 
-            if (blockPrefab != null)
-            {
-                interactionManager.InteractWithBlock(blockPrefab, interaction, gameObject);
-
-            }
         }
     }
 }

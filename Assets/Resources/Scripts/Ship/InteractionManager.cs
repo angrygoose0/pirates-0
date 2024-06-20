@@ -1,20 +1,40 @@
-using UnityEngine;
+using System;
 using System.Collections.Generic;
+using UnityEngine;
+
+
 
 public class InteractionManager : MonoBehaviour
 {
+    public Dictionary<GameObject, GameObject> playerBlockRelations = new Dictionary<GameObject, GameObject>(); // adds two instances where block/players are swapped key/value to make it more efficient when searching.
+
     public GameObject equippedCannon;
     public CannonBehaviour cannonBehaviour;
 
-    private Dictionary<GameObject, GameObject> playerBlockRelations = new Dictionary<GameObject, GameObject>(); // adds two instances where block/players are swapped key/value to make it more efficient when searching.
 
-
-    public void InteractWithBlock(GameObject blockPrefab, int interaction, GameObject player) // 0=primary 1=secondary interaction
+    public void InteractWithBlock(int interaction, GameObject player) // 0=primary 1=secondary interaction  
+    //sometimes when a player interacts, the blockPrefab shouldnt have to be defined, as the player might already be equipped to a block, so it should check the dictionary to see what block the player is attatched to first.
     {
+
         PlayerBehaviour playerScript = player.GetComponent<PlayerBehaviour>();
+
+        GameObject blockPrefab = null;
+
+
+
+        if (playerBlockRelations.ContainsKey(player))
+        {
+            blockPrefab = playerBlockRelations[player];
+            // if exists, continue to use the block the player is equipped rn
+
+        }
+        else
+        {
+            blockPrefab = playerScript.selectedBlockPrefab;
+            //use the blockprefab the player is looking at rn. because the player hasnt equipped a block.
+        }
+
         GameObject equippedItem = null;
-
-
         equippedItem = playerScript.equippedItem;
 
         ItemObject equippedItemObject = null;
@@ -45,14 +65,33 @@ public class InteractionManager : MonoBehaviour
             Debug.Log("cannoninteraction");
             if (interaction == 0)
             {
+
                 Debug.Log("interaction 0");
-                if (blockScript.player == player)
+
+                //the player is equipped to a block, so he is leaving.
+                if (playerBlockRelations.ContainsKey(player))
                 {
-                    blockScript.player = null; //player exits cannon
+                    playerBlockRelations.Remove(player);
+
+                    playerBlockRelations.Remove(blockPrefab);
+                    //player exits cannon
                 }
-                else
+
+                else //the player isn't equipped to a block, so hes entering
                 {
-                    blockScript.player = player; //player equips empty / kicks out another player
+                    playerBlockRelations[player] = blockPrefab; // the player shouldnt have another instance with the same key
+
+
+
+                    if (playerBlockRelations.ContainsKey(blockPrefab))
+                    {
+                        GameObject existingPlayer = playerBlockRelations[blockPrefab];
+                        playerBlockRelations.Remove(existingPlayer);
+                    }
+
+                    playerBlockRelations[blockPrefab] = player;
+
+                    //player equips empty / kicks out another player
                 }
             }
             else if (interaction == 1)
