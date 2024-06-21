@@ -2,15 +2,22 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-
-
 public class InteractionManager : MonoBehaviour
 {
     public Dictionary<GameObject, GameObject> playerBlockRelations = new Dictionary<GameObject, GameObject>(); // adds two instances where block/players are swapped key/value to make it more efficient when searching.
-
     public GameObject equippedCannon;
     public CannonBehaviour cannonBehaviour;
 
+    public GameObject playerOne; //temporary player variable
+
+    void Update()
+    {
+        if (playerBlockRelations.ContainsKey(playerOne))
+        {
+            cannonBehaviour.cannonSelector();
+        }
+
+    }
 
     public void InteractWithBlock(int interaction, GameObject player) // 0=primary 1=secondary interaction  
     //sometimes when a player interacts, the blockPrefab shouldnt have to be defined, as the player might already be equipped to a block, so it should check the dictionary to see what block the player is attatched to first.
@@ -19,8 +26,6 @@ public class InteractionManager : MonoBehaviour
         PlayerBehaviour playerScript = player.GetComponent<PlayerBehaviour>();
 
         GameObject blockPrefab = null;
-
-
 
         if (playerBlockRelations.ContainsKey(player))
         {
@@ -34,13 +39,16 @@ public class InteractionManager : MonoBehaviour
             //use the blockprefab the player is looking at rn. because the player hasnt equipped a block.
         }
 
+        Debug.Log(blockPrefab);
+
         GameObject equippedItem = null;
         equippedItem = playerScript.equippedItem;
+        ItemScript equippedItemScript = null;
 
         ItemObject equippedItemObject = null;
         if (equippedItem != null)
         {
-            ItemScript equippedItemScript = equippedItem.GetComponent<ItemScript>();
+            equippedItemScript = equippedItem.GetComponent<ItemScript>();
             equippedItemObject = equippedItemScript.itemObject;
         }
 
@@ -50,81 +58,104 @@ public class InteractionManager : MonoBehaviour
         BlockObject blockObject = blockScript.blockObject;
         GameObject blockItem = null;
 
-
         blockItem = blockScript.itemPrefabObject;
 
+        ItemScript blockItemScript = null;
         ItemObject blockItemObject = null;
         if (blockItem != null)
         {
-            ItemScript blockItemScript = blockItem.GetComponent<ItemScript>();
+            blockItemScript = blockItem.GetComponent<ItemScript>();
             blockItemObject = blockItemScript.itemObject;
         }
 
-        if (blockObject.blockType == BlockType.Cannon)
+        switch (interaction)
         {
-            Debug.Log("cannoninteraction");
-            if (interaction == 0)
-            {
-
-                Debug.Log("interaction 0");
-
-                //the player is equipped to a block, so he is leaving.
-                if (playerBlockRelations.ContainsKey(player))
+            case 0:
+                if (blockObject.blockType == BlockType.Cannon)
                 {
-                    playerBlockRelations.Remove(player);
+                    Debug.Log("cannoninteraction");
+                    Debug.Log("interaction 0");
 
-                    playerBlockRelations.Remove(blockPrefab);
-                    //player exits cannon
-                }
-
-                else //the player isn't equipped to a block, so hes entering
-                {
-                    playerBlockRelations[player] = blockPrefab; // the player shouldnt have another instance with the same key
-
-
-
-                    if (playerBlockRelations.ContainsKey(blockPrefab))
+                    //the player is equipped to a block, so he is leaving.
+                    if (playerBlockRelations.ContainsKey(player))
                     {
-                        GameObject existingPlayer = playerBlockRelations[blockPrefab];
-                        playerBlockRelations.Remove(existingPlayer);
+                        playerBlockRelations.Remove(player);
+                        playerBlockRelations.Remove(blockPrefab);
+                        //player exits cannon
+                    }
+                    else //the player isn't equipped to a block, so he's entering
+                    {
+                        playerBlockRelations[player] = blockPrefab; // the player shouldn't have another instance with the same key
+
+                        if (playerBlockRelations.ContainsKey(blockPrefab))
+                        {
+                            GameObject existingPlayer = playerBlockRelations[blockPrefab];
+                            playerBlockRelations.Remove(existingPlayer);
+                        }
+
+                        playerBlockRelations[blockPrefab] = player;
+                        //player equips empty / kicks out another player
+                    }
+                }
+                else if (blockObject.blockType == BlockType.Mast)
+                {
+                    Debug.Log("turning mast clockwise 45");
+                    blockScript.blockDirection = RotateVector(blockScript.blockDirection, 45);
+                }
+                break;
+
+            case 1:
+                if (blockObject.blockType == BlockType.Cannon)
+                {
+                    Debug.Log("cannoninteraction");
+                    Debug.Log("interaction 1");
+                    if (equippedItemScript != null)
+                    {
+                        equippedItemScript.SetItemVisibility(false);
+                        equippedItemScript.NewParent(blockPrefab);
                     }
 
-                    playerBlockRelations[blockPrefab] = player;
 
-                    //player equips empty / kicks out another player
+                    blockScript.itemPrefabObject = equippedItem;
+
+                    if (blockItemScript != null)
+                    {
+                        blockItemScript.SetItemVisibility(true);
+                        blockItemScript.NewParent(player);
+                    }
+
+                    playerScript.equippedItem = blockItem;
                 }
-            }
-            else if (interaction == 1)
-            {
-                Debug.Log("interaction 1");
-                blockScript.itemPrefabObject = equippedItem;
-                playerScript.equippedItem = blockItem;
-            }
+                else if (blockObject.blockType == BlockType.Mast)
+                {
+                    Debug.Log("turning mast anti-clockwise 45");
+                    blockScript.blockDirection = RotateVector(blockScript.blockDirection, -45);
+                }
+                break;
 
-            else if (interaction == 2) //fire
-            {
-                Debug.Log("interaction 2");
-                Vector3 blockPosition = blockPrefab.transform.position;
-                Vector3 selectorPosition = cannonBehaviour.GetSelectorPosition();
-                Vector3Int selectorTilePosition = cannonBehaviour.WorldToCell(selectorPosition);
-                cannonBehaviour.FireInTheHole(blockPosition, selectorTilePosition, blockItemObject);
-            }
+            case 2:
+                if (blockObject.blockType == BlockType.Cannon)
+                {
+                    Debug.Log("cannoninteraction");
+                    Debug.Log("interaction 2");
+                    if (playerBlockRelations.ContainsKey(player))
+                    {
+                        Vector3 blockPosition = blockPrefab.transform.position;
+                        Vector3 selectorPosition = cannonBehaviour.GetSelectorPosition();
+                        Vector3Int selectorTilePosition = cannonBehaviour.WorldToCell(selectorPosition);
+                        cannonBehaviour.FireInTheHole(blockPosition, selectorTilePosition, blockItemObject);
+                    }
+                    else
+                    {
+                        Debug.Log("shoot blanks");
+                    }
+                }
+                break;
+
+            default:
+                Debug.Log("Unknown interaction");
+                break;
         }
-
-        else if (blockObject.blockType == BlockType.Mast)
-        {
-            if (interaction == 0)
-            {
-                Debug.Log("turning mast clockwise 45");
-                blockScript.blockDirection = RotateVector(blockScript.blockDirection, 45);
-            }
-            else if (interaction == 1)
-            {
-                Debug.Log("turning mast anti-clockwise 45");
-                blockScript.blockDirection = RotateVector(blockScript.blockDirection, -45);
-            }
-        }
-
     }
 
     private Vector2 RotateVector(Vector2 originalVector, float angleDegrees)

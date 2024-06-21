@@ -26,35 +26,39 @@ public class CannonBehaviour : MonoBehaviour
     void Start()
     {
         previousTilemapPosition = tilemap.transform.position;
+
+        Dictionary<GameObject, GameObject> playerBlockRelations = interactionManager.playerBlockRelations;
     }
 
     void Update()
     {
-        if (interactionManager.equippedCannon)
+
+    }
+
+    public void cannonSelector()
+    {
+        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3Int cellPosition = tilemap.WorldToCell(worldPosition);
+
+        // Update the current mouse tile coordinate
+        currentMouseTileCoordinate = cellPosition;
+
+        // Check if the mouse position has changed or if the tilemap has moved
+        if (cellPosition != previousMousePosition || tilemap.transform.position != previousTilemapPosition)
         {
-            Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector3Int cellPosition = tilemap.WorldToCell(worldPosition);
+            previousMousePosition = cellPosition;
+            previousTilemapPosition = tilemap.transform.position;
 
-            // Update the current mouse tile coordinate
-            currentMouseTileCoordinate = cellPosition;
-
-            // Check if the mouse position has changed or if the tilemap has moved
-            if (cellPosition != previousMousePosition || tilemap.transform.position != previousTilemapPosition)
+            if (selectorInstantiated == null)
             {
-                previousMousePosition = cellPosition;
-                previousTilemapPosition = tilemap.transform.position;
-
-                if (selectorInstantiated == null)
-                {
-                    selectorInstantiated = Instantiate(selectorPrefab);
-                }
-
-                // Convert cell position to world position with proper alignment
-                Vector3 cellWorldPosition = tilemap.GetCellCenterWorld(cellPosition);
-                cellWorldPosition.z = 0; // Ensure Z coordinate is correct
-
-                selectorInstantiated.transform.position = cellWorldPosition;
+                selectorInstantiated = Instantiate(selectorPrefab);
             }
+
+            // Convert cell position to world position with proper alignment
+            Vector3 cellWorldPosition = tilemap.GetCellCenterWorld(cellPosition);
+            cellWorldPosition.z = 0; // Ensure Z coordinate is correct
+
+            selectorInstantiated.transform.position = cellWorldPosition;
         }
     }
 

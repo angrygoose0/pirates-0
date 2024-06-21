@@ -42,24 +42,27 @@ public class PlayerBehaviour : MonoBehaviour
         {
             InteractWithBlock(0);
         }
-        if (Input.GetKeyDown(KeyCode.Q))
+        else if (Input.GetKeyDown(KeyCode.Q))
         {
             InteractWithBlock(1);
         }
+        else if (Input.GetMouseButtonDown(0))
+        {
+            InteractWithBlock(2);
+        }
+        else if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            DropItem();
+        }
+
 
         if (equippedItem != null)
         {
-            // Attach the equipped item to the player
-            equippedItem.transform.SetParent(this.transform);
+            ItemScript itemScript = equippedItem.GetComponent<ItemScript>();
+            itemScript.NewParent(gameObject);
 
             // Set the equipped item's position to the player's position
             equippedItem.transform.localPosition = Vector3.zero;
-
-            ItemScript itemScript = equippedItem.GetComponent<ItemScript>();
-            if (itemScript != null)
-            {
-                itemScript.isEquipped = true;
-            }
         }
     }
 
@@ -261,4 +264,21 @@ public class PlayerBehaviour : MonoBehaviour
 
         }
     }
+
+    void DropItem()
+    {
+        if (equippedItem != null)
+        {
+            // Set the equipped item's position to the player's current position
+            equippedItem.transform.position = rb.position;
+
+            ItemScript itemScript = equippedItem.GetComponent<ItemScript>();
+            itemScript.NewParent(null);
+
+
+            // Set equippedItem to null as the player no longer has the item equipped
+            equippedItem = null;
+        }
+    }
+
 }
