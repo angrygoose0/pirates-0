@@ -13,8 +13,8 @@ public class CreatureVitals : MonoBehaviour
 
     private SpriteRenderer spriteRenderer;
     private Color originalColor;
+    private CreatureBehaviour creatureBehaviour;
 
-    // Update is called once per frame
     void Start()
     {
         isDamaged = false;
@@ -30,8 +30,13 @@ public class CreatureVitals : MonoBehaviour
         {
             Debug.LogError("SpriteRenderer component is missing from this game object.");
         }
-    }
 
+        creatureBehaviour = GetComponent<CreatureBehaviour>();
+        if (creatureBehaviour == null)
+        {
+            Debug.LogError("CreatureBehaviour component not found on this GameObject.");
+        }
+    }
 
     public void ApplyImpact(Vector2 force, float forceMagnitude, float damageMagnitude)
     {
@@ -40,14 +45,10 @@ public class CreatureVitals : MonoBehaviour
             if (forceMagnitude > currentForce)
             {
                 currentForce = forceMagnitude;
-                StopCoroutine(DamageCoroutine(Vector2.zero)); // Pass default Vector2
-                StartCoroutine(DamageCoroutine(force));
             }
             if (damageMagnitude > currentDamage)
             {
                 currentDamage = damageMagnitude;
-                StopCoroutine(DamageCoroutine(Vector2.zero)); // Pass default Vector2
-                StartCoroutine(DamageCoroutine(force));
             }
         }
         else
@@ -61,6 +62,7 @@ public class CreatureVitals : MonoBehaviour
     private IEnumerator DamageCoroutine(Vector2 force)
     {
         isDamaged = true;
+
         // Apply the damage to health, considering armor if needed
         ApplyDamage(currentDamage);
 
@@ -105,6 +107,8 @@ public class CreatureVitals : MonoBehaviour
         // Assuming armor reduces damage by a flat amount
         float actualDamage = Mathf.Max(0, damage - armor);
         health -= actualDamage;
+
+        creatureBehaviour.hostility += 20;
 
         // Check if health drops below zero
         if (health <= 0)

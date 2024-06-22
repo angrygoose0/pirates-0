@@ -3,7 +3,9 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Item
+  - Ship
   layers:
   - Default
   - TransparentFX
@@ -44,6 +46,9 @@ TagManager:
   - name: world
     uniqueID: 2957908791
     locked: 0
+  - name: creature
+    uniqueID: 3698801699
+    locked: 0
   - name: ship
     uniqueID: 3043669347
     locked: 0
@@ -55,7 +60,4 @@ TagManager:
     locked: 0
   - name: ui
     uniqueID: 76177347
-    locked: 0
-  - name: New Layer 6
-    uniqueID: 3698801699
     locked: 0

@@ -59,7 +59,7 @@ public class ShipGenerator : MonoBehaviour
                     {
                         // Convert tilemap position to world position
                         Vector3 worldPosition = tilemap.CellToWorld(tilePosition) + tilemap.tileAnchor;
-                        worldPosition.z = 0; // Ensure the block is at the correct Z position if needed
+                        worldPosition.z = 1; // Ensure the block is at the correct Z position if needed
 
                         // Adjust the position as required
                         worldPosition.x -= 0.5f;

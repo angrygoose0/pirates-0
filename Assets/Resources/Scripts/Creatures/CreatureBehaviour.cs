@@ -8,6 +8,7 @@ public class CreatureBehaviour : MonoBehaviour
     public enum State
     {
         Idle,
+        Aggressive,
         // Add more states here as needed
     }
 
@@ -17,16 +18,20 @@ public class CreatureBehaviour : MonoBehaviour
     public float maxMoveSpeed = 3f; // Maximum movement speed in units per second
     public float acceleration = 2f; // Acceleration in units per second squared
     public float deceleration = 2f; // Deceleration in units per second squared
-    public float idleDelay = 2f; // Time to wait before moving again in seconds
+    public float movementDelay; // Time to wait before moving again in seconds
+
+    public GameObject targetShipPart; //for when raft pieces have invisible gameobjects that count the hp, etc
 
     private Vector3 targetPosition; // Position to move towards
     private Vector3 velocity = Vector3.zero; // Current velocity
 
     public float range = 5f;
+    public float hostility; //0=passive, 100=AGGRESSIVE
+    public float aggressionThreshold = 75f; // Threshold for changing state to aggressive
 
     private Vector3Int currentTilePosition; // Variable to store the current tile position
-    private State currentState; // Current state of the creature
-    private bool isIdleCoroutineRunning = false; // Flag to track if the idle coroutine is running
+    public State currentState; // Current state of the creature
+    private bool isMovementCoroutineRunning = false; // Flag to track if the movement coroutine is running
 
     // Start is called before the first frame update
     void Start()
@@ -40,7 +45,12 @@ public class CreatureBehaviour : MonoBehaviour
         currentTilePosition = tilemap.WorldToCell(transform.position);
 
         // Set the initial state
-        ChangeState(State.Idle);
+        currentState = State.Idle;
+
+        if (!isMovementCoroutineRunning)
+        {
+            StartCoroutine(MovementCoroutine());
+        }
     }
 
     // Update is called once per frame
@@ -49,40 +59,38 @@ public class CreatureBehaviour : MonoBehaviour
         // Update the current tile position
         currentTilePosition = tilemap.WorldToCell(transform.position);
 
-        // Update the current state
-        switch (currentState)
+        // Check if hostility has reached the threshold
+        if (hostility >= aggressionThreshold && currentState != State.Aggressive)
         {
-            case State.Idle:
-                UpdateIdleState();
-                break;
+            currentState = State.Aggressive;
+        }
+        else if (hostility < aggressionThreshold && currentState != State.Idle)
+        {
+            currentState = State.Idle;
+        }
 
-                // Add cases for other states here
+        UpdateMovement();
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        // Check if the collider has the specified tag
+        if (other.CompareTag("Ship"))
+        {
+            // Perform actions when the creature collides with the ship
         }
     }
 
-    private void ChangeState(State newState)
+    private void EnterMovementState()
     {
-        currentState = newState;
-        switch (newState)
-        {
-            case State.Idle:
-                EnterIdleState();
-                break;
-
-                // Add cases for entering other states here
-        }
+        // Define behavior when entering a new movement state
     }
 
-    private void EnterIdleState()
+    private void UpdateMovement()
     {
-        if (!isIdleCoroutineRunning)
-        {
-            StartCoroutine(IdleStateCoroutine());
-        }
-    }
+        // Adjust the acceleration based on the current state
+        float currentAcceleration = currentState == State.Aggressive ? acceleration * 1.5f : acceleration;
 
-    private void UpdateIdleState()
-    {
         // Calculate the direction and distance to the target position
         Vector3 direction = targetPosition - transform.localPosition;
         float distance = direction.magnitude;
@@ -98,7 +106,7 @@ public class CreatureBehaviour : MonoBehaviour
         if (distance > 0.1f)
         {
             // Accelerate towards the target velocity
-            velocity = Vector3.MoveTowards(velocity, targetVelocity, acceleration * Time.deltaTime);
+            velocity = Vector3.MoveTowards(velocity, targetVelocity, currentAcceleration * Time.deltaTime);
         }
         else
         {
@@ -120,31 +128,61 @@ public class CreatureBehaviour : MonoBehaviour
         }
     }
 
-    private IEnumerator IdleStateCoroutine()
+    private IEnumerator MovementCoroutine()
     {
-        isIdleCoroutineRunning = true;
-        while (currentState == State.Idle)
+        isMovementCoroutineRunning = true;
+        while (true)
         {
-            // Get surrounding tiles within the given range and pick a random one
             List<Vector3Int> surroundingTiles = GetSurroundingTiles(currentTilePosition, range);
+
+            bool found = false;
+            Vector3Int targetTile;
             if (surroundingTiles.Count > 0)
             {
-                Vector3Int randomTile = surroundingTiles[Random.Range(0, surroundingTiles.Count)];
-                targetPosition = tilemap.GetCellCenterLocal(randomTile);
-                //Debug.Log("Random surrounding tile: " + randomTile);
+                switch (currentState)
+                {
+                    case State.Idle:
+                        // Pick a random tile.
+                        targetTile = surroundingTiles[Random.Range(0, surroundingTiles.Count)];
+                        targetPosition = tilemap.GetCellCenterLocal(targetTile);
+                        break;
+                    case State.Aggressive:
+
+
+                        Vector3 targetShipPartLocalPosition = tilemap.WorldToCell(targetShipPart.transform.position);
+                        targetTile = Vector3Int.FloorToInt(targetShipPartLocalPosition);
+                        Debug.Log(targetTile);
+                        foreach (Vector3Int tile in surroundingTiles)
+                        {
+
+                            if (tile == targetTile)
+                            {
+                                targetPosition = tilemap.GetCellCenterLocal(tile);
+                                Debug.Log("found");
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if (!found)
+                        {
+                            Debug.Log("not found");
+                            targetTile = surroundingTiles[Random.Range(0, surroundingTiles.Count)];
+                            targetPosition = tilemap.GetCellCenterLocal(targetTile);
+                            hostility -= 10; // Reduce hostility only when the exact tile is not found
+                        }
+                        break;
+                        // Add cases for other states here
+                }
             }
 
-            // Wait for the idle delay before picking a new target
-            yield return new WaitForSeconds(idleDelay);
+            movementDelay = 2.0f;
+            // Wait for the delay before picking a new targetTile
+            yield return new WaitForSeconds(movementDelay);
         }
-        isIdleCoroutineRunning = false;
     }
 
-    // Optional: Method to get the current tile position
-    public Vector3Int GetCurrentTilePosition()
-    {
-        return currentTilePosition;
-    }
+
 
     // Method to get surrounding tiles within a given range
     private List<Vector3Int> GetSurroundingTiles(Vector3Int centerTile, float range)
