@@ -11,6 +11,12 @@ public class CreatureVitals : MonoBehaviour
     private float currentDamage;
     private float currentForce;
 
+    public int minGoldDrop = 5;
+    public int maxGoldDrop = 10;
+
+    public itemManager itemManager;
+
+
     private SpriteRenderer spriteRenderer;
     private Color originalColor;
     private CreatureBehaviour creatureBehaviour;
@@ -107,14 +113,32 @@ public class CreatureVitals : MonoBehaviour
         // Assuming armor reduces damage by a flat amount
         float actualDamage = Mathf.Max(0, damage - armor);
         health -= actualDamage;
+        Debug.Log("damaged");
+        Debug.Log(health);
 
         creatureBehaviour.hostility += 20;
 
         // Check if health drops below zero
         if (health <= 0)
         {
-            // Handle creature death (not implemented here)
-            Debug.Log("Creature is dead.");
+            HandleDeath();
         }
+    }
+
+    private void HandleDeath()
+    {
+        Debug.Log("Creature is dead.");
+
+        // Determine the gold drop amount
+        int goldDrop = Random.Range(minGoldDrop, maxGoldDrop + 1);
+
+        // Instantiate the item prefabs based on the gold drop
+        for (int i = 0; i < goldDrop; i++)
+        {
+            itemManager.CreateItem("goldOne", transform.position);
+        }
+
+        // Destroy the creature game object
+        Destroy(gameObject);
     }
 }

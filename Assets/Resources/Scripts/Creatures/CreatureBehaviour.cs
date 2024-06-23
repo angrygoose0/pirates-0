@@ -151,14 +151,12 @@ public class CreatureBehaviour : MonoBehaviour
 
                         Vector3 targetShipPartLocalPosition = tilemap.WorldToCell(targetShipPart.transform.position);
                         targetTile = Vector3Int.FloorToInt(targetShipPartLocalPosition);
-                        Debug.Log(targetTile);
                         foreach (Vector3Int tile in surroundingTiles)
                         {
 
                             if (tile == targetTile)
                             {
                                 targetPosition = tilemap.GetCellCenterLocal(tile);
-                                Debug.Log("found");
                                 found = true;
                                 break;
                             }
@@ -166,7 +164,6 @@ public class CreatureBehaviour : MonoBehaviour
 
                         if (!found)
                         {
-                            Debug.Log("not found");
                             targetTile = surroundingTiles[Random.Range(0, surroundingTiles.Count)];
                             targetPosition = tilemap.GetCellCenterLocal(targetTile);
                             hostility -= 10; // Reduce hostility only when the exact tile is not found

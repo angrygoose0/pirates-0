@@ -96,7 +96,7 @@ public class ItemScript : MonoBehaviour
         }
 
         // Wait for one minute of inactivity
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(60);
 
         float fadeDuration = 5f; // Duration of the fading period
         float fadeTime = 0f;

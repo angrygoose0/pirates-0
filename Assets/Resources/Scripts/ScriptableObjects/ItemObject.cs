@@ -6,6 +6,7 @@ using UnityEngine;
 public class ItemObject : ScriptableObject
 {
     public string itemName;
+    public Sprite itemSprite;
     public float mass;
     public float damageMultiplier;
     public float explosionMultiplier;

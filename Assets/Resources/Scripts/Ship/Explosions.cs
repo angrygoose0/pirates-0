@@ -34,6 +34,7 @@ public class Explosions : MonoBehaviour
 
             if (hit.collider != null)
             {
+
                 float distance = Vector2.Distance(currentPosition, hit.point);
                 currentRayForce = Mathf.Max(currentRayForce - distance * dissipationRate, 0);
 
@@ -46,7 +47,7 @@ public class Explosions : MonoBehaviour
                         float appliedForce = currentRayForce * itemObject.explosionMultiplier;
                         float appliedDamage = currentRayForce * itemObject.damageMultiplier;
                         creatureVitals.ApplyImpact(forceDirection * appliedForce, appliedForce, appliedDamage);
-                        Debug.Log("hit");
+
                     }
 
                     // Draw the ray in the scene view for visualization
