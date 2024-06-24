@@ -137,6 +137,49 @@ public class WorldGenerator : MonoBehaviour
 
             // Generate new chunks in the new radius
             GenerateChunksInRadius(currentCenterChunkPosition);
+
+            // Remove chunks that are out of the radius
+            RemoveChunksOutOfRadius(currentCenterChunkPosition);
+        }
+    }
+
+    void RemoveChunksOutOfRadius(Vector3Int centerChunkPosition)
+    {
+        List<Vector3Int> chunksToRemove = new List<Vector3Int>();
+
+        foreach (var chunk in generatedChunks)
+        {
+            if (Vector3Int.Distance(chunk, centerChunkPosition) > radius)
+            {
+                chunksToRemove.Add(chunk);
+            }
+        }
+
+        foreach (var chunk in chunksToRemove)
+        {
+            RemoveChunk(chunk);
+            generatedChunks.Remove(chunk);
+        }
+    }
+
+    void RemoveChunk(Vector3Int chunkPosition)
+    {
+        for (int y = 0; y < chunkSize; y++)
+        {
+            for (int x = 0; x < chunkSize; x++)
+            {
+                Vector3Int tilePosition = new Vector3Int(
+                    chunkPosition.x * chunkSize + x,
+                    chunkPosition.y * chunkSize + y,
+                    0
+                );
+
+                // Remove the tile from the tilemap and dictionaries
+                seaTilemap.SetTile(tilePosition, null);
+                tileDepths.Remove(tilePosition);
+                tileTemperatures.Remove(tilePosition);
+                tileHostility.Remove(tilePosition);
+            }
         }
     }
 

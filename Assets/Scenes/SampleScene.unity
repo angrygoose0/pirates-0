@@ -646,6 +646,7 @@ GameObject:
   - component: {fileID: 383585324}
   - component: {fileID: 383585325}
   - component: {fileID: 383585326}
+  - component: {fileID: 383585327}
   m_Layer: 0
   m_Name: ghost
   m_TagString: Untagged
@@ -735,7 +736,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   seaTilemap: {fileID: 170296654}
   chunkSize: 16
-  radius: 3
+  radius: 10
   depthScale: 0.001
   temperatureScale: 0.0005
   tileObjects:
@@ -882,6 +883,23 @@ MonoBehaviour:
   itemPrefab: {fileID: 7643066971796696554, guid: a02dfe49a58e0af428c86086ccfa3b23, type: 3}
   itemObjects:
   - {fileID: 11400000, guid: 853124c3c476fd24aaf407a880fb3fa5, type: 2}
+--- !u!114 &383585327
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 383585313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e62ec46af0f4fb242b0961504808d4c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  creaturePrefab: {fileID: 1024876700175561445, guid: 3860df99372c4d1468862cc566aa603a, type: 3}
+  minSpawnDistance: 4
+  maxSpawnDistance: 4
+  globalMobCap: 50
+  spawnInterval: 0.01
 --- !u!1 &485961737
 GameObject:
   m_ObjectHideFlags: 0
