@@ -2,6 +2,25 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Collections.Generic;
 
+[System.Serializable]
+public class ChunkData
+{
+    public Vector3Int chunkPosition;
+    public Dictionary<Vector3Int, int> tileDepths;
+    public Dictionary<Vector3Int, int> tileTemperatures;
+    public Dictionary<Vector3Int, int> tileHostility;
+    public bool hasCreature;
+
+    public ChunkData(Vector3Int position)
+    {
+        chunkPosition = position;
+        tileDepths = new Dictionary<Vector3Int, int>();
+        tileTemperatures = new Dictionary<Vector3Int, int>();
+        tileHostility = new Dictionary<Vector3Int, int>();
+        hasCreature = false; // Initialize with false
+    }
+}
+
 public class WorldGenerator : MonoBehaviour
 {
     public Tilemap seaTilemap;
@@ -13,17 +32,11 @@ public class WorldGenerator : MonoBehaviour
 
     private Vector3Int initialChunkPosition;
     private Vector3Int previousCenterChunkPosition;
-    private HashSet<Vector3Int> generatedChunks;
-    private Dictionary<Vector3Int, int> tileDepths;
-    private Dictionary<Vector3Int, int> tileTemperatures;
-    private Dictionary<Vector3Int, int> tileHostility;
+    public Dictionary<Vector3Int, ChunkData> generatedChunks;
 
     void Start()
     {
-        generatedChunks = new HashSet<Vector3Int>();
-        tileDepths = new Dictionary<Vector3Int, int>();
-        tileTemperatures = new Dictionary<Vector3Int, int>();
-        tileHostility = new Dictionary<Vector3Int, int>();
+        generatedChunks = new Dictionary<Vector3Int, ChunkData>();
 
         GenerateInitialWorld();
     }
@@ -47,7 +60,18 @@ public class WorldGenerator : MonoBehaviour
         GenerateChunksInRadius(initialChunkPosition);
     }
 
-    Vector3Int WorldToChunkPosition(Vector3 worldPosition)
+    public ChunkData GetChunkData(Vector3 worldPosition)
+    {
+        Vector3Int chunkPosition = WorldToChunkPosition(worldPosition);
+        if (generatedChunks.TryGetValue(chunkPosition, out ChunkData chunkData))
+        {
+            return chunkData;
+        }
+        return null;
+    }
+
+
+    public Vector3Int WorldToChunkPosition(Vector3 worldPosition)
     {
         Vector3Int tilePosition = seaTilemap.WorldToCell(worldPosition);
         return new Vector3Int(
@@ -66,10 +90,9 @@ public class WorldGenerator : MonoBehaviour
                 Vector3Int chunkPosition = new Vector3Int(centerChunkPosition.x + x, centerChunkPosition.y + y, 0);
                 float distance = Mathf.Sqrt(x * x + y * y);
 
-                if (distance <= radius && !generatedChunks.Contains(chunkPosition))
+                if (distance <= radius && !generatedChunks.ContainsKey(chunkPosition))
                 {
                     GenerateChunk(chunkPosition);
-                    generatedChunks.Add(chunkPosition);
                 }
             }
         }
@@ -77,6 +100,9 @@ public class WorldGenerator : MonoBehaviour
 
     void GenerateChunk(Vector3Int chunkPosition)
     {
+        // Create a new ChunkData instance for this chunk
+        ChunkData chunkData = new ChunkData(chunkPosition);
+
         // Calculate the distance from the initial chunk position to determine hostility range
         float distanceFromInitialChunk = Vector3Int.Distance(chunkPosition, initialChunkPosition);
         int hostilityRange = Mathf.RoundToInt(distanceFromInitialChunk);
@@ -101,9 +127,9 @@ public class WorldGenerator : MonoBehaviour
                 int temperature = Mathf.RoundToInt(temperatureValue * 100);
 
                 // Store the depth, temperature, and hostility values
-                tileDepths[tilePosition] = depth;
-                tileTemperatures[tilePosition] = temperature;
-                tileHostility[tilePosition] = hostilityRange;
+                chunkData.tileDepths[tilePosition] = depth;
+                chunkData.tileTemperatures[tilePosition] = temperature;
+                chunkData.tileHostility[tilePosition] = hostilityRange;
 
                 // Determine the correct tile based on the data ranges
                 TileBase selectedTile = null;
@@ -122,6 +148,9 @@ public class WorldGenerator : MonoBehaviour
                 seaTilemap.SetTile(tilePosition, selectedTile);
             }
         }
+
+        // Add the chunk data to the generated chunks dictionary
+        generatedChunks[chunkPosition] = chunkData;
     }
 
     void MaintainChunkRadius()
@@ -147,7 +176,7 @@ public class WorldGenerator : MonoBehaviour
     {
         List<Vector3Int> chunksToRemove = new List<Vector3Int>();
 
-        foreach (var chunk in generatedChunks)
+        foreach (var chunk in generatedChunks.Keys)
         {
             if (Vector3Int.Distance(chunk, centerChunkPosition) > radius)
             {
@@ -158,28 +187,21 @@ public class WorldGenerator : MonoBehaviour
         foreach (var chunk in chunksToRemove)
         {
             RemoveChunk(chunk);
-            generatedChunks.Remove(chunk);
         }
     }
 
     void RemoveChunk(Vector3Int chunkPosition)
     {
-        for (int y = 0; y < chunkSize; y++)
+        if (generatedChunks.TryGetValue(chunkPosition, out ChunkData chunkData))
         {
-            for (int x = 0; x < chunkSize; x++)
+            foreach (var tilePosition in chunkData.tileDepths.Keys)
             {
-                Vector3Int tilePosition = new Vector3Int(
-                    chunkPosition.x * chunkSize + x,
-                    chunkPosition.y * chunkSize + y,
-                    0
-                );
-
-                // Remove the tile from the tilemap and dictionaries
+                // Remove the tile from the tilemap
                 seaTilemap.SetTile(tilePosition, null);
-                tileDepths.Remove(tilePosition);
-                tileTemperatures.Remove(tilePosition);
-                tileHostility.Remove(tilePosition);
             }
+
+            // Remove the chunk data from the generated chunks dictionary
+            generatedChunks.Remove(chunkPosition);
         }
     }
 
@@ -195,14 +217,48 @@ public class WorldGenerator : MonoBehaviour
         // Convert the world position to a tile position
         Vector3Int tilePosition = seaTilemap.WorldToCell(mouseWorldPosition);
 
-        // Check if the tile exists in the dictionaries
-        if (tileDepths.ContainsKey(tilePosition) && tileTemperatures.ContainsKey(tilePosition) && tileHostility.ContainsKey(tilePosition))
+        // Check if the tile exists in the generated chunks
+        foreach (var chunkData in generatedChunks.Values)
         {
-            // Log the values to the console
-            int depth = tileDepths[tilePosition];
-            int temperature = tileTemperatures[tilePosition];
-            int hostility = tileHostility[tilePosition];
-            //Debug.Log($"Tile Position: {tilePosition} - Depth: {depth}, Temperature: {temperature}, Hostility: {hostility}");
+            if (chunkData.tileDepths.ContainsKey(tilePosition) &&
+                chunkData.tileTemperatures.ContainsKey(tilePosition) &&
+                chunkData.tileHostility.ContainsKey(tilePosition))
+            {
+                // Log the values to the console
+                int depth = chunkData.tileDepths[tilePosition];
+                int temperature = chunkData.tileTemperatures[tilePosition];
+                int hostility = chunkData.tileHostility[tilePosition];
+                //Debug.Log($"Tile Position: {tilePosition} - Depth: {depth}, Temperature: {temperature}, Hostility: {hostility}");
+                break;
+            }
+        }
+    }
+
+
+    public TileBase highlightTile; // Tile to change to
+    private Dictionary<Vector3Int, TileBase> originalTiles = new Dictionary<Vector3Int, TileBase>();
+
+    public void ChangeTilesInChunk(ChunkData chunkData)
+    {
+        foreach (var tilePosition in chunkData.tileDepths.Keys)
+        {
+            if (!originalTiles.ContainsKey(tilePosition))
+            {
+                originalTiles[tilePosition] = seaTilemap.GetTile(tilePosition);
+            }
+            seaTilemap.SetTile(tilePosition, highlightTile);
+        }
+    }
+
+    public void RevertTilesInChunk(ChunkData chunkData)
+    {
+        foreach (var tilePosition in chunkData.tileDepths.Keys)
+        {
+            if (originalTiles.TryGetValue(tilePosition, out TileBase originalTile))
+            {
+                seaTilemap.SetTile(tilePosition, originalTile);
+                originalTiles.Remove(tilePosition);
+            }
         }
     }
 }
