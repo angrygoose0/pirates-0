@@ -21,5 +21,9 @@ public class CreatureObject : ScriptableObject
     public float id;
     public float hp;
     public float armor;
+    public int populationValue;
+    public int spawnWeight;
+    public int minPackSpawn;
+    public int maxPackSpawn;
     public List<CreatureValue> creatureValues;
 }

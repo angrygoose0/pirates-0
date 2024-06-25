@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5152250735215174697}
   - component: {fileID: 2147507820004086232}
+  - component: {fileID: 8638348195675044095}
   m_Layer: 0
   m_Name: Circle
   m_TagString: Untagged
@@ -71,7 +72,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 76177347
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
   m_Color: {r: 1, g: 0, b: 0.08064842, a: 1}
@@ -84,3 +85,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &8638348195675044095
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3258447280453129342}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f794321ed1689345844bbdaf7484447, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: 100
+  armor: 0
+  creatureObject: {fileID: 0}
+  minGoldDrop: 5
+  maxGoldDrop: 10
+  itemManager: {fileID: 0}

@@ -9,7 +9,7 @@ public class ChunkData
     public Dictionary<Vector3Int, int> tileDepths;
     public Dictionary<Vector3Int, int> tileTemperatures;
     public Dictionary<Vector3Int, int> tileHostility;
-    public bool hasCreature;
+    public int chunkPopulation;
 
     public ChunkData(Vector3Int position)
     {
@@ -17,7 +17,8 @@ public class ChunkData
         tileDepths = new Dictionary<Vector3Int, int>();
         tileTemperatures = new Dictionary<Vector3Int, int>();
         tileHostility = new Dictionary<Vector3Int, int>();
-        hasCreature = false; // Initialize with false
+        chunkPopulation = 0;
+
     }
 }
 
@@ -228,7 +229,8 @@ public class WorldGenerator : MonoBehaviour
                 int depth = chunkData.tileDepths[tilePosition];
                 int temperature = chunkData.tileTemperatures[tilePosition];
                 int hostility = chunkData.tileHostility[tilePosition];
-                //Debug.Log($"Tile Position: {tilePosition} - Depth: {depth}, Temperature: {temperature}, Hostility: {hostility}");
+                int chunkPopulation = chunkData.chunkPopulation;
+                Debug.Log($"Tile Position: {tilePosition} - Depth: {depth}, Temperature: {temperature}, Hostility: {hostility}, Mob Capacity: {chunkPopulation}");
                 break;
             }
         }
