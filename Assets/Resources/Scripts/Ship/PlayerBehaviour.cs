@@ -22,9 +22,24 @@ public class PlayerBehaviour : MonoBehaviour
 
     public InteractionManager interactionManager; // Reference to the InteractionManager script
     public GameObject equippedItem;
+    public GameObject closestItem;
     public GameObject equippedBlock;
-    public ShipGenerator.Direction currentDirection;
+    public float playerPickupRadius = 5f; // Radius within which to detect items
 
+    public ShipGenerator.Direction currentDirection;
+    public GoldManager goldManager;
+
+    void Start()
+    {
+        if (equippedItem != null)
+        {
+            ItemScript itemScript = equippedItem.GetComponent<ItemScript>();
+            itemScript.NewParent(gameObject);
+
+            // Set the equipped item's position to the player's position
+            equippedItem.transform.localPosition = Vector3.zero;
+        }
+    }
     void Update()
     {
         // Get input from the player
@@ -36,6 +51,7 @@ public class PlayerBehaviour : MonoBehaviour
 
         // Update the direction based on movement input
         UpdateDirection();
+        FindClosestItem();
 
         // Check if the player presses the "E" key to interact with a block
         if (Input.GetKeyDown(KeyCode.E))
@@ -52,15 +68,14 @@ public class PlayerBehaviour : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.LeftShift))
         {
-            DropItem();
+            ToggleItem();
         }
-
-
+        else if (Input.GetKeyDown(KeyCode.F))
+        {
+            CollectItem();
+        }
         if (equippedItem != null)
         {
-            ItemScript itemScript = equippedItem.GetComponent<ItemScript>();
-            itemScript.NewParent(gameObject);
-
             // Set the equipped item's position to the player's position
             equippedItem.transform.localPosition = Vector3.zero;
         }
@@ -105,6 +120,40 @@ public class PlayerBehaviour : MonoBehaviour
             currentVelocity = -currentVelocity * bounceBackFactor;
             newPosition = rb.position + currentVelocity * Time.fixedDeltaTime;
             rb.MovePosition(newPosition);
+        }
+    }
+
+    void FindClosestItem()
+    {
+        // Reset closest item
+        closestItem = null;
+
+        // Find all items in the scene
+        GameObject[] items = GameObject.FindGameObjectsWithTag("Item");
+
+        // Initialize the minimum distance with a large number
+        float minDistance = Mathf.Infinity;
+
+        // Get the player's position
+        Vector2 playerPosition = new Vector2(transform.position.x, transform.position.y);
+
+        foreach (GameObject item in items)
+        {
+            // Get the item's position
+            Vector2 itemPosition = new Vector2(item.transform.position.x, item.transform.position.y);
+
+            // Calculate the distance with squashed Y value
+            float distance = Mathf.Sqrt(
+                Mathf.Pow(playerPosition.x - itemPosition.x, 2) +
+                Mathf.Pow((playerPosition.y - itemPosition.y) * 2, 2)
+            );
+
+            // If the distance is within the pickup radius and is the closest one found
+            if (distance < playerPickupRadius && distance < minDistance)
+            {
+                minDistance = distance;
+                closestItem = item;
+            }
         }
     }
 
@@ -265,20 +314,60 @@ public class PlayerBehaviour : MonoBehaviour
         }
     }
 
-    void DropItem()
+    void ToggleItem()
     {
         if (equippedItem != null)
         {
             // Set the equipped item's position to the player's current position
             equippedItem.transform.position = rb.position;
 
+            // Remove the parent from the equipped item
             ItemScript itemScript = equippedItem.GetComponent<ItemScript>();
             itemScript.NewParent(null);
-
 
             // Set equippedItem to null as the player no longer has the item equipped
             equippedItem = null;
         }
+        else if (closestItem != null)
+        {
+            // Equip the closest item
+            equippedItem = closestItem;
+
+            // Set the new parent for the equipped item
+            ItemScript itemScript = equippedItem.GetComponent<ItemScript>();
+            itemScript.NewParent(gameObject);
+        }
     }
+
+    void CollectItem()
+    {
+        if (equippedItem != null)
+        {
+            ItemScript itemScript = equippedItem.GetComponent<ItemScript>();
+            int goldAmount = itemScript.itemObject.goldAmount;
+            if (goldAmount == 0)
+            {
+                return;
+            }
+            goldManager.AddGold(goldAmount);
+            Destroy(equippedItem);
+            equippedItem = null;
+
+        }
+        else if (closestItem != null)
+        {
+            ItemScript itemScript = closestItem.GetComponent<ItemScript>();
+            int goldAmount = itemScript.itemObject.goldAmount;
+            if (goldAmount == 0)
+            {
+                return;
+            }
+            goldManager.AddGold(goldAmount);
+            Destroy(closestItem);
+            closestItem = null;
+        }
+    }
+
+
 
 }

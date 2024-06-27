@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tileBase: {fileID: 11400000, guid: a8490638551d81e4abd1dc498268e504, type: 2}
   temperatureRange: {x: 41, y: 59}
-  depthRange: {x: 60, y: 100}
-  hostilityRange: {x: 0, y: 100}
+  depthRange: {x: 60, y: 150}
+  hostilityRange: {x: 0, y: 999}

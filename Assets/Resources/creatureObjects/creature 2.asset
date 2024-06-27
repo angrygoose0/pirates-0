@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: creature 2
   m_EditorClassIdentifier: 
   id: 0
-  hp: 0
-  armor: 0
-  populationValue: 0
-  spawnWeight: 0
-  minPackSpawn: 0
-  maxPackSpawn: 0
+  hp: 2000
+  armor: 100
+  populationValue: 5
+  spawnWeight: 1
+  minPackSpawn: 1
+  maxPackSpawn: 2
   creatureValues: []

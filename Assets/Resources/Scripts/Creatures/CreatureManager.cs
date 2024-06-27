@@ -44,13 +44,16 @@ public class CreatureManager : MonoBehaviour
         {
             if (currentChunk != null)
             {
-                worldGenerator.RevertTilesInChunk(currentChunk);
+
+                //worldGenerator.RevertTilesInChunk(currentChunk);
                 RevertViableChunks();
             }
 
             currentChunk = newChunk;
-            worldGenerator.ChangeTilesInChunk(currentChunk);
+
+            //worldGenerator.ChangeTilesInChunk(currentChunk);
             HighlightViableChunks(currentChunk.chunkPosition);
+
 
             Debug.Log($"GameObject is now in chunk at {currentChunk.chunkPosition}");
         }
@@ -70,7 +73,7 @@ public class CreatureManager : MonoBehaviour
                     if (worldGenerator.generatedChunks.TryGetValue(chunkPosition, out ChunkData chunkData))
                     {
                         viableChunks.Add(chunkPosition);
-                        worldGenerator.ChangeTilesInChunk(chunkData);
+                        //worldGenerator.ChangeTilesInChunk(chunkData);
                     }
                 }
             }
@@ -83,7 +86,7 @@ public class CreatureManager : MonoBehaviour
         {
             if (worldGenerator.generatedChunks.TryGetValue(chunkPosition, out ChunkData chunkData))
             {
-                worldGenerator.RevertTilesInChunk(chunkData);
+                //worldGenerator.RevertTilesInChunk(chunkData);
             }
         }
         viableChunks.Clear();
@@ -93,29 +96,33 @@ public class CreatureManager : MonoBehaviour
     {
         foreach (var creature in creatures)
         {
-            Vector3 creaturePosition = creature.transform.position;
-            ChunkData newChunk = worldGenerator.GetChunkData(creaturePosition);
-
-            if (newChunk != null)
+            if (creature != null)
             {
-                CreatureVitals vitals = creature.GetComponent<CreatureVitals>();
-                int populationValue = vitals.creatureObject.populationValue;
+                Vector3 creaturePosition = creature.transform.position;
+                ChunkData newChunk = worldGenerator.GetChunkData(creaturePosition);
 
-                if (creatureChunks.TryGetValue(creature, out ChunkData oldChunk))
+                if (newChunk != null)
                 {
-                    if (oldChunk != newChunk)
+                    CreatureVitals vitals = creature.GetComponent<CreatureVitals>();
+                    int populationValue = vitals.creatureObject.populationValue;
+
+                    if (creatureChunks.TryGetValue(creature, out ChunkData oldChunk))
                     {
-                        oldChunk.chunkPopulation -= populationValue;
+                        if (oldChunk != newChunk)
+                        {
+                            oldChunk.chunkPopulation -= populationValue;
+                            newChunk.chunkPopulation += populationValue;
+                            creatureChunks[creature] = newChunk;
+                        }
+                    }
+                    else
+                    {
                         newChunk.chunkPopulation += populationValue;
                         creatureChunks[creature] = newChunk;
                     }
                 }
-                else
-                {
-                    newChunk.chunkPopulation += populationValue;
-                    creatureChunks[creature] = newChunk;
-                }
             }
+
         }
     }
 
@@ -189,12 +196,19 @@ public class CreatureManager : MonoBehaviour
                     // Log the tile position and world position
                     Debug.Log($"Spawning creature at tile position: {randomTilePosition} in chunk: {randomChunkPosition} with world position: {worldPosition}");
 
-                    // Instantiate the creature at the world position and set its parent to the tilemap
-                    GameObject newCreature = Instantiate(creaturePrefab, worldPosition, Quaternion.identity, worldGenerator.seaTilemap.transform);
-                    newCreature.GetComponent<CreatureVitals>().creatureObject = randomCreatureObject;
+                    int packSize = Random.Range(randomCreatureObject.minPackSpawn, randomCreatureObject.maxPackSpawn);
 
-                    AddCreature(newCreature);
-                    randomChunk.chunkPopulation += randomCreatureObject.populationValue;
+                    for (int i = 0; i < packSize; i++)
+                    {
+                        // Instantiate the creature at the world position and set its parent to the tilemap
+                        GameObject newCreature = Instantiate(creaturePrefab, worldPosition, Quaternion.identity, worldGenerator.seaTilemap.transform);
+                        newCreature.GetComponent<CreatureVitals>().creatureObject = randomCreatureObject;
+                        newCreature.GetComponent<CreatureBehaviour>().creatureObject = randomCreatureObject;
+
+                        AddCreature(newCreature);
+                        randomChunk.chunkPopulation += randomCreatureObject.populationValue;
+                    }
+
                 }
                 else
                 {
@@ -209,24 +223,34 @@ public class CreatureManager : MonoBehaviour
         Vector3 centerPosition = trackedObject.transform.position;
         Vector3Int centerChunkPosition = worldGenerator.WorldToChunkPosition(centerPosition);
 
+        // Create a temporary list to store creatures that need to be despawned
         List<GameObject> creaturesToDespawn = new List<GameObject>();
 
+        // Identify creatures that need to be despawned
         foreach (var creature in creatures)
         {
-            Vector3 creaturePosition = creature.transform.position;
-            Vector3Int creatureChunkPosition = worldGenerator.WorldToChunkPosition(creaturePosition);
-            float distance = Vector3Int.Distance(creatureChunkPosition, centerChunkPosition);
-
-            if (distance > maxRadius)
+            if (creature != null) // Check if the creature is not null
             {
-                creaturesToDespawn.Add(creature);
+                Vector3 creaturePosition = creature.transform.position;
+                Vector3Int creatureChunkPosition = worldGenerator.WorldToChunkPosition(creaturePosition);
+                float distance = Vector3Int.Distance(creatureChunkPosition, centerChunkPosition);
+
+                if (distance > maxRadius)
+                {
+                    creaturesToDespawn.Add(creature);
+                }
             }
         }
 
+        // Remove and destroy the creatures
         foreach (var creature in creaturesToDespawn)
         {
             RemoveCreature(creature);
             Destroy(creature);
         }
+
+        // Remove null references from the creatures list
+        creatures.RemoveAll(c => c == null);
     }
+
 }

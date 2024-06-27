@@ -11,7 +11,7 @@ public class ItemObject : ScriptableObject
     public float damageMultiplier;
     public float explosionMultiplier;
     public float explosionRange;
-
+    public int goldAmount = 0;
 }
 
 

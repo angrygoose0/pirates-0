@@ -15,4 +15,4 @@ MonoBehaviour:
   tileBase: {fileID: 11400000, guid: cd2d2821bc86ee0459b0db55b877eaaa, type: 2}
   temperatureRange: {x: 41, y: 59}
   depthRange: {x: 41, y: 59}
-  hostilityRange: {x: 0, y: 100}
+  hostilityRange: {x: 0, y: 999}

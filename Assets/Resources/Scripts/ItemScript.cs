@@ -12,8 +12,8 @@ public class ItemScript : MonoBehaviour
 
     void Start()
     {
-        // Check if the GameObject has a parent on startup
-        if (transform.parent != null)
+        // Check if the GameObject has a parent on startup and that parent is not the world Tilemap
+        if (transform.parent != null && transform.parent.name != "world")
         {
             isActive = true;
         }
@@ -56,8 +56,15 @@ public class ItemScript : MonoBehaviour
         if (newParent != null)
         {
             transform.parent = newParent.transform;
-            isActive = true; // Set isActive to true when parented
-            StopInactiveTimer();
+            isActive = newParent.name != "world"; // Set isActive based on the new parent
+            if (isActive)
+            {
+                StopInactiveTimer();
+            }
+            else
+            {
+                StartInactiveTimer();
+            }
         }
         else
         {

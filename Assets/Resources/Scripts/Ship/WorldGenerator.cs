@@ -10,6 +10,7 @@ public class ChunkData
     public Dictionary<Vector3Int, int> tileTemperatures;
     public Dictionary<Vector3Int, int> tileHostility;
     public int chunkPopulation;
+    public int chunkWeirdness;
 
     public ChunkData(Vector3Int position)
     {
@@ -18,10 +19,10 @@ public class ChunkData
         tileTemperatures = new Dictionary<Vector3Int, int>();
         tileHostility = new Dictionary<Vector3Int, int>();
         chunkPopulation = 0;
+        chunkWeirdness = 0;
 
     }
 }
-
 public class WorldGenerator : MonoBehaviour
 {
     public Tilemap seaTilemap;
@@ -29,8 +30,10 @@ public class WorldGenerator : MonoBehaviour
     public int radius = 50;  // Radius in chunks
     public float depthScale = 0.1f;
     public float temperatureScale = 0.1f;
+    public float weirdnessScale = 0.05f;
     public List<TileObject> tileObjects; // List of TileObjects
 
+    public int worldSeed;
     private Vector3Int initialChunkPosition;
     private Vector3Int previousCenterChunkPosition;
     public Dictionary<Vector3Int, ChunkData> generatedChunks;
@@ -46,6 +49,14 @@ public class WorldGenerator : MonoBehaviour
     {
         MaintainChunkRadius();
         DetectTileHover();
+        foreach (var chunkData in generatedChunks.Values)
+        {
+            if (chunkData.chunkWeirdness > 95)
+            {
+                ChangeTilesInChunk(chunkData);
+            }
+        }
+
     }
 
     void GenerateInitialWorld()
@@ -70,7 +81,6 @@ public class WorldGenerator : MonoBehaviour
         }
         return null;
     }
-
 
     public Vector3Int WorldToChunkPosition(Vector3 worldPosition)
     {
@@ -108,6 +118,15 @@ public class WorldGenerator : MonoBehaviour
         float distanceFromInitialChunk = Vector3Int.Distance(chunkPosition, initialChunkPosition);
         int hostilityRange = Mathf.RoundToInt(distanceFromInitialChunk);
 
+
+        float seedMultiplier = worldSeed;
+
+        // Calculate weirdness using Perlin noise
+        float weirdValue = Mathf.PerlinNoise(chunkPosition.x * weirdnessScale + seedMultiplier + 2000, chunkPosition.y * weirdnessScale + seedMultiplier + 2000);
+
+        int weird = Mathf.RoundToInt(weirdValue * 100);
+        chunkData.chunkWeirdness = weird;
+
         for (int y = 0; y < chunkSize; y++)
         {
             for (int x = 0; x < chunkSize; x++)
@@ -119,9 +138,9 @@ public class WorldGenerator : MonoBehaviour
                 );
 
                 // Calculate depth using Perlin noise
-                float depthValue = Mathf.PerlinNoise(tilePosition.x * depthScale, tilePosition.y * depthScale);
+                float depthValue = Mathf.PerlinNoise(tilePosition.x * depthScale + seedMultiplier, tilePosition.y * depthScale + seedMultiplier);
                 // Calculate temperature using a different Perlin noise function
-                float temperatureValue = Mathf.PerlinNoise(tilePosition.x * temperatureScale + 1000, tilePosition.y * temperatureScale + 1000);
+                float temperatureValue = Mathf.PerlinNoise(tilePosition.x * temperatureScale + 1000 + seedMultiplier, tilePosition.y * temperatureScale + 1000 + seedMultiplier);
 
                 // Convert Perlin noise value to integer
                 int depth = Mathf.RoundToInt(depthValue * 100);
@@ -230,12 +249,12 @@ public class WorldGenerator : MonoBehaviour
                 int temperature = chunkData.tileTemperatures[tilePosition];
                 int hostility = chunkData.tileHostility[tilePosition];
                 int chunkPopulation = chunkData.chunkPopulation;
-                Debug.Log($"Tile Position: {tilePosition} - Depth: {depth}, Temperature: {temperature}, Hostility: {hostility}, Mob Capacity: {chunkPopulation}");
+                float chunkWeirdness = chunkData.chunkWeirdness; // Add this line
+                Debug.Log($"Tile Position: {tilePosition} - Depth: {depth}, Temperature: {temperature}, Hostility: {hostility}, Mob Capacity: {chunkPopulation}, Weirdness: {chunkWeirdness}, Position: {chunkData.chunkPosition}");
                 break;
             }
         }
     }
-
 
     public TileBase highlightTile; // Tile to change to
     private Dictionary<Vector3Int, TileBase> originalTiles = new Dictionary<Vector3Int, TileBase>();

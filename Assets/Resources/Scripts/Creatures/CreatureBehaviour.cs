@@ -12,8 +12,9 @@ public class CreatureBehaviour : MonoBehaviour
         // Add more states here as needed
     }
 
-    public Vector2Int spawnTilePosition; // Define the tile to spawn the creature on
-    public Tilemap tilemap; // Reference to the tilemap
+    public CreatureObject creatureObject;
+
+    private Tilemap tilemap; // Reference to the tilemap
     public float rotationSpeed = 200f; // Rotation speed in degrees per second
     public float maxMoveSpeed = 3f; // Maximum movement speed in units per second
     public float acceleration = 2f; // Acceleration in units per second squared
@@ -36,10 +37,9 @@ public class CreatureBehaviour : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // Convert the tile position to world position and set the creature's position
-        Vector3 localPosition = tilemap.GetCellCenterLocal((Vector3Int)spawnTilePosition);
-        transform.localPosition = localPosition;
-        targetPosition = transform.localPosition; // Initial target is the spawn position
+        targetShipPart = GameObject.Find("ghost");
+        tilemap = GameObject.Find("world").GetComponent<Tilemap>();
+
 
         // Initialize the current tile position
         currentTilePosition = tilemap.WorldToCell(transform.position);
@@ -88,8 +88,9 @@ public class CreatureBehaviour : MonoBehaviour
 
     private void UpdateMovement()
     {
-        // Adjust the acceleration based on the current state
+        // Adjust the acceleration/max speed based on the current state
         float currentAcceleration = currentState == State.Aggressive ? acceleration * 1.5f : acceleration;
+        float currentMaxMoveSpeed = currentState == State.Aggressive ? maxMoveSpeed * 1.5f : maxMoveSpeed;
 
         // Calculate the direction and distance to the target position
         Vector3 direction = targetPosition - transform.localPosition;
@@ -97,7 +98,7 @@ public class CreatureBehaviour : MonoBehaviour
         direction.Normalize();
 
         // Determine the target velocity
-        Vector3 targetVelocity = direction * maxMoveSpeed;
+        Vector3 targetVelocity = direction * currentMaxMoveSpeed;
 
         // Adjust the target velocity for isometric scaling
         targetVelocity.y *= 0.5f;
@@ -151,17 +152,11 @@ public class CreatureBehaviour : MonoBehaviour
 
                         Vector3 targetShipPartLocalPosition = tilemap.WorldToCell(targetShipPart.transform.position);
                         targetTile = Vector3Int.FloorToInt(targetShipPartLocalPosition);
-                        foreach (Vector3Int tile in surroundingTiles)
-                        {
 
-                            if (tile == targetTile)
-                            {
-                                targetPosition = tilemap.GetCellCenterLocal(tile);
-                                found = true;
-                                break;
-                            }
-                        }
-
+                        targetPosition = tilemap.GetCellCenterLocal(targetTile);
+                        found = true;
+                        break;
+                        
                         if (!found)
                         {
                             targetTile = surroundingTiles[Random.Range(0, surroundingTiles.Count)];

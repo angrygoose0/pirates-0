@@ -14,12 +14,13 @@ public class CreatureVitals : MonoBehaviour
     public int minGoldDrop = 5;
     public int maxGoldDrop = 10;
 
-    public itemManager itemManager;
+    public ItemManager itemManager;
+
 
 
     private SpriteRenderer spriteRenderer;
     private Color originalColor;
-    private CreatureBehaviour creatureBehaviour;
+    public CreatureBehaviour creatureBehaviour;
 
     void Start()
     {
@@ -37,11 +38,15 @@ public class CreatureVitals : MonoBehaviour
             Debug.LogError("SpriteRenderer component is missing from this game object.");
         }
 
+
         creatureBehaviour = GetComponent<CreatureBehaviour>();
         if (creatureBehaviour == null)
         {
             Debug.LogError("CreatureBehaviour component not found on this GameObject.");
         }
+
+        itemManager = GameObject.Find("ghost").GetComponent<ItemManager>();
+
     }
 
     public void ApplyImpact(Vector2 force, float forceMagnitude, float damageMagnitude)

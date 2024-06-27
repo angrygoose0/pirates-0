@@ -2,11 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class itemManager : MonoBehaviour
+public class ItemManager : MonoBehaviour
 {
     public GameObject itemPrefab;
     public List<ItemObject> itemObjects;
     private Dictionary<string, ItemObject> itemDictionary;
+
+    private GameObject worldTilemap;
 
     private void Awake()
     {
@@ -15,6 +17,10 @@ public class itemManager : MonoBehaviour
         {
             itemDictionary[item.itemName] = item;
         }
+    }
+    void Start()
+    {
+        worldTilemap = GameObject.Find("world");
     }
 
     public ItemObject GetItemByName(string itemName)
@@ -40,6 +46,7 @@ public class itemManager : MonoBehaviour
         }
 
         GameObject createdItem = Instantiate(itemPrefab, position, Quaternion.identity);
+        createdItem.transform.SetParent(worldTilemap.transform);
 
         SpriteRenderer spriteRenderer = createdItem.GetComponent<SpriteRenderer>();
         if (spriteRenderer != null)
