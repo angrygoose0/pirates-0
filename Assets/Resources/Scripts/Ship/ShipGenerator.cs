@@ -34,6 +34,7 @@ public class ShipGenerator : MonoBehaviour
         GenerateTilemap(ship);
         CenterGhostOnShip();
         FindMastBlocks(); // Find all mast blocks after generating the ship
+        
     }
 
     public void GenerateTilemap(float[,] ship)

@@ -1,0 +1,41 @@
+private static int Hash(int x, int y, int seed)
+    {
+        int hash = 17;
+        hash = hash * 31 + x;   // Multiply by 31 and add x
+        hash = hash * 31 + y;   // Multiply by 31 and add y
+        hash = hash * 31 + seed; // Multiply by 31 and add seed
+        return hash;
+    }
+
+    // A function to get a pseudo-random value in a range using the hash value
+    private static int PseudoRandomRange(int min, int max, int x, int y, int seed)
+    {
+        int hash = Hash(x, y, seed);
+        Random random = new Random(hash);
+        return random.Next(min, max);
+    }
+
+StructureObject PickRandomStructureObject(int chunkX, int chunkY, int seed)
+    {
+        // Calculate total weight
+        int totalWeight = 0;
+        foreach (var structureObject in structureObjects)
+        {
+            totalWeight += structureObject.spawnWeight;
+        }
+
+        // Pick a random value within the total weight
+        int randomValue = PseudoRandomRange(0, totalWeight, chunkX, chunkY, seed);
+
+        // Determine which structureObject corresponds to the random value
+        foreach (var structureObject in structureObjects)
+        {
+            if (randomValue < structureObject.spawnWeight)
+            {
+                return structureObject;
+            }
+            randomValue -= structureObject.spawnWeight;
+        }
+
+        return null; // This should never happen if weights are properly set
+    }

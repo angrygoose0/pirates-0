@@ -1,18 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
-public class StructureObject : MonoBehaviour
+[CreateAssetMenu(fileName = "StructureObject", menuName = "Structure", order = 1)]
+public class StructureObject : ScriptableObject
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public int spawnWeight;
+    public int height;
+    public int width;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

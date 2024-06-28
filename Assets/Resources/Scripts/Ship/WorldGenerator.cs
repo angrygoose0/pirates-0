@@ -33,6 +33,8 @@ public class WorldGenerator : MonoBehaviour
     public float weirdnessScale = 0.05f;
     public List<TileObject> tileObjects; // List of TileObjects
 
+    public StructureManager structureManager;
+
     public int worldSeed;
     private Vector3Int initialChunkPosition;
     private Vector3Int previousCenterChunkPosition;
@@ -49,14 +51,6 @@ public class WorldGenerator : MonoBehaviour
     {
         MaintainChunkRadius();
         DetectTileHover();
-        foreach (var chunkData in generatedChunks.Values)
-        {
-            if (chunkData.chunkWeirdness > 95)
-            {
-                ChangeTilesInChunk(chunkData);
-            }
-        }
-
     }
 
     void GenerateInitialWorld()
@@ -91,6 +85,10 @@ public class WorldGenerator : MonoBehaviour
             0
         );
     }
+
+
+
+
 
     void GenerateChunksInRadius(Vector3Int centerChunkPosition)
     {
@@ -171,6 +169,16 @@ public class WorldGenerator : MonoBehaviour
 
         // Add the chunk data to the generated chunks dictionary
         generatedChunks[chunkPosition] = chunkData;
+
+        // Instantiate the structure if the weirdness is above 95
+        if (chunkData.chunkWeirdness > 95)
+        {
+            ChangeTilesInChunk(chunkData);
+            Vector3 chunkCenterWorldPosition = seaTilemap.CellToWorld(new Vector3Int(chunkPosition.x * chunkSize + chunkSize / 2, chunkPosition.y * chunkSize + chunkSize / 2, 0));
+            structureManager.GenerateStructure(chunkCenterWorldPosition);
+        }
+
+
     }
 
     void MaintainChunkRadius()
@@ -250,7 +258,8 @@ public class WorldGenerator : MonoBehaviour
                 int hostility = chunkData.tileHostility[tilePosition];
                 int chunkPopulation = chunkData.chunkPopulation;
                 float chunkWeirdness = chunkData.chunkWeirdness; // Add this line
-                Debug.Log($"Tile Position: {tilePosition} - Depth: {depth}, Temperature: {temperature}, Hostility: {hostility}, Mob Capacity: {chunkPopulation}, Weirdness: {chunkWeirdness}, Position: {chunkData.chunkPosition}");
+                //Debug.Log(chunkData.chunkPosition);
+                //Debug.Log($"Tile Position: {tilePosition} - Depth: {depth}, Temperature: {temperature}, Hostility: {hostility}, Mob Capacity: {chunkPopulation}, Weirdness: {chunkWeirdness}, Position: {chunkData.chunkPosition}");
                 break;
             }
         }
