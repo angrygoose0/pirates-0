@@ -353,6 +353,7 @@ MonoBehaviour:
   wiggleMagnitude: 10
   wiggleDir: {fileID: 81624865442338971}
   creature: {fileID: 8112100835143601025}
+  segmentPrefab: {fileID: 3258447280453129342, guid: fa707123ad2c9244da06a6adc4df02dd, type: 3}
 --- !u!1 &8876104013410284966
 GameObject:
   m_ObjectHideFlags: 0
