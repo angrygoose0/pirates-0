@@ -11,15 +11,30 @@ public class Procedural : MonoBehaviour
     public float wiggleFrequency = 2.0f;
     public float wiggleAmplitude = 0.5f;
 
+    private Vector3 targetPosition;
+    private Vector3 endPosition;
     private List<GameObject> gameObjectList = new List<GameObject>();
     private List<CircleCollider2D> colliders = new List<CircleCollider2D>();
     private List<SpriteRenderer> renderers = new List<SpriteRenderer>();
+    public FollowMouse followMouse;
 
     void Start()
     {
+        endPosition = followMouse.targetObject.transform.position;
+
+        targetPosition = transform.position;
+
+        GameObject tentacleContainer = GameObject.Find("tentacleContainer");
+        if (tentacleContainer == null)
+        {
+            Debug.LogError("tentacleContainer not found!");
+            return;
+        }
+
         for (int i = 0; i < sizes.Count; i++)
         {
-            GameObject newGameObject = Instantiate(prefab, Vector3.zero, Quaternion.identity);
+            GameObject newGameObject = Instantiate(prefab, targetPosition, Quaternion.identity);
+            newGameObject.transform.SetParent(tentacleContainer.transform);
 
             CircleCollider2D collider = newGameObject.GetComponent<CircleCollider2D>();
             if (collider != null)
@@ -40,15 +55,18 @@ public class Procedural : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        // Update targetPosition if needed (e.g., based on user input or AI logic)
+        targetPosition = transform.position;
+        endPosition = followMouse.targetObject.transform.position;
+    }
+
     void FixedUpdate()
     {
-        Vector3 mousePosition = Input.mousePosition;
-        mousePosition.z = Camera.main.nearClipPlane;
-        Vector3 worldMousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
-
         if (gameObjectList.Count > 0 && gameObjectList[0] != null)
         {
-            ApplyForcesToAllObjects(worldMousePosition);
+            ApplyForcesToAllObjects(targetPosition);
         }
     }
 
@@ -65,15 +83,21 @@ public class Procedural : MonoBehaviour
             {
                 desiredPosition = targetPosition;
             }
+            else if (i == gameObjectList.Count - 1)
+            {
+                desiredPosition = endPosition;
+            }
             else
             {
                 GameObject previousGameObject = gameObjectList[i - 1];
-                Vector3 direction = currentGameObject.transform.position - previousGameObject.transform.position;
-                desiredPosition = previousGameObject.transform.position + direction.normalized * setDistance;
+                GameObject nextGameObject = gameObjectList[i + 1];
+                Vector3 directionPrev = currentGameObject.transform.position - previousGameObject.transform.position;
+                Vector3 directionNext = nextGameObject.transform.position - currentGameObject.transform.position;
+                desiredPosition = (previousGameObject.transform.position + nextGameObject.transform.position) / 2.0f;
 
                 // Add wiggling motion
                 float offset = Mathf.Sin(time * wiggleFrequency + i * 0.5f) * wiggleAmplitude;
-                Vector3 perpendicular = Vector3.Cross(direction, Vector3.forward).normalized;
+                Vector3 perpendicular = Vector3.Cross(directionPrev, Vector3.forward).normalized;
                 desiredPosition += perpendicular * offset;
             }
 
@@ -82,13 +106,26 @@ public class Procedural : MonoBehaviour
             if (i < gameObjectList.Count - 1)
             {
                 GameObject nextGameObject = gameObjectList[i + 1];
-                Vector3 pullDirection = currentGameObject.transform.position - nextGameObject.transform.position;
-                float distance = pullDirection.magnitude;
+                Vector3 pullDirectionNext = currentGameObject.transform.position - nextGameObject.transform.position;
+                float distanceNext = pullDirectionNext.magnitude;
 
-                if (distance > setDistance)
+                if (distanceNext > setDistance)
                 {
-                    Vector3 pullForce = pullDirection.normalized * (distance - setDistance) * pullStrength;
-                    currentGameObject.transform.position -= pullForce * Time.deltaTime;
+                    Vector3 pullForceNext = pullDirectionNext.normalized * (distanceNext - setDistance) * pullStrength;
+                    currentGameObject.transform.position -= pullForceNext * Time.deltaTime;
+                }
+            }
+
+            if (i > 0)
+            {
+                GameObject previousGameObject = gameObjectList[i - 1];
+                Vector3 pullDirectionPrev = previousGameObject.transform.position - currentGameObject.transform.position;
+                float distancePrev = pullDirectionPrev.magnitude;
+
+                if (distancePrev > setDistance)
+                {
+                    Vector3 pullForcePrev = pullDirectionPrev.normalized * (distancePrev - setDistance) * pullStrength;
+                    currentGameObject.transform.position += pullForcePrev * Time.deltaTime;
                 }
             }
         }
@@ -96,6 +133,13 @@ public class Procedural : MonoBehaviour
 
     void MoveTowards(GameObject gameObject, Vector3 targetPosition)
     {
-        gameObject.transform.position = Vector3.Lerp(gameObject.transform.position, targetPosition, moveSpeed * Time.deltaTime);
+        Vector3 currentPosition = gameObject.transform.position;
+        Vector3 direction = targetPosition - currentPosition;
+
+        // Adjust direction to slow down movement in the y-axis
+        direction.y *= 0.5f;
+
+        Vector3 adjustedTargetPosition = currentPosition + direction;
+        gameObject.transform.position = Vector3.Lerp(currentPosition, adjustedTargetPosition, moveSpeed * Time.deltaTime);
     }
 }

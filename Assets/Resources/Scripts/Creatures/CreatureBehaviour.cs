@@ -136,7 +136,6 @@ public class CreatureBehaviour : MonoBehaviour
         {
             List<Vector3Int> surroundingTiles = GetSurroundingTiles(currentTilePosition, range);
 
-            bool found = false;
             Vector3Int targetTile;
             if (surroundingTiles.Count > 0)
             {
@@ -154,17 +153,7 @@ public class CreatureBehaviour : MonoBehaviour
                         targetTile = Vector3Int.FloorToInt(targetShipPartLocalPosition);
 
                         targetPosition = tilemap.GetCellCenterLocal(targetTile);
-                        found = true;
                         break;
-                        
-                        if (!found)
-                        {
-                            targetTile = surroundingTiles[Random.Range(0, surroundingTiles.Count)];
-                            targetPosition = tilemap.GetCellCenterLocal(targetTile);
-                            hostility -= 10; // Reduce hostility only when the exact tile is not found
-                        }
-                        break;
-                        // Add cases for other states here
                 }
             }
 

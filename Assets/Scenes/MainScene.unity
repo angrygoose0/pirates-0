@@ -153,7 +153,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1810103419}
   m_Father: {fileID: 485961739}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!483693784 &170296653
@@ -685,7 +686,7 @@ MonoBehaviour:
   globalMobCount: 0
   maxGlobalMobCount: 5
   maxGlobalChunkPopulation: 4
-  creaturePrefab: {fileID: 3853018371985993264, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
+  creaturePrefab: {fileID: 6939055558043858172, guid: 00a94a03bb1f99f4d953fb2b17f1056a, type: 3}
 --- !u!114 &383585328
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1397,6 +1398,37 @@ PolygonCollider2D:
       - {x: -0.25, y: 0}
       - {x: 0, y: 0.125}
   m_UseDelaunayMesh: 0
+--- !u!1 &1810103418
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1810103419}
+  m_Layer: 0
+  m_Name: tentacleContainer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1810103419
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1810103418}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 170296652}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1830874724
 GameObject:
   m_ObjectHideFlags: 0

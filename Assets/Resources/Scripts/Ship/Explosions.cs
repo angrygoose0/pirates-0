@@ -34,32 +34,34 @@ public class Explosions : MonoBehaviour
 
             if (hit.collider != null)
             {
-
                 float distance = Vector2.Distance(currentPosition, hit.point);
                 currentRayForce = Mathf.Max(currentRayForce - distance * dissipationRate, 0);
 
                 if (currentRayForce > 0)
                 {
+                    Rigidbody2D rigidBody = hit.collider.GetComponent<Rigidbody2D>();
                     CreatureVitals creatureVitals = hit.collider.GetComponent<CreatureVitals>();
-                    if (creatureVitals != null)
-                    {
-                        Vector2 forceDirection = ((Vector2)hit.point - (Vector2)startPosition).normalized;
-                        float appliedForce = currentRayForce * itemObject.explosionMultiplier;
-                        float appliedDamage = currentRayForce * itemObject.damageMultiplier;
-                        creatureVitals.ApplyImpact(forceDirection * appliedForce, appliedForce, appliedDamage);
 
+                    Vector2 forceDirection = ((Vector2)hit.point - (Vector2)startPosition).normalized;
+                    float appliedForce = currentRayForce * itemObject.explosionMultiplier;
+                    float appliedDamage = currentRayForce * itemObject.damageMultiplier;
+
+                    if (rigidBody != null)
+                    {
+                        rigidBody.AddForce(forceDirection * appliedForce, ForceMode2D.Impulse);
                     }
 
-                    // Draw the ray in the scene view for visualization
-                    Debug.DrawRay(startPosition, direction * distance, Color.red, 0.1f);
+                    if (creatureVitals != null)
+                    {
+                        creatureVitals.ApplyImpact(appliedDamage);
+                    }
+                }
 
-                    // Break out of the loop to stop casting the ray
-                    break;
-                }
-                else
-                {
-                    break;
-                }
+                // Draw the ray in the scene view for visualization
+                Debug.DrawRay(startPosition, direction * distance, Color.red, 0.1f);
+
+                // Break out of the loop to stop casting the ray
+                break;
             }
             else
             {
@@ -75,6 +77,3 @@ public class Explosions : MonoBehaviour
         }
     }
 }
-
-
-
