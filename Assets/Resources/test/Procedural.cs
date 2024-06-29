@@ -1,29 +1,41 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Procedural : MonoBehaviour
+[System.Serializable]
+public class Tentacles
 {
-    public GameObject prefab;
-    public List<float> sizes = new List<float>();
+    public List<float> sizes;
+    public GameObject endTarget;
     public float setDistance = 1.0f;
     public float moveSpeed = 5.0f;
     public float pullStrength = 0.5f;
     public float wiggleFrequency = 2.0f;
     public float wiggleAmplitude = 0.5f;
 
-    private Vector3 targetPosition;
-    private Vector3 endPosition;
-    private List<GameObject> gameObjectList = new List<GameObject>();
-    private List<CircleCollider2D> colliders = new List<CircleCollider2D>();
-    private List<SpriteRenderer> renderers = new List<SpriteRenderer>();
+    public Tentacles(List<float> sizes, GameObject endTarget, float setDistance, float moveSpeed, float pullStrength, float wiggleFrequency, float wiggleAmplitude)
+    {
+        this.sizes = sizes;
+        this.endTarget = endTarget;
+        this.setDistance = setDistance;
+        this.moveSpeed = moveSpeed;
+        this.pullStrength = pullStrength;
+        this.wiggleFrequency = wiggleFrequency;
+        this.wiggleAmplitude = wiggleAmplitude;
+    }
+}
+
+public class Procedural : MonoBehaviour
+{
+    public GameObject prefab;
+    public List<Tentacles> tentaclesList = new List<Tentacles>();
+
+    private List<List<GameObject>> gameObjectLists = new List<List<GameObject>>();
+    private List<List<CircleCollider2D>> collidersLists = new List<List<CircleCollider2D>>();
+    private List<List<SpriteRenderer>> renderersLists = new List<List<SpriteRenderer>>();
     public FollowMouse followMouse;
 
     void Start()
     {
-        endPosition = followMouse.targetObject.transform.position;
-
-        targetPosition = transform.position;
-
         GameObject tentacleContainer = GameObject.Find("tentacleContainer");
         if (tentacleContainer == null)
         {
@@ -31,46 +43,71 @@ public class Procedural : MonoBehaviour
             return;
         }
 
-        for (int i = 0; i < sizes.Count; i++)
+        foreach (var tentacles in tentaclesList)
         {
-            GameObject newGameObject = Instantiate(prefab, targetPosition, Quaternion.identity);
-            newGameObject.transform.SetParent(tentacleContainer.transform);
+            List<GameObject> gameObjectList = new List<GameObject>();
+            List<CircleCollider2D> colliders = new List<CircleCollider2D>();
+            List<SpriteRenderer> renderers = new List<SpriteRenderer>();
 
-            CircleCollider2D collider = newGameObject.GetComponent<CircleCollider2D>();
-            if (collider != null)
+            Vector3 targetPosition = transform.position;
+
+            for (int i = 0; i < tentacles.sizes.Count; i++)
             {
-                collider.radius = sizes[i];
-                colliders.Add(collider);
+                GameObject newGameObject = Instantiate(prefab, targetPosition, Quaternion.identity);
+                newGameObject.transform.SetParent(tentacleContainer.transform);
+
+                CircleCollider2D collider = newGameObject.GetComponent<CircleCollider2D>();
+                if (collider != null)
+                {
+                    collider.radius = tentacles.sizes[i];
+                    colliders.Add(collider);
+                }
+
+                SpriteRenderer renderer = newGameObject.GetComponent<SpriteRenderer>();
+                if (renderer != null)
+                {
+                    float diameter = tentacles.sizes[i] * 2.0f;
+                    newGameObject.transform.localScale = new Vector3(diameter, diameter, 1);
+                    renderers.Add(renderer);
+                }
+
+                gameObjectList.Add(newGameObject);
             }
 
-            SpriteRenderer renderer = newGameObject.GetComponent<SpriteRenderer>();
-            if (renderer != null)
-            {
-                float diameter = sizes[i] * 2.0f;
-                newGameObject.transform.localScale = new Vector3(diameter, diameter, 1);
-                renderers.Add(renderer);
-            }
-
-            gameObjectList.Add(newGameObject);
+            gameObjectLists.Add(gameObjectList);
+            collidersLists.Add(colliders);
+            renderersLists.Add(renderers);
         }
     }
 
     void Update()
     {
-        // Update targetPosition if needed (e.g., based on user input or AI logic)
-        targetPosition = transform.position;
-        endPosition = followMouse.targetObject.transform.position;
+        for (int i = 0; i < tentaclesList.Count; i++)
+        {
+            var tentacles = tentaclesList[i];
+            Vector3 targetPosition = transform.position;
+            Vector3 endPosition = tentacles.endTarget != null ? tentacles.endTarget.transform.position : targetPosition;
+
+            ApplyForcesToAllObjects(gameObjectLists[i], targetPosition, endPosition, tentacles);
+        }
     }
 
     void FixedUpdate()
     {
-        if (gameObjectList.Count > 0 && gameObjectList[0] != null)
+        for (int i = 0; i < gameObjectLists.Count; i++)
         {
-            ApplyForcesToAllObjects(targetPosition);
+            var gameObjectList = gameObjectLists[i];
+            if (gameObjectList.Count > 0 && gameObjectList[0] != null)
+            {
+                var tentacles = tentaclesList[i];
+                Vector3 targetPosition = transform.position;
+                Vector3 endPosition = tentacles.endTarget != null ? tentacles.endTarget.transform.position : targetPosition;
+                ApplyForcesToAllObjects(gameObjectList, targetPosition, endPosition, tentacles);
+            }
         }
     }
 
-    void ApplyForcesToAllObjects(Vector3 targetPosition)
+    void ApplyForcesToAllObjects(List<GameObject> gameObjectList, Vector3 targetPosition, Vector3 endPosition, Tentacles tentacles)
     {
         float time = Time.time;
 
@@ -83,25 +120,33 @@ public class Procedural : MonoBehaviour
             {
                 desiredPosition = targetPosition;
             }
-            else if (i == gameObjectList.Count - 1)
+            else if (i == gameObjectList.Count - 1 && tentacles.endTarget != null)
             {
                 desiredPosition = endPosition;
             }
             else
             {
                 GameObject previousGameObject = gameObjectList[i - 1];
-                GameObject nextGameObject = gameObjectList[i + 1];
+                GameObject nextGameObject = i < gameObjectList.Count - 1 ? gameObjectList[i + 1] : null;
                 Vector3 directionPrev = currentGameObject.transform.position - previousGameObject.transform.position;
-                Vector3 directionNext = nextGameObject.transform.position - currentGameObject.transform.position;
-                desiredPosition = (previousGameObject.transform.position + nextGameObject.transform.position) / 2.0f;
+                Vector3 directionNext = nextGameObject != null ? nextGameObject.transform.position - currentGameObject.transform.position : Vector3.zero;
+
+                if (tentacles.endTarget != null)
+                {
+                    desiredPosition = nextGameObject != null ? (previousGameObject.transform.position + nextGameObject.transform.position) / 2.0f : previousGameObject.transform.position;
+                }
+                else
+                {
+                    desiredPosition = previousGameObject.transform.position + directionPrev.normalized * tentacles.setDistance;
+                }
 
                 // Add wiggling motion
-                float offset = Mathf.Sin(time * wiggleFrequency + i * 0.5f) * wiggleAmplitude;
+                float offset = Mathf.Sin(time * tentacles.wiggleFrequency + i * 0.5f) * tentacles.wiggleAmplitude;
                 Vector3 perpendicular = Vector3.Cross(directionPrev, Vector3.forward).normalized;
                 desiredPosition += perpendicular * offset;
             }
 
-            MoveTowards(currentGameObject, desiredPosition);
+            MoveTowards(currentGameObject, desiredPosition, tentacles.moveSpeed);
 
             if (i < gameObjectList.Count - 1)
             {
@@ -109,29 +154,29 @@ public class Procedural : MonoBehaviour
                 Vector3 pullDirectionNext = currentGameObject.transform.position - nextGameObject.transform.position;
                 float distanceNext = pullDirectionNext.magnitude;
 
-                if (distanceNext > setDistance)
+                if (distanceNext > tentacles.setDistance)
                 {
-                    Vector3 pullForceNext = pullDirectionNext.normalized * (distanceNext - setDistance) * pullStrength;
+                    Vector3 pullForceNext = pullDirectionNext.normalized * (distanceNext - tentacles.setDistance) * tentacles.pullStrength;
                     currentGameObject.transform.position -= pullForceNext * Time.deltaTime;
                 }
             }
 
-            if (i > 0)
+            if (i > 0 && tentacles.endTarget != null)
             {
                 GameObject previousGameObject = gameObjectList[i - 1];
                 Vector3 pullDirectionPrev = previousGameObject.transform.position - currentGameObject.transform.position;
                 float distancePrev = pullDirectionPrev.magnitude;
 
-                if (distancePrev > setDistance)
+                if (distancePrev > tentacles.setDistance)
                 {
-                    Vector3 pullForcePrev = pullDirectionPrev.normalized * (distancePrev - setDistance) * pullStrength;
-                    currentGameObject.transform.position += pullForcePrev * Time.deltaTime;
+                    Vector3 pullForcePrev = pullDirectionPrev.normalized * (distancePrev - tentacles.setDistance) * tentacles.pullStrength;
+                    //currentGameObject.transform.position += pullForcePrev * Time.deltaTime;
                 }
             }
         }
     }
 
-    void MoveTowards(GameObject gameObject, Vector3 targetPosition)
+    void MoveTowards(GameObject gameObject, Vector3 targetPosition, float moveSpeed)
     {
         Vector3 currentPosition = gameObject.transform.position;
         Vector3 direction = targetPosition - currentPosition;

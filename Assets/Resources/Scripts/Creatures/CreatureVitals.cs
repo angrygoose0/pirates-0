@@ -6,6 +6,8 @@ public class CreatureVitals : MonoBehaviour
     public float health;
     public float armor;
     public CreatureObject creatureObject;
+    //public CreatureManager creatureManager;
+    //public CreatureData creatureData;
 
     private bool isDamaged;
     private float currentDamage;
@@ -16,7 +18,6 @@ public class CreatureVitals : MonoBehaviour
     public ItemManager itemManager;
 
     private Color originalColor;
-    private CreatureBehaviour creatureBehaviour;
     private Procedural procedural;
     CircleCollider2D circleCollider;
 
@@ -26,9 +27,6 @@ public class CreatureVitals : MonoBehaviour
         isDamaged = false;
         currentDamage = 0f;
 
-
-
-        creatureBehaviour = GetComponent<CreatureBehaviour>();
         procedural = GetComponent<Procedural>();
         circleCollider = GetComponent<CircleCollider2D>();
         //circleCollider.radius = procedural.sizes[0];
@@ -85,7 +83,7 @@ public class CreatureVitals : MonoBehaviour
         Debug.Log("damaged");
         Debug.Log(health);
 
-        creatureBehaviour.hostility += 20;
+        //creatureBehaviour.hostility += 20;
 
         // Check if health drops below zero
         if (health <= 0)

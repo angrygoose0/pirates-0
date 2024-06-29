@@ -14,7 +14,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2608855381030885501, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
       propertyPath: hostility
-      value: 500
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3853018371985993264, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
       propertyPath: m_Name
@@ -74,6 +74,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3519153156418283130, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
+    - {fileID: 2608855381030885501, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
     m_RemovedGameObjects:
     - {fileID: 4951504727248566143, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
     m_AddedGameObjects: []
@@ -103,19 +104,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefab: {fileID: 6285872198284085077, guid: 8505bef393acbbf4cab79a22a9e93f5a, type: 3}
-  sizes:
-  - 0.1
-  - 0.08
-  - 0.07
-  - 0.06
-  - 0.05
-  - 0.03
-  setDistance: 0.5
-  moveSpeed: 5
-  pullStrength: 1
-  wiggleFrequency: 0
-  wiggleAmplitude: 0
-  targetPosition: {x: 0, y: 0, z: 0}
+  tentaclesList:
+  - sizes:
+    - 0.06
+    - 0.06
+    - 0.06
+    - 0.06
+    - 0.06
+    - 0.06
+    endTarget: {fileID: 0}
+    setDistance: 1
+    moveSpeed: 5
+    pullStrength: 0.5
+    wiggleFrequency: 0
+    wiggleAmplitude: 0.1
+  followMouse: {fileID: 0}
 --- !u!58 &6758094151740418470
 CircleCollider2D:
   m_ObjectHideFlags: 0

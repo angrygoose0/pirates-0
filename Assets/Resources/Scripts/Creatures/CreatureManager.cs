@@ -1,11 +1,42 @@
-using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Tilemaps;
+
+
+public enum State
+{
+    Idle,
+    Aggressive,
+    // Add more states here as needed
+}
+
+public class TentacleData
+{
+    public Vector3 targetPosition { get; set; }
+}
+
+public class CreatureData
+{
+    public CreatureObject creatureObject;
+    public Vector3Int currentTilePosition { get; set; }
+    public List<Vector3Int> surroundingTiles { get; set; }
+    public Vector3 targetPosition { get; set; }
+    public Dictionary<GameObject, TentacleData> tentacles = new Dictionary<GameObject, TentacleData>();
+    public State currentState;
+    public float hostility;
+    public Vector3 velocity;
+    public bool isMovementCoroutineRunning = false;
+    public float movementDelay;
+    public GameObject targetShipPart = GameObject.Find("ghost");
+
+}
 
 public class CreatureManager : MonoBehaviour
 {
     public WorldGenerator worldGenerator;
     public GameObject trackedObject;
-    public List<GameObject> creatures; // List of all creatures
+    public Dictionary<GameObject, CreatureData> creatures; // Dictionary of all creatures
     public List<CreatureObject> creatureObjects;
     public int minRadius = 5;
     public int maxRadius = 10;
@@ -16,16 +47,60 @@ public class CreatureManager : MonoBehaviour
     public int maxGlobalMobCount = 70; // Maximum global mob count
     public int maxGlobalChunkPopulation = 50;
     public GameObject creaturePrefab;
+    public GameObject tentaclePrefab;
+
+    public Tilemap worldTilemap;
 
     void Start()
     {
+        creatures = new Dictionary<GameObject, CreatureData>();
         globalMobCount = creatures.Count; // Initialize the global mob count
+        worldTilemap = GameObject.Find("world").GetComponent<Tilemap>();
     }
 
     void Update()
     {
         TrackObjectChunk();
         UpdateCreatureChunks();
+        UpdateCreatureTilePositions(); // Update creatures' current tile positions
+
+        foreach (KeyValuePair<GameObject, CreatureData> entry in creatures)
+        {
+            GameObject creatureGameObject = entry.Key;
+            CreatureData creatureData = entry.Value;
+
+
+
+            Vector3Int newTilePosition = worldGenerator.seaTilemap.WorldToCell(creatureGameObject.transform.position);
+            if (creatureData.currentTilePosition != newTilePosition)
+            {
+                creatureData.currentTilePosition = newTilePosition;
+                creatureData.surroundingTiles = GetSurroundingTiles(newTilePosition, creatureData.creatureObject.range);
+            }
+
+            float hostility = creatureData.hostility;
+            float aggressionThreshold = creatureData.creatureObject.aggressionThreshold;
+            State currentState = creatureData.currentState;
+
+            if (hostility >= aggressionThreshold && currentState != State.Aggressive)
+            {
+                creatureData.currentState = State.Aggressive;
+            }
+            else if (hostility < aggressionThreshold && currentState != State.Idle)
+            {
+                creatureData.currentState = State.Idle;
+            }
+
+            UpdateMovement(creatureData.targetPosition, creatureData.creatureObject, 1f, ref creatureData.velocity, creatureGameObject.transform);
+
+            if (!creatureData.isMovementCoroutineRunning)
+            {
+                StartCoroutine(MovementCoroutine(creatureData));
+            }
+
+
+
+        }
 
         if (globalMobCount < maxGlobalMobCount)
         {
@@ -44,16 +119,11 @@ public class CreatureManager : MonoBehaviour
         {
             if (currentChunk != null)
             {
-
-                //worldGenerator.RevertTilesInChunk(currentChunk);
                 RevertViableChunks();
             }
 
             currentChunk = newChunk;
-
-            //worldGenerator.ChangeTilesInChunk(currentChunk);
             HighlightViableChunks(currentChunk.chunkPosition);
-
 
             Debug.Log($"GameObject is now in chunk at {currentChunk.chunkPosition}");
         }
@@ -73,7 +143,6 @@ public class CreatureManager : MonoBehaviour
                     if (worldGenerator.generatedChunks.TryGetValue(chunkPosition, out ChunkData chunkData))
                     {
                         viableChunks.Add(chunkPosition);
-                        //worldGenerator.ChangeTilesInChunk(chunkData);
                     }
                 }
             }
@@ -94,7 +163,7 @@ public class CreatureManager : MonoBehaviour
 
     void UpdateCreatureChunks()
     {
-        foreach (var creature in creatures)
+        foreach (var creature in creatures.Keys)
         {
             if (creature != null)
             {
@@ -121,16 +190,101 @@ public class CreatureManager : MonoBehaviour
                         creatureChunks[creature] = newChunk;
                     }
                 }
-            }
 
+
+            }
         }
     }
 
-    public void AddCreature(GameObject creature)
+    void UpdateCreatureTilePositions()
     {
-        creatures.Add(creature);
-        globalMobCount++;
+
     }
+
+    private IEnumerator MovementCoroutine(CreatureData creatureData)
+    {
+        creatureData.isMovementCoroutineRunning = true;
+        while (true)
+        {
+            List<Vector3Int> surroundingTiles = creatureData.surroundingTiles;
+
+            Vector3Int targetTile;
+            if (surroundingTiles.Count > 0)
+            {
+                switch (creatureData.currentState)
+                {
+                    case State.Idle:
+                        // Pick a random tile.
+                        targetTile = surroundingTiles[Random.Range(0, surroundingTiles.Count)];
+                        creatureData.targetPosition = worldTilemap.GetCellCenterLocal(targetTile);
+                        break;
+                    case State.Aggressive:
+
+
+                        Vector3 targetShipPartLocalPosition = worldTilemap.WorldToCell(creatureData.targetShipPart.transform.position);
+                        targetTile = Vector3Int.FloorToInt(targetShipPartLocalPosition);
+
+                        creatureData.targetPosition = worldTilemap.GetCellCenterLocal(targetTile);
+                        break;
+                }
+            }
+
+
+            // Wait for the delay before picking a new targetTile
+            yield return new WaitForSeconds(creatureData.movementDelay);
+        }
+    }
+
+    public List<Vector3Int> GetSurroundingTiles(Vector3Int centerTile, float range)
+    {
+        List<Vector3Int> tiles = new List<Vector3Int>();
+        int rangeInt = Mathf.CeilToInt(range);
+
+        for (int x = -rangeInt; x <= rangeInt; x++)
+        {
+            for (int y = -rangeInt; y <= rangeInt; y++)
+            {
+                Vector3Int tile = new Vector3Int(centerTile.x + x, centerTile.y + y, centerTile.z);
+                if (Vector3Int.Distance(centerTile, tile) <= range)
+                {
+                    tiles.Add(tile);
+                }
+            }
+        }
+
+        return tiles;
+    }
+    public void UpdateMovement(Vector3 targetPosition, CreatureObject creatureObject, float movementMultiplier, ref Vector3 velocity, Transform transform)
+    {
+        float currentAcceleration = creatureObject.acceleration * movementMultiplier;
+        float currentMaxMoveSpeed = creatureObject.maxMoveSpeed * movementMultiplier;
+
+        Vector3 direction = targetPosition - transform.localPosition;
+        float distance = direction.magnitude;
+        direction.Normalize();
+
+        Vector3 targetVelocity = direction * currentMaxMoveSpeed;
+        targetVelocity.y *= 0.5f;
+
+        if (distance > 0.1f)
+        {
+            velocity = Vector3.MoveTowards(velocity, targetVelocity, currentAcceleration * Time.deltaTime);
+        }
+        else
+        {
+            velocity = Vector3.MoveTowards(velocity, Vector3.zero, creatureObject.deceleration * Time.deltaTime);
+        }
+
+        transform.localPosition += velocity * Time.deltaTime;
+
+        if (velocity.magnitude > 0.1f)
+        {
+            float targetAngle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg;
+            float angle = Mathf.MoveTowardsAngle(transform.eulerAngles.z, targetAngle, creatureObject.rotationSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Euler(0, 0, angle);
+        }
+    }
+
 
     public void RemoveCreature(GameObject creature)
     {
@@ -149,17 +303,14 @@ public class CreatureManager : MonoBehaviour
 
     CreatureObject PickRandomCreatureObject()
     {
-        // Calculate total weight
         int totalWeight = 0;
         foreach (var creatureObject in creatureObjects)
         {
             totalWeight += creatureObject.spawnWeight;
         }
 
-        // Pick a random value within the total weight
         int randomValue = Random.Range(0, totalWeight);
 
-        // Determine which creatureObject corresponds to the random value
         foreach (var creatureObject in creatureObjects)
         {
             if (randomValue < creatureObject.spawnWeight)
@@ -169,7 +320,7 @@ public class CreatureManager : MonoBehaviour
             randomValue -= creatureObject.spawnWeight;
         }
 
-        return null; // This should never happen if weights are properly set
+        return null;
     }
 
     void mobSpawner()
@@ -187,28 +338,52 @@ public class CreatureManager : MonoBehaviour
                 List<Vector3Int> tilePositions = new List<Vector3Int>(randomChunk.tileDepths.Keys);
                 Vector3Int randomTilePosition = tilePositions[Random.Range(0, tilePositions.Count)];
 
-                // Validate the tile position
                 if (randomChunk.tileDepths.ContainsKey(randomTilePosition))
                 {
-                    // Convert tile position to world position
                     Vector3 worldPosition = worldGenerator.seaTilemap.CellToWorld(randomTilePosition);
 
-                    // Log the tile position and world position
                     Debug.Log($"Spawning creature at tile position: {randomTilePosition} in chunk: {randomChunkPosition} with world position: {worldPosition}");
 
                     int packSize = Random.Range(randomCreatureObject.minPackSpawn, randomCreatureObject.maxPackSpawn);
 
                     for (int i = 0; i < packSize; i++)
                     {
-                        // Instantiate the creature at the world position and set its parent to the tilemap
                         GameObject newCreature = Instantiate(creaturePrefab, worldPosition, Quaternion.identity, worldGenerator.seaTilemap.transform);
                         newCreature.GetComponent<CreatureVitals>().creatureObject = randomCreatureObject;
-                        newCreature.GetComponent<CreatureBehaviour>().creatureObject = randomCreatureObject;
 
-                        AddCreature(newCreature);
+
+                        Vector3Int currentTilePosition = worldGenerator.seaTilemap.WorldToCell(worldPosition);
+                        creatures.Add(newCreature, new CreatureData
+                        {
+                            creatureObject = randomCreatureObject,
+                            currentTilePosition = currentTilePosition,
+                            surroundingTiles = GetSurroundingTiles(currentTilePosition, randomCreatureObject.range),
+                            targetPosition = currentTilePosition, // Initialize the target position
+                            hostility = 10,
+                        });
+                        globalMobCount++;
+
                         randomChunk.chunkPopulation += randomCreatureObject.populationValue;
-                    }
 
+                        CreatureData creatureData = creatures[newCreature];
+
+                        if (randomCreatureObject.tentacles > 0)
+                        {
+                            for (int j = 0; j < randomCreatureObject.tentacles; j++)
+                            {
+                                GameObject newTentacle = Instantiate(tentaclePrefab, worldPosition, Quaternion.identity, worldGenerator.seaTilemap.transform);
+                                TentaclePrefabScript tentacleScript = newTentacle.GetComponent<TentaclePrefabScript>();
+                                tentacleScript.creature = newCreature;
+
+                                // Add tentacle to creature's tentacles dictionary
+                                TentacleData tentacleData = new TentacleData
+                                {
+                                    targetPosition = worldGenerator.seaTilemap.WorldToCell(newCreature.transform.position)
+                                };
+                                creatureData.tentacles.Add(newTentacle, tentacleData);
+                            }
+                        }
+                    }
                 }
                 else
                 {
@@ -223,13 +398,11 @@ public class CreatureManager : MonoBehaviour
         Vector3 centerPosition = trackedObject.transform.position;
         Vector3Int centerChunkPosition = worldGenerator.WorldToChunkPosition(centerPosition);
 
-        // Create a temporary list to store creatures that need to be despawned
         List<GameObject> creaturesToDespawn = new List<GameObject>();
 
-        // Identify creatures that need to be despawned
-        foreach (var creature in creatures)
+        foreach (var creature in creatures.Keys)
         {
-            if (creature != null) // Check if the creature is not null
+            if (creature != null)
             {
                 Vector3 creaturePosition = creature.transform.position;
                 Vector3Int creatureChunkPosition = worldGenerator.WorldToChunkPosition(creaturePosition);
@@ -242,15 +415,23 @@ public class CreatureManager : MonoBehaviour
             }
         }
 
-        // Remove and destroy the creatures
         foreach (var creature in creaturesToDespawn)
         {
             RemoveCreature(creature);
             Destroy(creature);
         }
 
-        // Remove null references from the creatures list
-        creatures.RemoveAll(c => c == null);
+        List<GameObject> keysToRemove = new List<GameObject>();
+        foreach (var kvp in creatures)
+        {
+            if (kvp.Key == null)
+            {
+                keysToRemove.Add(kvp.Key);
+            }
+        }
+        foreach (var key in keysToRemove)
+        {
+            creatures.Remove(key);
+        }
     }
-
 }

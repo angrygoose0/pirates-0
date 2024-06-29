@@ -26,4 +26,12 @@ public class CreatureObject : ScriptableObject
     public int minPackSpawn;
     public int maxPackSpawn;
     public List<CreatureValue> creatureValues;
+    public int tentacles;
+
+    public float rotationSpeed;
+    public float maxMoveSpeed;
+    public float acceleration;
+    public float deceleration;
+    public int range;
+    public float aggressionThreshold;
 }

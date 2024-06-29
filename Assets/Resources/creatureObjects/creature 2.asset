@@ -20,3 +20,10 @@ MonoBehaviour:
   minPackSpawn: 1
   maxPackSpawn: 2
   creatureValues: []
+  tentacles: 0
+  rotationSpeed: 100
+  maxMoveSpeed: 2
+  acceleration: 3
+  deceleration: 7
+  range: 10
+  aggressionThreshold: 40

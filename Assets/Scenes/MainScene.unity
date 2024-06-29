@@ -677,16 +677,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worldGenerator: {fileID: 383585319}
   trackedObject: {fileID: 383585313}
-  creatures: []
   creatureObjects:
   - {fileID: 11400000, guid: 7f9693fa9cac6954684e38dfebcd0f51, type: 2}
   - {fileID: 11400000, guid: 3368a91c624a7134ab47e93f99cb0a11, type: 2}
   minRadius: 3
   maxRadius: 8
   globalMobCount: 0
-  maxGlobalMobCount: 5
+  maxGlobalMobCount: 4
   maxGlobalChunkPopulation: 4
   creaturePrefab: {fileID: 6939055558043858172, guid: 00a94a03bb1f99f4d953fb2b17f1056a, type: 3}
+  tentaclePrefab: {fileID: 2915069436650555665, guid: 57ecd34c1f573154d815dfef9213d165, type: 3}
+  worldTilemap: {fileID: 0}
 --- !u!114 &383585328
 MonoBehaviour:
   m_ObjectHideFlags: 0
