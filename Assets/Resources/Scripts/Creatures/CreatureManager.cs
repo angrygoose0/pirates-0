@@ -14,6 +14,8 @@ public enum State
 public class TentacleData
 {
     public Vector3 targetPosition { get; set; }
+    public Vector3Int currentTilePosition { get; set; }
+    public Vector3 velocity;
 }
 
 public class CreatureData
@@ -62,12 +64,11 @@ public class CreatureManager : MonoBehaviour
     {
         TrackObjectChunk();
         UpdateCreatureChunks();
-        UpdateCreatureTilePositions(); // Update creatures' current tile positions
 
-        foreach (KeyValuePair<GameObject, CreatureData> entry in creatures)
+        foreach (KeyValuePair<GameObject, CreatureData> creatureEntry in creatures)
         {
-            GameObject creatureGameObject = entry.Key;
-            CreatureData creatureData = entry.Value;
+            GameObject creatureGameObject = creatureEntry.Key;
+            CreatureData creatureData = creatureEntry.Value;
 
 
 
@@ -90,14 +91,56 @@ public class CreatureManager : MonoBehaviour
             {
                 creatureData.currentState = State.Idle;
             }
+            CreatureObject creatureObject = creatureData.creatureObject;
 
-            UpdateMovement(creatureData.targetPosition, creatureData.creatureObject, 1f, ref creatureData.velocity, creatureGameObject.transform);
+            UpdateMovement(creatureData.targetPosition, creatureObject.acceleration, creatureObject.maxMoveSpeed, creatureObject.deceleration, creatureObject.rotationSpeed, 1f, ref creatureData.velocity, creatureGameObject.transform);
+
+
+            Debug.Log(creatureData.targetPosition + "creaturePosition");
+            foreach (KeyValuePair<GameObject, TentacleData> tentacleEntry in creatureData.tentacles)
+            {
+                GameObject tentacleGameObject = tentacleEntry.Key;
+                TentacleData tentacleData = tentacleEntry.Value;
+
+                Debug.Log(tentacleData.targetPosition + "tentaclePosition");
+
+                Vector3Int newTentacleTilePosition = worldGenerator.seaTilemap.WorldToCell(tentacleGameObject.transform.position);
+                if (tentacleData.currentTilePosition != newTentacleTilePosition)
+                {
+                    tentacleData.currentTilePosition = newTentacleTilePosition;
+                }
+
+                UpdateMovement(tentacleData.targetPosition, 3f, 5f, 2f, 200f, 1f, ref tentacleData.velocity, tentacleGameObject.transform);
+
+                int deltaCurrentX = Mathf.Abs(tentacleData.currentTilePosition.x - creatureData.currentTilePosition.x);
+                int deltaCurrentY = Mathf.Abs(tentacleData.currentTilePosition.y - creatureData.currentTilePosition.y);
+
+                Vector3Int tentacleTargetTilemapPosition = Vector3Int.FloorToInt(tentacleData.targetPosition);
+
+                int deltaTargetX = Mathf.Abs(tentacleTargetTilemapPosition.x - creatureData.currentTilePosition.x);
+                int deltaTargetY = Mathf.Abs(tentacleTargetTilemapPosition.y - creatureData.currentTilePosition.y);
+
+                Debug.Log(deltaCurrentX + deltaCurrentY + "current");
+                Debug.Log(deltaTargetX + deltaTargetY + "target");
+
+
+                if (deltaCurrentX + deltaCurrentY > 2 && deltaTargetX + deltaTargetY > 2)
+                {
+                    Vector3Int targetTile = creatureData.surroundingTiles[Random.Range(0, creatureData.surroundingTiles.Count)];
+                    tentacleData.targetPosition = worldTilemap.GetCellCenterLocal(targetTile);
+                }
+
+
+
+
+
+            }
+
 
             if (!creatureData.isMovementCoroutineRunning)
             {
                 StartCoroutine(MovementCoroutine(creatureData));
             }
-
 
 
         }
@@ -196,11 +239,6 @@ public class CreatureManager : MonoBehaviour
         }
     }
 
-    void UpdateCreatureTilePositions()
-    {
-
-    }
-
     private IEnumerator MovementCoroutine(CreatureData creatureData)
     {
         creatureData.isMovementCoroutineRunning = true;
@@ -254,10 +292,10 @@ public class CreatureManager : MonoBehaviour
 
         return tiles;
     }
-    public void UpdateMovement(Vector3 targetPosition, CreatureObject creatureObject, float movementMultiplier, ref Vector3 velocity, Transform transform)
+    public void UpdateMovement(Vector3 targetPosition, float acceleration, float maxMoveSpeed, float deceleration, float rotationSpeed, float movementMultiplier, ref Vector3 velocity, Transform transform)
     {
-        float currentAcceleration = creatureObject.acceleration * movementMultiplier;
-        float currentMaxMoveSpeed = creatureObject.maxMoveSpeed * movementMultiplier;
+        float currentAcceleration = acceleration * movementMultiplier;
+        float currentMaxMoveSpeed = maxMoveSpeed * movementMultiplier;
 
         Vector3 direction = targetPosition - transform.localPosition;
         float distance = direction.magnitude;
@@ -272,7 +310,7 @@ public class CreatureManager : MonoBehaviour
         }
         else
         {
-            velocity = Vector3.MoveTowards(velocity, Vector3.zero, creatureObject.deceleration * Time.deltaTime);
+            velocity = Vector3.MoveTowards(velocity, Vector3.zero, deceleration * Time.deltaTime);
         }
 
         transform.localPosition += velocity * Time.deltaTime;
@@ -280,7 +318,7 @@ public class CreatureManager : MonoBehaviour
         if (velocity.magnitude > 0.1f)
         {
             float targetAngle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg;
-            float angle = Mathf.MoveTowardsAngle(transform.eulerAngles.z, targetAngle, creatureObject.rotationSpeed * Time.deltaTime);
+            float angle = Mathf.MoveTowardsAngle(transform.eulerAngles.z, targetAngle, rotationSpeed * Time.deltaTime);
             transform.rotation = Quaternion.Euler(0, 0, angle);
         }
     }
@@ -358,7 +396,7 @@ public class CreatureManager : MonoBehaviour
                             creatureObject = randomCreatureObject,
                             currentTilePosition = currentTilePosition,
                             surroundingTiles = GetSurroundingTiles(currentTilePosition, randomCreatureObject.range),
-                            targetPosition = currentTilePosition, // Initialize the target position
+                            targetPosition = newCreature.transform.position,
                             hostility = 10,
                         });
                         globalMobCount++;
@@ -371,14 +409,16 @@ public class CreatureManager : MonoBehaviour
                         {
                             for (int j = 0; j < randomCreatureObject.tentacles; j++)
                             {
+                                Debug.Log(j);
                                 GameObject newTentacle = Instantiate(tentaclePrefab, worldPosition, Quaternion.identity, worldGenerator.seaTilemap.transform);
-                                TentaclePrefabScript tentacleScript = newTentacle.GetComponent<TentaclePrefabScript>();
-                                tentacleScript.creature = newCreature;
+                                //TentaclePrefabScript tentacleScript = newTentacle.GetComponent<TentaclePrefabScript>();
+                                //tentacleScript.creature = newCreature;
 
                                 // Add tentacle to creature's tentacles dictionary
                                 TentacleData tentacleData = new TentacleData
                                 {
-                                    targetPosition = worldGenerator.seaTilemap.WorldToCell(newCreature.transform.position)
+                                    targetPosition = newCreature.transform.position,
+                                    currentTilePosition = currentTilePosition,
                                 };
                                 creatureData.tentacles.Add(newTentacle, tentacleData);
                             }

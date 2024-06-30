@@ -534,13 +534,34 @@ MonoBehaviour:
   prefab: {fileID: 6285872198284085077, guid: 8505bef393acbbf4cab79a22a9e93f5a, type: 3}
   tentaclesList:
   - sizes:
-    - 0.02
-    - 0.02
-    - 0.02
-    - 0.02
-    - 0.02
-    - 0.02
-    endTarget: {fileID: 0}
+    - 0.1
+    - 0.1
+    - 0.1
+    - 0.1
+    - 0.1
+    - 0.1
+    - 0.1
+    - 0.1
+    - 0.1
+    - 0.1
+    endTarget: {fileID: 1428441415}
+    setDistance: 1
+    moveSpeed: 5
+    pullStrength: 0.5
+    wiggleFrequency: 0
+    wiggleAmplitude: 0.1
+  - sizes:
+    - 0.1
+    - 0.1
+    - 0.1
+    - 0.1
+    - 0.1
+    - 0.1
+    - 0.1
+    - 0.1
+    - 0.1
+    - 0.1
+    endTarget: {fileID: 891983427}
     setDistance: 1
     moveSpeed: 5
     pullStrength: 0.5
