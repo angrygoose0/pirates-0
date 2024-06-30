@@ -21,7 +21,7 @@ public class TentacleSegment
 [System.Serializable]
 public class Tentacles
 {
-    public List<float> sizes;
+    public List<TentacleSegment> segments;
     public GameObject endTarget;
     public float setDistance = 1.0f;
     public float moveSpeed = 5.0f;
@@ -29,9 +29,9 @@ public class Tentacles
     public float wiggleFrequency = 2.0f;
     public float wiggleAmplitude = 0.5f;
 
-    public Tentacles(List<float> sizes, GameObject endTarget, float setDistance, float moveSpeed, float pullStrength, float wiggleFrequency, float wiggleAmplitude)
+    public Tentacles(List<TentacleSegment> segments, GameObject endTarget, float setDistance, float moveSpeed, float pullStrength, float wiggleFrequency, float wiggleAmplitude)
     {
-        this.sizes = sizes;
+        this.segments = segments;
         this.endTarget = endTarget;
         this.setDistance = setDistance;
         this.moveSpeed = moveSpeed;
@@ -45,9 +45,6 @@ public class Procedural : MonoBehaviour
 {
     public GameObject prefab;
     public List<Tentacles> tentaclesList = new List<Tentacles>();
-
-    private List<List<TentacleSegment>> tentacleSegmentsList = new List<List<TentacleSegment>>();
-    public FollowMouse followMouse;
 
     void Start()
     {
@@ -63,7 +60,7 @@ public class Procedural : MonoBehaviour
             List<TentacleSegment> tentacleSegments = new List<TentacleSegment>();
             Vector3 targetPosition = transform.position;
 
-            for (int i = 0; i < tentacles.sizes.Count; i++)
+            foreach (var size in tentacles.segments)
             {
                 GameObject newGameObject = Instantiate(prefab, targetPosition, Quaternion.identity);
                 newGameObject.transform.SetParent(tentacleContainer.transform);
@@ -73,46 +70,43 @@ public class Procedural : MonoBehaviour
 
                 if (collider != null)
                 {
-                    collider.radius = tentacles.sizes[i];
+                    collider.radius = size.size;
                 }
 
                 if (renderer != null)
                 {
-                    float diameter = tentacles.sizes[i] * 2.0f;
+                    float diameter = size.size * 2.0f;
                     newGameObject.transform.localScale = new Vector3(diameter, diameter, 1);
                 }
 
-                TentacleSegment segment = new TentacleSegment(tentacles.sizes[i], newGameObject, collider, renderer);
+                TentacleSegment segment = new TentacleSegment(size.size, newGameObject, collider, renderer);
                 tentacleSegments.Add(segment);
             }
 
-            tentacleSegmentsList.Add(tentacleSegments);
+            tentacles.segments = tentacleSegments;
         }
     }
 
     void Update()
     {
-        for (int i = 0; i < tentaclesList.Count; i++)
+        foreach (var tentacles in tentaclesList)
         {
-            var tentacles = tentaclesList[i];
             Vector3 targetPosition = transform.position;
             Vector3 endPosition = tentacles.endTarget != null ? tentacles.endTarget.transform.position : targetPosition;
 
-            ApplyForcesToAllSegments(tentacleSegmentsList[i], targetPosition, endPosition, tentacles);
+            ApplyForcesToAllSegments(tentacles.segments, targetPosition, endPosition, tentacles);
         }
     }
 
     void FixedUpdate()
     {
-        for (int i = 0; i < tentacleSegmentsList.Count; i++)
+        foreach (var tentacles in tentaclesList)
         {
-            var tentacleSegments = tentacleSegmentsList[i];
-            if (tentacleSegments.Count > 0 && tentacleSegments[0].gameObject != null)
+            if (tentacles.segments.Count > 0 && tentacles.segments[0].gameObject != null)
             {
-                var tentacles = tentaclesList[i];
                 Vector3 targetPosition = transform.position;
                 Vector3 endPosition = tentacles.endTarget != null ? tentacles.endTarget.transform.position : targetPosition;
-                ApplyForcesToAllSegments(tentacleSegments, targetPosition, endPosition, tentacles);
+                ApplyForcesToAllSegments(tentacles.segments, targetPosition, endPosition, tentacles);
             }
         }
     }
