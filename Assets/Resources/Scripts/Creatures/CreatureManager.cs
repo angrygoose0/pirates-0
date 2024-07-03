@@ -93,16 +93,31 @@ public class CreatureManager : MonoBehaviour
             }
             CreatureObject creatureObject = creatureData.creatureObject;
 
+
+            Vector3Int creatureTargetTilemapPosition = worldTilemap.WorldToCell(creatureData.targetPosition);
+            Debug.Log(creatureData.targetPosition + "target");
+            Debug.Log(creatureTargetTilemapPosition + "changed target");
+            Debug.Log(creatureData.currentTilePosition + "current");
+            int deltaCreatureTargetX = Mathf.Abs(creatureTargetTilemapPosition.x - creatureData.currentTilePosition.x);
+            int deltaCreatureTargetY = Mathf.Abs(creatureTargetTilemapPosition.y - creatureData.currentTilePosition.y);
+            Debug.Log(deltaCreatureTargetX + deltaCreatureTargetY);
+
+            if (deltaCreatureTargetX + deltaCreatureTargetY == 0)
+            {
+                Vector3Int targetTile = creatureData.surroundingTiles[Random.Range(0, creatureData.surroundingTiles.Count)];
+                creatureData.targetPosition = worldTilemap.GetCellCenterLocal(targetTile);
+            }
+
             UpdateMovement(creatureData.targetPosition, creatureObject.acceleration, creatureObject.maxMoveSpeed, creatureObject.deceleration, creatureObject.rotationSpeed, 1f, ref creatureData.velocity, creatureGameObject.transform);
 
 
-            Debug.Log(creatureData.targetPosition + "creaturePosition");
+
+
+
             foreach (KeyValuePair<GameObject, TentacleData> tentacleEntry in creatureData.tentacles)
             {
                 GameObject tentacleGameObject = tentacleEntry.Key;
                 TentacleData tentacleData = tentacleEntry.Value;
-
-                Debug.Log(tentacleData.targetPosition + "tentaclePosition");
 
                 Vector3Int newTentacleTilePosition = worldGenerator.seaTilemap.WorldToCell(tentacleGameObject.transform.position);
                 if (tentacleData.currentTilePosition != newTentacleTilePosition)
@@ -115,34 +130,23 @@ public class CreatureManager : MonoBehaviour
                 int deltaCurrentX = Mathf.Abs(tentacleData.currentTilePosition.x - creatureData.currentTilePosition.x);
                 int deltaCurrentY = Mathf.Abs(tentacleData.currentTilePosition.y - creatureData.currentTilePosition.y);
 
-                Vector3Int tentacleTargetTilemapPosition = Vector3Int.FloorToInt(tentacleData.targetPosition);
+                Vector3Int tentacleTargetTilemapPosition = worldTilemap.WorldToCell(creatureData.targetPosition);
 
                 int deltaTargetX = Mathf.Abs(tentacleTargetTilemapPosition.x - creatureData.currentTilePosition.x);
                 int deltaTargetY = Mathf.Abs(tentacleTargetTilemapPosition.y - creatureData.currentTilePosition.y);
-
-                Debug.Log(deltaCurrentX + deltaCurrentY + "current");
-                Debug.Log(deltaTargetX + deltaTargetY + "target");
-
 
                 if (deltaCurrentX + deltaCurrentY > 2 && deltaTargetX + deltaTargetY > 2)
                 {
                     Vector3Int targetTile = creatureData.surroundingTiles[Random.Range(0, creatureData.surroundingTiles.Count)];
                     tentacleData.targetPosition = worldTilemap.GetCellCenterLocal(targetTile);
                 }
-
-
-
-
-
             }
 
 
             if (!creatureData.isMovementCoroutineRunning)
             {
-                StartCoroutine(MovementCoroutine(creatureData));
+                //StartCoroutine(MovementCoroutine(creatureData));
             }
-
-
         }
 
         if (globalMobCount < maxGlobalMobCount)
@@ -167,8 +171,6 @@ public class CreatureManager : MonoBehaviour
 
             currentChunk = newChunk;
             HighlightViableChunks(currentChunk.chunkPosition);
-
-            Debug.Log($"GameObject is now in chunk at {currentChunk.chunkPosition}");
         }
     }
 
@@ -380,8 +382,6 @@ public class CreatureManager : MonoBehaviour
                 {
                     Vector3 worldPosition = worldGenerator.seaTilemap.CellToWorld(randomTilePosition);
 
-                    Debug.Log($"Spawning creature at tile position: {randomTilePosition} in chunk: {randomChunkPosition} with world position: {worldPosition}");
-
                     int packSize = Random.Range(randomCreatureObject.minPackSpawn, randomCreatureObject.maxPackSpawn);
 
                     for (int i = 0; i < packSize; i++)
@@ -409,7 +409,6 @@ public class CreatureManager : MonoBehaviour
                         {
                             for (int j = 0; j < randomCreatureObject.tentacles; j++)
                             {
-                                Debug.Log(j);
                                 GameObject newTentacle = Instantiate(tentaclePrefab, worldPosition, Quaternion.identity, worldGenerator.seaTilemap.transform);
                                 //TentaclePrefabScript tentacleScript = newTentacle.GetComponent<TentaclePrefabScript>();
                                 //tentacleScript.creature = newCreature;
@@ -424,10 +423,6 @@ public class CreatureManager : MonoBehaviour
                             }
                         }
                     }
-                }
-                else
-                {
-                    Debug.LogWarning($"Random tile position {randomTilePosition} is not valid in chunk: {randomChunkPosition}");
                 }
             }
         }

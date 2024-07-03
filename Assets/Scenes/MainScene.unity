@@ -682,8 +682,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3368a91c624a7134ab47e93f99cb0a11, type: 2}
   minRadius: 3
   maxRadius: 8
-  globalMobCount: 0
-  maxGlobalMobCount: 7
+  globalMobCount: 6
+  maxGlobalMobCount: 1
   maxGlobalChunkPopulation: 4
   creaturePrefab: {fileID: 6939055558043858172, guid: 00a94a03bb1f99f4d953fb2b17f1056a, type: 3}
   tentaclePrefab: {fileID: 2915069436650555665, guid: 57ecd34c1f573154d815dfef9213d165, type: 3}

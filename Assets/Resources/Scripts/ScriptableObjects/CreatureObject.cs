@@ -15,6 +15,19 @@ public class CreatureValue
     }
 }
 
+[System.Serializable]
+public class TentacleValue
+{
+    public List<float> segmentSizes;
+    public float setDistance = 1.0f;
+    public float moveSpeed = 5.0f;
+    public float pullStrength = 0.5f;
+    public float wiggleFrequency = 2.0f;
+    public float wiggleAmplitude = 0.5f;
+
+
+}
+
 [CreateAssetMenu(fileName = "Block", menuName = "Creature", order = 1)]
 public class CreatureObject : ScriptableObject
 {
@@ -34,4 +47,6 @@ public class CreatureObject : ScriptableObject
     public float deceleration;
     public int range;
     public float aggressionThreshold;
+
+    public List<TentacleValue> tentacleList;
 }

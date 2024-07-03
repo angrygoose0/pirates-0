@@ -17,8 +17,8 @@ MonoBehaviour:
   armor: 10
   populationValue: 2
   spawnWeight: 100
-  minPackSpawn: 1
-  maxPackSpawn: 2
+  minPackSpawn: 4
+  maxPackSpawn: 5
   creatureValues: []
   tentacles: 3
   rotationSpeed: 200
