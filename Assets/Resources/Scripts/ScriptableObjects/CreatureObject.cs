@@ -24,11 +24,10 @@ public class TentacleValue
     public float pullStrength = 0.5f;
     public float wiggleFrequency = 2.0f;
     public float wiggleAmplitude = 0.5f;
-
-
+    public bool endTarget;
 }
 
-[CreateAssetMenu(fileName = "Block", menuName = "Creature", order = 1)]
+[CreateAssetMenu(fileName = "creatureObject", menuName = "Creature", order = 1)]
 public class CreatureObject : ScriptableObject
 {
     public float id;
@@ -47,6 +46,5 @@ public class CreatureObject : ScriptableObject
     public float deceleration;
     public int range;
     public float aggressionThreshold;
-
     public List<TentacleValue> tentacleList;
 }

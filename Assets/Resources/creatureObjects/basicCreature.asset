@@ -20,10 +20,24 @@ MonoBehaviour:
   minPackSpawn: 4
   maxPackSpawn: 5
   creatureValues: []
-  tentacles: 3
+  tentacles: 0
   rotationSpeed: 200
   maxMoveSpeed: 5
   acceleration: 3
   deceleration: 2
   range: 6
   aggressionThreshold: 70
+  tentacleList:
+  - segmentSizes:
+    - 0.3
+    - 0.3
+    - 0.3
+    - 0.3
+    - 0.3
+    - 0.3
+    - 0.3
+    setDistance: 0.5
+    moveSpeed: 0
+    pullStrength: 0
+    wiggleFrequency: 0
+    wiggleAmplitude: 0

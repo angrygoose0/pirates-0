@@ -89,6 +89,7 @@ public class Procedural2 : MonoBehaviour
         }
     }
 
+
     void Update()
     {
         foreach (var tentacles in tentaclesList)
@@ -99,6 +100,8 @@ public class Procedural2 : MonoBehaviour
             ApplyForcesToAllSegments(tentacles.segments, targetPosition, endPosition, tentacles);
         }
     }
+
+
 
     void FixedUpdate()
     {
@@ -112,6 +115,7 @@ public class Procedural2 : MonoBehaviour
             }
         }
     }
+
 
     void ApplyForcesToAllSegments(List<TentacleSegment2> tentacleSegments, Vector3 targetPosition, Vector3 endPosition, Tentacles2 tentacles)
     {

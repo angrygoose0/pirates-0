@@ -11,11 +11,26 @@ public enum State
     // Add more states here as needed
 }
 
+public class TentacleSegment
+{
+    public GameObject gameObject;
+    public CircleCollider2D collider;
+    public SpriteRenderer renderer;
+    public Vector3 direction;
+}
+
 public class TentacleData
 {
     public Vector3 targetPosition { get; set; }
     public Vector3Int currentTilePosition { get; set; }
     public Vector3 velocity;
+    public Dictionary<GameObject, TentacleSegment> segments = new Dictionary<GameObject, TentacleSegment>();
+    public float setDistance = 1.0f;
+    public float moveSpeed = 5.0f;
+    public float pullStrength = 0.5f;
+    public float wiggleFrequency = 2.0f;
+    public float wiggleAmplitude = 0.5f;
+    public bool endTarget = true;
 }
 
 public class CreatureData
@@ -50,6 +65,7 @@ public class CreatureManager : MonoBehaviour
     public int maxGlobalChunkPopulation = 50;
     public GameObject creaturePrefab;
     public GameObject tentaclePrefab;
+    public GameObject tentacleSegmentprefab;
 
     public Tilemap worldTilemap;
 
@@ -58,6 +74,7 @@ public class CreatureManager : MonoBehaviour
         creatures = new Dictionary<GameObject, CreatureData>();
         globalMobCount = creatures.Count; // Initialize the global mob count
         worldTilemap = GameObject.Find("world").GetComponent<Tilemap>();
+        GameObject tentacleContainer = GameObject.Find("tentacleContainer");
     }
 
     void Update()
@@ -69,8 +86,6 @@ public class CreatureManager : MonoBehaviour
         {
             GameObject creatureGameObject = creatureEntry.Key;
             CreatureData creatureData = creatureEntry.Value;
-
-
 
             Vector3Int newTilePosition = worldGenerator.seaTilemap.WorldToCell(creatureGameObject.transform.position);
             if (creatureData.currentTilePosition != newTilePosition)
@@ -85,6 +100,7 @@ public class CreatureManager : MonoBehaviour
 
             if (hostility >= aggressionThreshold && currentState != State.Aggressive)
             {
+                Debug.Log("agressive");
                 creatureData.currentState = State.Aggressive;
             }
             else if (hostility < aggressionThreshold && currentState != State.Idle)
@@ -95,23 +111,28 @@ public class CreatureManager : MonoBehaviour
 
 
             Vector3Int creatureTargetTilemapPosition = worldTilemap.WorldToCell(creatureData.targetPosition);
-            Debug.Log(creatureData.targetPosition + "target");
-            Debug.Log(creatureTargetTilemapPosition + "changed target");
-            Debug.Log(creatureData.currentTilePosition + "current");
+
             int deltaCreatureTargetX = Mathf.Abs(creatureTargetTilemapPosition.x - creatureData.currentTilePosition.x);
             int deltaCreatureTargetY = Mathf.Abs(creatureTargetTilemapPosition.y - creatureData.currentTilePosition.y);
-            Debug.Log(deltaCreatureTargetX + deltaCreatureTargetY);
 
             if (deltaCreatureTargetX + deltaCreatureTargetY == 0)
             {
-                Vector3Int targetTile = creatureData.surroundingTiles[Random.Range(0, creatureData.surroundingTiles.Count)];
-                creatureData.targetPosition = worldTilemap.GetCellCenterLocal(targetTile);
+                if (currentState == State.Idle)
+                {
+                    Vector3Int targetTile = creatureData.surroundingTiles[Random.Range(0, creatureData.surroundingTiles.Count)];
+                    creatureData.targetPosition = worldTilemap.GetCellCenterLocal(targetTile);
+                }
+                else if (currentState == State.Aggressive)
+                {
+                    Vector3 targetShipPartLocalPosition = worldTilemap.WorldToCell(creatureData.targetShipPart.transform.position);
+                    Vector3Int targetTile = Vector3Int.FloorToInt(targetShipPartLocalPosition);
+
+                    creatureData.targetPosition = worldTilemap.GetCellCenterLocal(targetTile);
+                }
+
             }
 
             UpdateMovement(creatureData.targetPosition, creatureObject.acceleration, creatureObject.maxMoveSpeed, creatureObject.deceleration, creatureObject.rotationSpeed, 1f, ref creatureData.velocity, creatureGameObject.transform);
-
-
-
 
 
             foreach (KeyValuePair<GameObject, TentacleData> tentacleEntry in creatureData.tentacles)
@@ -125,37 +146,130 @@ public class CreatureManager : MonoBehaviour
                     tentacleData.currentTilePosition = newTentacleTilePosition;
                 }
 
-                UpdateMovement(tentacleData.targetPosition, 3f, 5f, 2f, 200f, 1f, ref tentacleData.velocity, tentacleGameObject.transform);
-
-                int deltaCurrentX = Mathf.Abs(tentacleData.currentTilePosition.x - creatureData.currentTilePosition.x);
-                int deltaCurrentY = Mathf.Abs(tentacleData.currentTilePosition.y - creatureData.currentTilePosition.y);
-
-                Vector3Int tentacleTargetTilemapPosition = worldTilemap.WorldToCell(creatureData.targetPosition);
-
-                int deltaTargetX = Mathf.Abs(tentacleTargetTilemapPosition.x - creatureData.currentTilePosition.x);
-                int deltaTargetY = Mathf.Abs(tentacleTargetTilemapPosition.y - creatureData.currentTilePosition.y);
-
-                if (deltaCurrentX + deltaCurrentY > 2 && deltaTargetX + deltaTargetY > 2)
+                if (tentacleData.endTarget == true)
                 {
-                    Vector3Int targetTile = creatureData.surroundingTiles[Random.Range(0, creatureData.surroundingTiles.Count)];
-                    tentacleData.targetPosition = worldTilemap.GetCellCenterLocal(targetTile);
+                    int deltaCurrentX = Mathf.Abs(tentacleData.currentTilePosition.x - creatureData.currentTilePosition.x);
+                    int deltaCurrentY = Mathf.Abs(tentacleData.currentTilePosition.y - creatureData.currentTilePosition.y);
+
+                    Vector3Int tentacleTargetTilemapPosition = worldTilemap.WorldToCell(creatureData.targetPosition);
+
+                    int deltaTargetX = Mathf.Abs(tentacleTargetTilemapPosition.x - creatureData.currentTilePosition.x);
+                    int deltaTargetY = Mathf.Abs(tentacleTargetTilemapPosition.y - creatureData.currentTilePosition.y);
+
+                    if (deltaCurrentX + deltaCurrentY > 2 && deltaTargetX + deltaTargetY > 2)
+                    {
+                        Vector3Int targetTile = creatureData.surroundingTiles[Random.Range(0, creatureData.surroundingTiles.Count)];
+                        tentacleData.targetPosition = worldTilemap.GetCellCenterLocal(targetTile);
+                    }
+                    UpdateMovement(tentacleData.targetPosition, 3f, 5f, 2f, 200f, 1f, ref tentacleData.velocity, tentacleGameObject.transform);
+                }
+                else
+                {
+                    //tentacleGameObject.transform = creatureGameObject.transform;
+                }
+
+
+                Dictionary<GameObject, TentacleSegment> segments = tentacleData.segments;
+                List<GameObject> segmentKeys = new List<GameObject>(segments.Keys);
+                for (int i = 0; i < segmentKeys.Count; i++)
+                {
+
+
+                    GameObject segmentKey = segmentKeys[i];
+                    TentacleSegment currentSegment = segments[segmentKey];
+                    Vector3 desiredPosition;
+
+                    GameObject nextSegmentKey = null;
+                    GameObject previousSegmentKey = null;
+
+
+                    if (i == 0)
+                    {
+
+                        nextSegmentKey = segmentKeys[i + 1];
+                        TentacleSegment nextSegment = segments[nextSegmentKey];
+
+                        desiredPosition = creatureGameObject.transform.position;
+                    }
+
+                    else if (i == segmentKeys.Count - 1 && tentacleData.endTarget == true)
+                    {
+                        desiredPosition = tentacleGameObject.transform.position;
+                        previousSegmentKey = segmentKeys[i - 1];
+                        TentacleSegment previousSegment = segments[previousSegmentKey];
+                    }
+
+                    else
+                    {
+                        previousSegmentKey = segmentKeys[i - 1];
+                        TentacleSegment previousSegment = segments[previousSegmentKey];
+
+                        nextSegmentKey = segmentKeys[i + 1];
+                        TentacleSegment nextSegment = segments[nextSegmentKey];
+
+                        Vector3 directionPrev = segmentKey.transform.position - previousSegmentKey.transform.position;
+                        Vector3 directionNext = nextSegment != null ? nextSegmentKey.transform.position - segmentKey.transform.position : Vector3.zero;
+
+                        if (tentacleData.endTarget == true)
+                        {
+                            desiredPosition = nextSegmentKey != null ? (previousSegmentKey.transform.position + nextSegmentKey.transform.position) / 2.0f : previousSegmentKey.transform.position;
+                        }
+                        else
+                        {
+                            desiredPosition = previousSegmentKey.transform.position + directionPrev.normalized * tentacleData.setDistance;
+                        }
+                        float offset = Mathf.Sin(Time.time * tentacleData.wiggleFrequency + i * 0.5f) * tentacleData.wiggleAmplitude;
+                        Vector3 perpendicular = Vector3.Cross(directionPrev, Vector3.forward).normalized;
+                        desiredPosition += perpendicular * offset;
+                    }
+
+                    Vector3 currentPosition = segmentKey.transform.position;
+                    Vector3 direction = desiredPosition - currentPosition;
+
+                    // Adjust direction to slow down movement in the y-axis
+                    direction.y *= 0.5f;
+
+                    Vector3 adjustedTargetPosition = currentPosition + direction;
+                    segmentKey.transform.position = Vector3.Lerp(currentPosition, adjustedTargetPosition, tentacleData.moveSpeed * Time.deltaTime);
+                    currentSegment.direction = (segmentKey.transform.position - currentPosition).normalized;
+
+                    if (nextSegmentKey != null)
+                    {
+                        Vector3 pullDirectionNext = segmentKey.transform.position - nextSegmentKey.transform.position;
+                        float distanceNext = pullDirectionNext.magnitude;
+
+                        if (distanceNext > tentacleData.setDistance)
+                        {
+                            Vector3 pullForceNext = pullDirectionNext.normalized * (distanceNext - tentacleData.setDistance) * tentacleData.pullStrength;
+                            segmentKey.transform.position -= pullForceNext * Time.deltaTime;
+                        }
+                    }
+
+                    if (previousSegmentKey != null && tentacleData.endTarget == true)
+                    {
+                        Vector3 pullDirectionPrev = previousSegmentKey.transform.position - segmentKey.transform.position;
+                        float distancePrev = pullDirectionPrev.magnitude;
+                        if (distancePrev > tentacleData.setDistance)
+                        {
+                            Vector3 pullForcePrev = pullDirectionPrev.normalized * (distancePrev - tentacleData.setDistance) * tentacleData.pullStrength;
+                            segmentKey.transform.position += pullForcePrev * Time.deltaTime;
+                        }
+                    }
                 }
             }
-
-
-            if (!creatureData.isMovementCoroutineRunning)
-            {
-                //StartCoroutine(MovementCoroutine(creatureData));
-            }
         }
+
+
+
 
         if (globalMobCount < maxGlobalMobCount)
         {
             mobSpawner();
         }
-
         HandleDespawning();
     }
+
+
 
     void TrackObjectChunk()
     {
@@ -390,6 +504,7 @@ public class CreatureManager : MonoBehaviour
                         newCreature.GetComponent<CreatureVitals>().creatureObject = randomCreatureObject;
 
 
+
                         Vector3Int currentTilePosition = worldGenerator.seaTilemap.WorldToCell(worldPosition);
                         creatures.Add(newCreature, new CreatureData
                         {
@@ -397,31 +512,57 @@ public class CreatureManager : MonoBehaviour
                             currentTilePosition = currentTilePosition,
                             surroundingTiles = GetSurroundingTiles(currentTilePosition, randomCreatureObject.range),
                             targetPosition = newCreature.transform.position,
-                            hostility = 10,
+                            hostility = 1000,
                         });
+
+
+
+
                         globalMobCount++;
 
                         randomChunk.chunkPopulation += randomCreatureObject.populationValue;
 
                         CreatureData creatureData = creatures[newCreature];
 
-                        if (randomCreatureObject.tentacles > 0)
-                        {
-                            for (int j = 0; j < randomCreatureObject.tentacles; j++)
-                            {
-                                GameObject newTentacle = Instantiate(tentaclePrefab, worldPosition, Quaternion.identity, worldGenerator.seaTilemap.transform);
-                                //TentaclePrefabScript tentacleScript = newTentacle.GetComponent<TentaclePrefabScript>();
-                                //tentacleScript.creature = newCreature;
 
-                                // Add tentacle to creature's tentacles dictionary
-                                TentacleData tentacleData = new TentacleData
+                        List<TentacleValue> tentacleList = randomCreatureObject.tentacleList;
+
+
+                        foreach (TentacleValue tentacle in tentacleList)
+                        {
+
+                            GameObject newTentacle = Instantiate(tentaclePrefab, worldPosition, Quaternion.identity, worldGenerator.seaTilemap.transform);
+                            TentacleData tentacleData = new TentacleData
+                            {
+                                targetPosition = newCreature.transform.position,
+                                currentTilePosition = currentTilePosition,
+                            };
+
+                            List<float> segmentSizeList = tentacle.segmentSizes;
+                            foreach (float segmentSize in segmentSizeList)
+                            {
+                                GameObject newTentacleSegment = Instantiate(tentacleSegmentprefab, worldPosition, Quaternion.identity);
+                                //newTentacleSegment.transform.SetParent();
+
+                                //CircleCollider2D collider = newTentacleSegment.GetComponent<CircleCollider2D>();
+                                //SpriteRenderer renderer = newTentacleSegment.GetComponent<SpriteRenderer>();
+                                //collider.radius = segmentSize;
+                                float diameter = segmentSize * 2.0f;
+                                newTentacleSegment.transform.localScale = new Vector3(diameter, diameter, 1);
+                                TentacleSegment tentacleSegmentData = new TentacleSegment
                                 {
-                                    targetPosition = newCreature.transform.position,
-                                    currentTilePosition = currentTilePosition,
+                                    //collider = collider,
+                                    //renderer = renderer,
                                 };
-                                creatureData.tentacles.Add(newTentacle, tentacleData);
+                                tentacleData.segments.Add(newTentacleSegment, tentacleSegmentData);
+
+
                             }
+                            creatureData.tentacles.Add(newTentacle, tentacleData);
+
                         }
+
+
                     }
                 }
             }

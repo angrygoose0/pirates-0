@@ -18,7 +18,7 @@ public class CreatureVitals : MonoBehaviour
     public ItemManager itemManager;
 
     private Color originalColor;
-    private Procedural procedural;
+    //private Procedural procedural;
     CircleCollider2D circleCollider;
 
 
@@ -27,7 +27,7 @@ public class CreatureVitals : MonoBehaviour
         isDamaged = false;
         currentDamage = 0f;
 
-        procedural = GetComponent<Procedural>();
+        //procedural = GetComponent<Procedural>();
         circleCollider = GetComponent<CircleCollider2D>();
         //circleCollider.radius = procedural.sizes[0];
         circleCollider.radius = 1f;
