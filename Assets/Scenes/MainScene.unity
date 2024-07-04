@@ -511,8 +511,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seaTilemap: {fileID: 170296654}
-  chunkSize: 5
-  radius: 20
+  chunkSize: 16
+  radius: 5
   depthScale: 0.001
   temperatureScale: 0.0005
   weirdnessScale: 0.5
@@ -680,14 +680,15 @@ MonoBehaviour:
   creatureObjects:
   - {fileID: 11400000, guid: 7f9693fa9cac6954684e38dfebcd0f51, type: 2}
   - {fileID: 11400000, guid: 3368a91c624a7134ab47e93f99cb0a11, type: 2}
-  minRadius: 3
-  maxRadius: 8
+  minRadius: 1
+  maxRadius: 4
   globalMobCount: 6
   maxGlobalMobCount: 1
   maxGlobalChunkPopulation: 4
   creaturePrefab: {fileID: 6939055558043858172, guid: 00a94a03bb1f99f4d953fb2b17f1056a, type: 3}
   tentaclePrefab: {fileID: 2915069436650555665, guid: 57ecd34c1f573154d815dfef9213d165, type: 3}
-  worldTilemap: {fileID: 0}
+  tentacleSegmentprefab: {fileID: 6285872198284085077, guid: 8505bef393acbbf4cab79a22a9e93f5a, type: 3}
+  worldTilemap: {fileID: 170296654}
 --- !u!114 &383585328
 MonoBehaviour:
   m_ObjectHideFlags: 0

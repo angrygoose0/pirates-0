@@ -43,7 +43,6 @@ public class CreatureData
     public State currentState;
     public float hostility;
     public Vector3 velocity;
-    public bool isMovementCoroutineRunning = false;
     public float movementDelay;
     public GameObject targetShipPart = GameObject.Find("ghost");
 
@@ -112,6 +111,7 @@ public class CreatureManager : MonoBehaviour
 
             Vector3Int creatureTargetTilemapPosition = worldTilemap.WorldToCell(creatureData.targetPosition);
 
+
             int deltaCreatureTargetX = Mathf.Abs(creatureTargetTilemapPosition.x - creatureData.currentTilePosition.x);
             int deltaCreatureTargetY = Mathf.Abs(creatureTargetTilemapPosition.y - creatureData.currentTilePosition.y);
 
@@ -132,7 +132,10 @@ public class CreatureManager : MonoBehaviour
 
             }
 
-            UpdateMovement(creatureData.targetPosition, creatureObject.acceleration, creatureObject.maxMoveSpeed, creatureObject.deceleration, creatureObject.rotationSpeed, 1f, ref creatureData.velocity, creatureGameObject.transform);
+            creatureTargetTilemapPosition = worldTilemap.WorldToCell(creatureData.targetPosition);
+            List<Vector3Int> creatureTargetSurroundingTiles = GetSurroundingTiles(creatureTargetTilemapPosition, creatureData.creatureObject.range);
+
+            UpdateMovement(creatureData.targetPosition, creatureObject.acceleration * 2f, creatureObject.maxMoveSpeed * 2f, creatureObject.deceleration, creatureObject.rotationSpeed, 1f, ref creatureData.velocity, creatureGameObject.transform);
 
 
             foreach (KeyValuePair<GameObject, TentacleData> tentacleEntry in creatureData.tentacles)
@@ -148,17 +151,20 @@ public class CreatureManager : MonoBehaviour
 
                 if (tentacleData.endTarget == true)
                 {
-                    int deltaCurrentX = Mathf.Abs(tentacleData.currentTilePosition.x - creatureData.currentTilePosition.x);
-                    int deltaCurrentY = Mathf.Abs(tentacleData.currentTilePosition.y - creatureData.currentTilePosition.y);
+                    int deltaCurrentX = Mathf.Abs(tentacleData.currentTilePosition.x - creatureTargetTilemapPosition.x);
+                    int deltaCurrentY = Mathf.Abs(tentacleData.currentTilePosition.y - creatureTargetTilemapPosition.y);
 
-                    Vector3Int tentacleTargetTilemapPosition = worldTilemap.WorldToCell(creatureData.targetPosition);
+                    Vector3Int tentacleTargetTilemapPosition = worldTilemap.WorldToCell(tentacleData.targetPosition);
 
-                    int deltaTargetX = Mathf.Abs(tentacleTargetTilemapPosition.x - creatureData.currentTilePosition.x);
-                    int deltaTargetY = Mathf.Abs(tentacleTargetTilemapPosition.y - creatureData.currentTilePosition.y);
+                    int deltaTargetX = Mathf.Abs(tentacleTargetTilemapPosition.x - creatureTargetTilemapPosition.x);
+                    int deltaTargetY = Mathf.Abs(tentacleTargetTilemapPosition.y - creatureTargetTilemapPosition.y);
 
-                    if (deltaCurrentX + deltaCurrentY > 2 && deltaTargetX + deltaTargetY > 2)
+                    Debug.Log(tentacleTargetTilemapPosition + "tentacle");
+                    Debug.Log(creatureTargetTilemapPosition + "creature");
+
+                    if (deltaTargetX + deltaTargetY > 5 && deltaCurrentX + deltaCurrentY > 3)
                     {
-                        Vector3Int targetTile = creatureData.surroundingTiles[Random.Range(0, creatureData.surroundingTiles.Count)];
+                        Vector3Int targetTile = creatureTargetSurroundingTiles[Random.Range(0, creatureTargetSurroundingTiles.Count)];
                         tentacleData.targetPosition = worldTilemap.GetCellCenterLocal(targetTile);
                     }
                     UpdateMovement(tentacleData.targetPosition, 3f, 5f, 2f, 200f, 1f, ref tentacleData.velocity, tentacleGameObject.transform);
@@ -355,39 +361,6 @@ public class CreatureManager : MonoBehaviour
         }
     }
 
-    private IEnumerator MovementCoroutine(CreatureData creatureData)
-    {
-        creatureData.isMovementCoroutineRunning = true;
-        while (true)
-        {
-            List<Vector3Int> surroundingTiles = creatureData.surroundingTiles;
-
-            Vector3Int targetTile;
-            if (surroundingTiles.Count > 0)
-            {
-                switch (creatureData.currentState)
-                {
-                    case State.Idle:
-                        // Pick a random tile.
-                        targetTile = surroundingTiles[Random.Range(0, surroundingTiles.Count)];
-                        creatureData.targetPosition = worldTilemap.GetCellCenterLocal(targetTile);
-                        break;
-                    case State.Aggressive:
-
-
-                        Vector3 targetShipPartLocalPosition = worldTilemap.WorldToCell(creatureData.targetShipPart.transform.position);
-                        targetTile = Vector3Int.FloorToInt(targetShipPartLocalPosition);
-
-                        creatureData.targetPosition = worldTilemap.GetCellCenterLocal(targetTile);
-                        break;
-                }
-            }
-
-
-            // Wait for the delay before picking a new targetTile
-            yield return new WaitForSeconds(creatureData.movementDelay);
-        }
-    }
 
     public List<Vector3Int> GetSurroundingTiles(Vector3Int centerTile, float range)
     {
@@ -512,7 +485,7 @@ public class CreatureManager : MonoBehaviour
                             currentTilePosition = currentTilePosition,
                             surroundingTiles = GetSurroundingTiles(currentTilePosition, randomCreatureObject.range),
                             targetPosition = newCreature.transform.position,
-                            hostility = 1000,
+                            hostility = 10,
                         });
 
 

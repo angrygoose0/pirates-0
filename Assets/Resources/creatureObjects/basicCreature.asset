@@ -16,28 +16,57 @@ MonoBehaviour:
   hp: 100
   armor: 10
   populationValue: 2
-  spawnWeight: 100
-  minPackSpawn: 4
-  maxPackSpawn: 5
+  spawnWeight: 1000
+  minPackSpawn: 1
+  maxPackSpawn: 1
   creatureValues: []
   tentacles: 0
   rotationSpeed: 200
   maxMoveSpeed: 5
   acceleration: 3
   deceleration: 2
-  range: 6
-  aggressionThreshold: 70
+  range: 10
+  aggressionThreshold: 100
   tentacleList:
   - segmentSizes:
-    - 0.3
-    - 0.3
-    - 0.3
-    - 0.3
-    - 0.3
-    - 0.3
-    - 0.3
-    setDistance: 0.5
+    - 0.1
+    - 0.1
+    - 0.1
+    - 0.1
+    - 0.1
+    - 0.1
+    - 0.1
+    setDistance: 0.4
     moveSpeed: 0
     pullStrength: 0
     wiggleFrequency: 0
     wiggleAmplitude: 0
+    endTarget: 1
+  - segmentSizes:
+    - 0.1
+    - 0.1
+    - 0.1
+    - 0.1
+    - 0.1
+    - 0.1
+    - 0.1
+    setDistance: 0.4
+    moveSpeed: 0
+    pullStrength: 0
+    wiggleFrequency: 0
+    wiggleAmplitude: 0
+    endTarget: 1
+  - segmentSizes:
+    - 0.1
+    - 0.1
+    - 0.1
+    - 0.1
+    - 0.1
+    - 0.1
+    - 0.1
+    setDistance: 0.4
+    moveSpeed: 0
+    pullStrength: 0
+    wiggleFrequency: 0
+    wiggleAmplitude: 0
+    endTarget: 1
