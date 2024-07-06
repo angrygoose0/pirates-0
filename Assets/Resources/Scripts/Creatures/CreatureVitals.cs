@@ -19,7 +19,7 @@ public class CreatureVitals : MonoBehaviour
 
     private Color originalColor;
     //private Procedural procedural;
-    CircleCollider2D circleCollider;
+    //CircleCollider2D circleCollider;
 
 
     void Start()
@@ -27,10 +27,6 @@ public class CreatureVitals : MonoBehaviour
         isDamaged = false;
         currentDamage = 0f;
 
-        //procedural = GetComponent<Procedural>();
-        circleCollider = GetComponent<CircleCollider2D>();
-        //circleCollider.radius = procedural.sizes[0];
-        circleCollider.radius = 1f;
 
         itemManager = GameObject.Find("ghost").GetComponent<ItemManager>();
 

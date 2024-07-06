@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: basicCreature
   m_EditorClassIdentifier: 
   id: 0
-  hp: 100
+  startingHealth: 0
   armor: 10
   populationValue: 2
   spawnWeight: 1000
@@ -29,44 +29,14 @@ MonoBehaviour:
   aggressionThreshold: 100
   tentacleList:
   - segmentSizes:
-    - 0.1
-    - 0.1
-    - 0.1
-    - 0.1
-    - 0.1
-    - 0.1
-    - 0.1
-    setDistance: 0.4
-    moveSpeed: 0
-    pullStrength: 0
+    - 0.5
+    - 0.5
+    - 0.5
+    - 0.5
+    setDistance: 1
+    moveSpeed: 10
+    pullStrength: 0.1
     wiggleFrequency: 0
-    wiggleAmplitude: 0
+    wiggleAmplitude: 0.1
     endTarget: 1
-  - segmentSizes:
-    - 0.1
-    - 0.1
-    - 0.1
-    - 0.1
-    - 0.1
-    - 0.1
-    - 0.1
-    setDistance: 0.4
-    moveSpeed: 0
-    pullStrength: 0
-    wiggleFrequency: 0
-    wiggleAmplitude: 0
-    endTarget: 1
-  - segmentSizes:
-    - 0.1
-    - 0.1
-    - 0.1
-    - 0.1
-    - 0.1
-    - 0.1
-    - 0.1
-    setDistance: 0.4
-    moveSpeed: 0
-    pullStrength: 0
-    wiggleFrequency: 0
-    wiggleAmplitude: 0
-    endTarget: 1
+  goldDropRange: {x: 0, y: 5}

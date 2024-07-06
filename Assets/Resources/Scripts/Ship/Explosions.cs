@@ -5,6 +5,7 @@ public class Explosions : MonoBehaviour
 {
     public int raycastCount = 36; // Number of raycasts
     public float raySpeed = 10f; // Speed at which rays progress
+    public CreatureManager creatureManager;
 
     public void Explode(Vector3 explosionPosition, ItemObject itemObject)
     {
@@ -34,13 +35,13 @@ public class Explosions : MonoBehaviour
 
             if (hit.collider != null)
             {
+                Debug.Log("Hit detected");
                 float distance = Vector2.Distance(currentPosition, hit.point);
                 currentRayForce = Mathf.Max(currentRayForce - distance * dissipationRate, 0);
 
                 if (currentRayForce > 0)
                 {
                     Rigidbody2D rigidBody = hit.collider.GetComponent<Rigidbody2D>();
-                    CreatureVitals creatureVitals = hit.collider.GetComponent<CreatureVitals>();
 
                     Vector2 forceDirection = ((Vector2)hit.point - (Vector2)startPosition).normalized;
                     float appliedForce = currentRayForce * itemObject.explosionMultiplier;
@@ -51,9 +52,23 @@ public class Explosions : MonoBehaviour
                         rigidBody.AddForce(forceDirection * appliedForce, ForceMode2D.Impulse);
                     }
 
-                    if (creatureVitals != null)
+                    GameObject hitObject = hit.collider.gameObject;
+                    if (hitObject != null)
                     {
-                        creatureVitals.ApplyImpact(appliedDamage);
+                        Debug.Log("Hit Object: " + hitObject);
+                        if (creatureManager != null)
+                        {
+                            Debug.Log("Applying impact to " + hitObject);
+                            creatureManager.ApplyImpact(hitObject, appliedDamage);
+                        }
+                        else
+                        {
+                            Debug.LogError("CreatureManager is not assigned.");
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogError("Hit object is null.");
                     }
                 }
 
@@ -76,4 +91,5 @@ public class Explosions : MonoBehaviour
             yield return null;
         }
     }
+
 }

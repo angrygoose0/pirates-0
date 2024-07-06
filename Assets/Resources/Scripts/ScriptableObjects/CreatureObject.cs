@@ -31,7 +31,7 @@ public class TentacleValue
 public class CreatureObject : ScriptableObject
 {
     public float id;
-    public float hp;
+    public float startingHealth;
     public float armor;
     public int populationValue;
     public int spawnWeight;
@@ -47,4 +47,5 @@ public class CreatureObject : ScriptableObject
     public int range;
     public float aggressionThreshold;
     public List<TentacleValue> tentacleList;
+    public Vector2 goldDropRange;
 }

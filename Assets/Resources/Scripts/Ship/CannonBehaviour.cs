@@ -86,42 +86,29 @@ public class CannonBehaviour : MonoBehaviour
 
     private IEnumerator MoveCannonball(Vector3 start, Vector3Int endTile, ItemObject itemObject)
     {
-        Debug.Log("Start Position: " + start);
-        Debug.Log("End Tile: " + endTile);
-        Debug.Log("Item Object Mass: " + itemObject.mass);
 
         // Instantiate the cannonball at the start position
         GameObject cannonball = Instantiate(cannonballPrefab, start, Quaternion.identity);
-        Debug.Log("Cannonball instantiated at: " + start);
 
         Rigidbody2D rb = cannonball.AddComponent<Rigidbody2D>();
         rb.gravityScale = 0; // We'll handle gravity manually
-        Debug.Log("Rigidbody2D added with gravity scale set to 0");
 
         float initialDistance = Vector3.Distance(start, tilemap.GetCellCenterWorld(endTile));
-        Debug.Log("Initial Distance: " + initialDistance);
 
         float timeToTarget = Mathf.Sqrt(2 * initialDistance / (cannonForce / itemObject.mass));
-        Debug.Log("Time to Target: " + timeToTarget);
 
         // Calculate initial velocity components
         Vector3 initialEnd = tilemap.GetCellCenterWorld(endTile);
-        Debug.Log("Initial End Position: " + initialEnd);
 
         Vector3 displacement = initialEnd - start;
-        Debug.Log("Displacement: " + displacement);
 
         float initialVelocityX = displacement.x / timeToTarget;
         float initialVelocityY = (displacement.y - 0.5f * gravity * Mathf.Pow(timeToTarget, 2)) / timeToTarget;
-        Debug.Log("Initial Velocity X: " + initialVelocityX);
-        Debug.Log("Initial Velocity Y: " + initialVelocityY);
 
         rb.velocity = new Vector2(initialVelocityX, initialVelocityY);
-        Debug.Log("Initial Velocity set: " + rb.velocity);
 
         // Simulate the cannonball flight
         float elapsedTime = 0f;
-        Debug.Log("Starting cannonball flight simulation");
 
         while (elapsedTime < timeToTarget)
         {
@@ -151,16 +138,13 @@ public class CannonBehaviour : MonoBehaviour
 
         // Destroy the cannonball
         Destroy(cannonball);
-        Debug.Log("Cannonball destroyed");
 
         // Ensure Z coordinate is correct
         Vector3 finalPosition = tilemap.GetCellCenterWorld(endTile);
         finalPosition.z = 0;
-        Debug.Log("Final Position: " + finalPosition);
 
         // Simulate explosion using raycasts
         explosionScript.Explode(finalPosition, itemObject);
-        Debug.Log("Explosion triggered at final position with item object");
     }
 
 
@@ -173,7 +157,6 @@ public class CannonBehaviour : MonoBehaviour
         else
         {
             // Return a default value or throw an exception
-            Debug.LogWarning("Selector is not instantiated.");
             return Vector3.zero; // Or throw new Exception("Selector is not instantiated.");
         }
     }

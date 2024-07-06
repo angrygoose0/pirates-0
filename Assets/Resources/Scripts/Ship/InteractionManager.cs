@@ -39,7 +39,6 @@ public class InteractionManager : MonoBehaviour
             //use the blockprefab the player is looking at rn. because the player hasnt equipped a block.
         }
 
-        Debug.Log(blockPrefab);
 
         GameObject equippedItem = null;
         equippedItem = playerScript.equippedItem;
@@ -52,7 +51,6 @@ public class InteractionManager : MonoBehaviour
             equippedItemObject = equippedItemScript.itemObject;
         }
 
-        Debug.Log(interaction);
 
         blockPrefabScript blockScript = blockPrefab.GetComponent<blockPrefabScript>();
         BlockObject blockObject = blockScript.blockObject;
@@ -73,8 +71,6 @@ public class InteractionManager : MonoBehaviour
             case 0:
                 if (blockObject.blockType == BlockType.Cannon)
                 {
-                    Debug.Log("cannoninteraction");
-                    Debug.Log("interaction 0");
 
                     //the player is equipped to a block, so he is leaving.
                     if (playerBlockRelations.ContainsKey(player))
@@ -99,7 +95,6 @@ public class InteractionManager : MonoBehaviour
                 }
                 else if (blockObject.blockType == BlockType.Mast)
                 {
-                    Debug.Log("turning mast clockwise 45");
                     blockScript.blockDirection = RotateVector(blockScript.blockDirection, 45);
                 }
                 break;
@@ -107,8 +102,6 @@ public class InteractionManager : MonoBehaviour
             case 1:
                 if (blockObject.blockType == BlockType.Cannon)
                 {
-                    Debug.Log("cannoninteraction");
-                    Debug.Log("interaction 1");
                     if (equippedItemScript != null)
                     {
                         equippedItemScript.SetItemVisibility(false);
@@ -128,7 +121,6 @@ public class InteractionManager : MonoBehaviour
                 }
                 else if (blockObject.blockType == BlockType.Mast)
                 {
-                    Debug.Log("turning mast anti-clockwise 45");
                     blockScript.blockDirection = RotateVector(blockScript.blockDirection, -45);
                 }
                 break;
@@ -136,8 +128,7 @@ public class InteractionManager : MonoBehaviour
             case 2:
                 if (blockObject.blockType == BlockType.Cannon)
                 {
-                    Debug.Log("cannoninteraction");
-                    Debug.Log("interaction 2");
+
                     if (playerBlockRelations.ContainsKey(player))
                     {
                         Vector3 blockPosition = blockPrefab.transform.position;
@@ -153,7 +144,7 @@ public class InteractionManager : MonoBehaviour
                 break;
 
             default:
-                Debug.Log("Unknown interaction");
+
                 break;
         }
     }

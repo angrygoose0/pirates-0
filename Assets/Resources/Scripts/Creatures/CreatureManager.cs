@@ -13,10 +13,11 @@ public enum State
 
 public class TentacleSegment
 {
-    public GameObject gameObject;
+    public GameObject creature;
     public CircleCollider2D collider;
     public SpriteRenderer renderer;
     public Vector3 direction;
+
 }
 
 public class TentacleData
@@ -45,7 +46,9 @@ public class CreatureData
     public Vector3 velocity;
     public float movementDelay;
     public GameObject targetShipPart = GameObject.Find("ghost");
-
+    public float health;
+    public bool isDamaged;
+    public float currentDamage;
 }
 
 public class CreatureManager : MonoBehaviour
@@ -59,18 +62,20 @@ public class CreatureManager : MonoBehaviour
     private ChunkData currentChunk;
     private HashSet<Vector3Int> viableChunks = new HashSet<Vector3Int>();
     private Dictionary<GameObject, ChunkData> creatureChunks = new Dictionary<GameObject, ChunkData>();
+    private Dictionary<GameObject, GameObject> segmentToCreature = new Dictionary<GameObject, GameObject>();
     public int globalMobCount; // New global mob count
     public int maxGlobalMobCount = 70; // Maximum global mob count
     public int maxGlobalChunkPopulation = 50;
     public GameObject creaturePrefab;
     public GameObject tentaclePrefab;
     public GameObject tentacleSegmentprefab;
-
+    public ItemManager itemManager;
     public Tilemap worldTilemap;
 
     void Start()
     {
         creatures = new Dictionary<GameObject, CreatureData>();
+        segmentToCreature = new Dictionary<GameObject, GameObject>(); // Initialize the reverse lookup dictionary
         globalMobCount = creatures.Count; // Initialize the global mob count
         worldTilemap = GameObject.Find("world").GetComponent<Tilemap>();
         GameObject tentacleContainer = GameObject.Find("tentacleContainer");
@@ -99,7 +104,6 @@ public class CreatureManager : MonoBehaviour
 
             if (hostility >= aggressionThreshold && currentState != State.Aggressive)
             {
-                Debug.Log("agressive");
                 creatureData.currentState = State.Aggressive;
             }
             else if (hostility < aggressionThreshold && currentState != State.Idle)
@@ -159,8 +163,6 @@ public class CreatureManager : MonoBehaviour
                     int deltaTargetX = Mathf.Abs(tentacleTargetTilemapPosition.x - creatureTargetTilemapPosition.x);
                     int deltaTargetY = Mathf.Abs(tentacleTargetTilemapPosition.y - creatureTargetTilemapPosition.y);
 
-                    Debug.Log(tentacleTargetTilemapPosition + "tentacle");
-                    Debug.Log(creatureTargetTilemapPosition + "creature");
 
                     if (deltaTargetX + deltaTargetY > 5 && deltaCurrentX + deltaCurrentY > 3)
                     {
@@ -276,6 +278,113 @@ public class CreatureManager : MonoBehaviour
     }
 
 
+    public void ApplyImpact(GameObject hitSegmentObject, float damageMagnitude)
+    {
+        Debug.Log(hitSegmentObject);
+        Debug.Log(damageMagnitude);
+
+        GameObject hitCreatureObject = segmentToCreature[hitSegmentObject];
+        CreatureData hitCreatureData = creatures[hitCreatureObject];
+        if (hitCreatureData.isDamaged)
+        {
+            if (damageMagnitude > hitCreatureData.currentDamage)
+            {
+                hitCreatureData.currentDamage = damageMagnitude;
+            }
+        }
+        else
+        {
+            hitCreatureData.currentDamage = damageMagnitude;
+            StartCoroutine(DamageCoroutine(hitCreatureObject));
+        }
+
+    }
+
+    public void CreatureDeath(GameObject creatureObject)
+    {
+        CreatureData creatureData = creatures[creatureObject];
+        foreach (KeyValuePair<GameObject, TentacleData> tentacleEntry in creatureData.tentacles)
+        {
+            TentacleData tentacleData = tentacleEntry.Value;
+            foreach (KeyValuePair<GameObject, TentacleSegment> segmentEntry in tentacleData.segments)
+            {
+                GameObject segmentObject = segmentEntry.Key;
+
+
+                if (segmentToCreature.TryGetValue(segmentObject, out GameObject creature))
+                {
+                    // Remove tentacle to creature mapping
+                    segmentToCreature.Remove(segmentObject);
+
+                }
+                Destroy(segmentObject);
+            }
+            Destroy(tentacleEntry.Key);
+        }
+
+
+        globalMobCount--;
+        if (creatureChunks.TryGetValue(creatureObject, out ChunkData chunkData))
+        {
+            int populationValue = creatureData.creatureObject.populationValue;
+            chunkData.chunkPopulation -= populationValue;
+            creatureChunks.Remove(creatureObject);
+        }
+
+        creatures.Remove(creatureObject);
+        Destroy(creatureObject);
+
+    }
+    private IEnumerator DamageCoroutine(GameObject creatureObject)
+    {
+
+        CreatureData creatureData = creatures[creatureObject];
+        creatureData.isDamaged = true;
+
+        float damageDone = Mathf.Max(creatureData.currentDamage - creatureData.creatureObject.armor, 0);
+        creatureData.health -= damageDone;
+        if (creatureData.health <= 0)
+        {
+            Vector3 creaturePosition = creatureObject.transform.position;
+            int goldDrop = Random.Range((int)creatureData.creatureObject.goldDropRange.x, (int)creatureData.creatureObject.goldDropRange.y + 1);
+            CreatureDeath(creatureObject);
+
+
+            // Instantiate the item prefabs based on the gold drop
+            for (int i = 0; i < goldDrop; i++)
+            {
+                itemManager.CreateItem("goldOne", creaturePosition);
+            }
+
+            yield break;
+        }
+
+        List<GameObject> segmentKeys = new List<GameObject>();
+
+        // Iterate through each TentacleData in the tentacles dictionary
+        foreach (var tentacle in creatureData.tentacles.Values)
+        {
+            // Add each GameObject key from the segments dictionary to the list
+            segmentKeys.AddRange(tentacle.segments.Keys);
+        }
+
+        foreach (GameObject segmentKey in segmentKeys)
+        {
+            SpriteRenderer spriteRenderer = segmentKey.GetComponent<SpriteRenderer>();
+            spriteRenderer.color = Color.red;
+        }
+        yield return new WaitForSeconds(0.1f);
+
+        foreach (GameObject segmentKey in segmentKeys)
+        {
+            SpriteRenderer spriteRenderer = segmentKey.GetComponent<SpriteRenderer>();
+            spriteRenderer.color = Color.white;
+        }
+        creatureData.isDamaged = false;
+
+        Debug.Log(creatureData.health);
+        creatureData.currentDamage = 0f;
+    }
 
     void TrackObjectChunk()
     {
@@ -413,21 +522,6 @@ public class CreatureManager : MonoBehaviour
     }
 
 
-    public void RemoveCreature(GameObject creature)
-    {
-        if (creatures.Remove(creature))
-        {
-            globalMobCount--;
-            if (creatureChunks.TryGetValue(creature, out ChunkData chunkData))
-            {
-                CreatureVitals vitals = creature.GetComponent<CreatureVitals>();
-                int populationValue = vitals.creatureObject.populationValue;
-                chunkData.chunkPopulation -= populationValue;
-                creatureChunks.Remove(creature);
-            }
-        }
-    }
-
     CreatureObject PickRandomCreatureObject()
     {
         int totalWeight = 0;
@@ -486,9 +580,8 @@ public class CreatureManager : MonoBehaviour
                             surroundingTiles = GetSurroundingTiles(currentTilePosition, randomCreatureObject.range),
                             targetPosition = newCreature.transform.position,
                             hostility = 10,
+                            health = randomCreatureObject.startingHealth,
                         });
-
-
 
 
                         globalMobCount++;
@@ -509,6 +602,12 @@ public class CreatureManager : MonoBehaviour
                             {
                                 targetPosition = newCreature.transform.position,
                                 currentTilePosition = currentTilePosition,
+                                setDistance = tentacle.setDistance,
+                                moveSpeed = tentacle.moveSpeed,
+                                pullStrength = tentacle.pullStrength,
+                                wiggleFrequency = tentacle.wiggleFrequency,
+                                wiggleAmplitude = tentacle.wiggleAmplitude,
+                                endTarget = tentacle.endTarget,
                             };
 
                             List<float> segmentSizeList = tentacle.segmentSizes;
@@ -517,17 +616,20 @@ public class CreatureManager : MonoBehaviour
                                 GameObject newTentacleSegment = Instantiate(tentacleSegmentprefab, worldPosition, Quaternion.identity);
                                 //newTentacleSegment.transform.SetParent();
 
-                                //CircleCollider2D collider = newTentacleSegment.GetComponent<CircleCollider2D>();
+                                CircleCollider2D collider = newTentacleSegment.GetComponent<CircleCollider2D>();
                                 //SpriteRenderer renderer = newTentacleSegment.GetComponent<SpriteRenderer>();
-                                //collider.radius = segmentSize;
+                                collider.radius = segmentSize;
                                 float diameter = segmentSize * 2.0f;
                                 newTentacleSegment.transform.localScale = new Vector3(diameter, diameter, 1);
                                 TentacleSegment tentacleSegmentData = new TentacleSegment
                                 {
-                                    //collider = collider,
+                                    creature = newCreature,
+                                    collider = collider,
                                     //renderer = renderer,
                                 };
                                 tentacleData.segments.Add(newTentacleSegment, tentacleSegmentData);
+
+                                segmentToCreature[newTentacleSegment] = newCreature; // Add to reverse lookup
 
 
                             }
@@ -566,8 +668,7 @@ public class CreatureManager : MonoBehaviour
 
         foreach (var creature in creaturesToDespawn)
         {
-            RemoveCreature(creature);
-            Destroy(creature);
+            CreatureDeath(creature);
         }
 
         List<GameObject> keysToRemove = new List<GameObject>();

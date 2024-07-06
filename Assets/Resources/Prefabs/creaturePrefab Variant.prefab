@@ -20,6 +20,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: creaturePrefab Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 4171011091443591820, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
+      propertyPath: m_Mass
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4171011091443591820, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
+      propertyPath: m_LinearDrag
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4171011091443591820, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
+      propertyPath: m_Constraints
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8112100835143601025, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
       propertyPath: m_LocalScale.x
       value: 1
@@ -114,7 +126,7 @@ CircleCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6939055558043858172}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
