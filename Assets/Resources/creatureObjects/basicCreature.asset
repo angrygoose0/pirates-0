@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: basicCreature
   m_EditorClassIdentifier: 
   id: 0
-  startingHealth: 0
-  armor: 10
+  startingHealth: 2
+  armor: 0.1
   populationValue: 2
   spawnWeight: 1000
   minPackSpawn: 1
@@ -39,4 +39,4 @@ MonoBehaviour:
     wiggleFrequency: 0
     wiggleAmplitude: 0.1
     endTarget: 1
-  goldDropRange: {x: 0, y: 5}
+  goldDropRange: {x: 1, y: 5}

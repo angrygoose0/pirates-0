@@ -29,4 +29,5 @@ public class BlockObject : ScriptableObject
     public Sprite selectedSprite;
     public BlockType blockType;
     public List<BlockValue> blockValues;
+    
 }
