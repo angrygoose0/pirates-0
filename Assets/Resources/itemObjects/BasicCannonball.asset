@@ -19,3 +19,4 @@ MonoBehaviour:
   explosionMultiplier: 10
   explosionRange: 4
   goldAmount: 0
+  spawningSprite: {fileID: 46604427, guid: eccc8b95d0cd88e4eb091f0228ffd6e7, type: 3}

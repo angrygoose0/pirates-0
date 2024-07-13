@@ -97,15 +97,21 @@ public class InteractionManager : MonoBehaviour
                 {
                     blockScript.blockDirection = RotateVector(blockScript.blockDirection, 45);
                 }
+                else if (blockObject.blockType == BlockType.Payload)
+                {
+
+                }
                 break;
 
             case 1:
-                if (blockObject.blockType == BlockType.Cannon)
+                if (blockObject.blockType == BlockType.Cannon || blockObject.blockType == BlockType.Payload)
+
                 {
                     if (equippedItemScript != null)
                     {
                         equippedItemScript.SetItemVisibility(false);
                         equippedItemScript.NewParent(blockPrefab);
+                        equippedItemScript.itemPickupable = false;
                     }
 
 
@@ -115,6 +121,7 @@ public class InteractionManager : MonoBehaviour
                     {
                         blockItemScript.SetItemVisibility(true);
                         blockItemScript.NewParent(player);
+                        equippedItemScript.itemPickupable = true;
                     }
 
                     playerScript.equippedItem = blockItem;

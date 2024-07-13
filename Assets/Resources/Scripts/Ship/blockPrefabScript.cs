@@ -9,12 +9,62 @@ public class blockPrefabScript : MonoBehaviour
     public GameObject itemPrefabObject;
     private ItemObject itemObject;
     public GameObject player;
+    public GameObject itemPrefab;
+    public GameObject spawnedItem;
 
+    private ItemScript spawnedItemScript;
+    private Collider2D spawnedItemCollider;
+
+    private bool isSpawning = false;
 
     void Update()
     {
         DisplayItemInfo();
+        if (blockObject.blockType == BlockType.Payload && !isSpawning && itemObject != null)
+        {
+            if (spawnedItem == null || (spawnedItemScript?.itemTaken == true))
+            {
+                spawnedItem = null;
+                spawnedItemCollider = null;
+                spawnedItemScript = null;
+                if (itemObject.spawningSprite != null)
+                {
+                    Debug.Log("started");
+                    StartCoroutine(SpawnItemWithDelay(2f));
+
+                }
+            }
+        }
     }
+
+    private IEnumerator SpawnItemWithDelay(float delay)
+    {
+        isSpawning = true;
+        yield return new WaitForSeconds(delay);
+        SpawnItem();
+        isSpawning = false;
+    }
+
+    private void SpawnItem()
+    {
+        Sprite spawningSprite = itemObject.spawningSprite;
+        if (spawningSprite != null)
+        {
+            Vector3 offset = new Vector3(0f, 0.5f, 0f);
+            spawnedItem = Instantiate(itemPrefab, gameObject.transform.position + offset, Quaternion.identity);
+
+
+            spawnedItemScript = spawnedItem.GetComponent<ItemScript>();
+            spawnedItemCollider = spawnedItem.GetComponent<Collider2D>();
+
+            spawnedItemCollider.enabled = false;
+            spawnedItemScript.NewParent(gameObject);
+            spawnedItemScript.itemTaken = false;
+            spawnedItemScript.itemPickupable = true;
+
+        }
+    }
+
     private List<BlockValue> GetBlockValues()
     {
         if (blockObject != null)
@@ -74,7 +124,6 @@ public class blockPrefabScript : MonoBehaviour
             if (itemScript != null)
             {
                 itemObject = itemScript.itemObject;
-
             }
         }
     }

@@ -12,6 +12,8 @@ public class ItemObject : ScriptableObject
     public float explosionMultiplier;
     public float explosionRange;
     public int goldAmount = 0;
+    public Sprite spawningSprite;
+    public float regenerateTime;
 }
 
 

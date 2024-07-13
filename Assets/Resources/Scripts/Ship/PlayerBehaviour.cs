@@ -310,7 +310,6 @@ public class PlayerBehaviour : MonoBehaviour
             Vector3Int tilePosition = previousInteractableTilePosition.Value;
             selectedBlockPrefab = shipGenerator.GetBlockPrefabAtTile(tilePosition);
             interactionManager.InteractWithBlock(interaction, gameObject);
-
         }
     }
 
@@ -330,12 +329,15 @@ public class PlayerBehaviour : MonoBehaviour
         }
         else if (closestItem != null)
         {
-            // Equip the closest item
-            equippedItem = closestItem;
+            ItemScript itemScript = closestItem.GetComponent<ItemScript>();
+            if (itemScript.itemPickupable == true)
+            {
+                equippedItem = closestItem;
+                // Set the new parent for the equipped item
+                itemScript.NewParent(gameObject);
+                itemScript.itemTaken = true;
+            }
 
-            // Set the new parent for the equipped item
-            ItemScript itemScript = equippedItem.GetComponent<ItemScript>();
-            itemScript.NewParent(gameObject);
         }
     }
 

@@ -14,7 +14,7 @@ public class ShipGenerator : MonoBehaviour
     {
         { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f },
         { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f },
-        { 1.0f, 1.0f, 3.0f, 1.0f, 1.0f },
+        { 1.0f, 1.0f, 4.0f, 1.0f, 1.0f },
         { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f },
         { 0.0f, 1.0f, 1.0f, 2.0f, 2.1f }
     };
@@ -34,7 +34,7 @@ public class ShipGenerator : MonoBehaviour
         GenerateTilemap(ship);
         CenterGhostOnShip();
         FindMastBlocks(); // Find all mast blocks after generating the ship
-        
+
     }
 
     public void GenerateTilemap(float[,] ship)

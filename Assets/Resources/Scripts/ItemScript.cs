@@ -9,9 +9,12 @@ public class ItemScript : MonoBehaviour
 
     private float inactiveTime = 0f;
     private Coroutine fadeCoroutine;
+    public bool itemTaken = false;
+    public bool itemPickupable;
 
     void Start()
     {
+        itemPickupable = true;
         // Check if the GameObject has a parent on startup and that parent is not the world Tilemap
         if (transform.parent != null && transform.parent.name != "world")
         {
