@@ -522,24 +522,32 @@ public class CreatureManager : MonoBehaviour
     }
 
 
-    CreatureObject PickRandomCreatureObject()
+    CreatureObject PickRandomCreatureObject(int hostilityLevel)
     {
         int totalWeight = 0;
+        Dictionary<CreatureObject, int> adjustedWeights = new Dictionary<CreatureObject, int>();
+
+        // Calculate the adjusted weights and total weight
         foreach (var creatureObject in creatureObjects)
         {
-            totalWeight += creatureObject.spawnWeight;
+            int adjustedWeight = Mathf.RoundToInt(creatureObject.spawnWeight + (creatureObject.hostilityMultiplier * hostilityLevel));
+            adjustedWeights[creatureObject] = adjustedWeight;
+            totalWeight += adjustedWeight;
         }
 
+        // Get a random value within the total weight
         int randomValue = Random.Range(0, totalWeight);
 
+        // Select a creature based on the adjusted weights
         foreach (var creatureObject in creatureObjects)
         {
-            if (randomValue < creatureObject.spawnWeight)
+            if (randomValue < adjustedWeights[creatureObject])
             {
                 return creatureObject;
             }
-            randomValue -= creatureObject.spawnWeight;
+            randomValue -= adjustedWeights[creatureObject];
         }
+
 
         return null;
     }
@@ -548,10 +556,12 @@ public class CreatureManager : MonoBehaviour
     {
         List<Vector3Int> viableChunkList = new List<Vector3Int>(viableChunks);
         Vector3Int randomChunkPosition = viableChunkList[Random.Range(0, viableChunkList.Count)];
+        ChunkData randomChunk;
+        worldGenerator.generatedChunks.TryGetValue(randomChunkPosition, out randomChunk);
 
-        if (worldGenerator.generatedChunks.TryGetValue(randomChunkPosition, out ChunkData randomChunk))
+        if (randomChunk != null)
         {
-            CreatureObject randomCreatureObject = PickRandomCreatureObject();
+            CreatureObject randomCreatureObject = PickRandomCreatureObject(randomChunk.chunkHostility);
 
             int currentMobPopulation = randomChunk.chunkPopulation;
             if (currentMobPopulation < maxGlobalChunkPopulation)
@@ -579,7 +589,7 @@ public class CreatureManager : MonoBehaviour
                             currentTilePosition = currentTilePosition,
                             surroundingTiles = GetSurroundingTiles(currentTilePosition, randomCreatureObject.range),
                             targetPosition = newCreature.transform.position,
-                            hostility = 10,
+                            hostility = 50,
                             health = randomCreatureObject.startingHealth,
                         });
 

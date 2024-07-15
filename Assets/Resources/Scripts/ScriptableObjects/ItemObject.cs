@@ -2,6 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public class Recipe
+{
+    public List<ItemObject> materials;
+
+}
+
 [CreateAssetMenu(fileName = "NewItem", menuName = "Item/Item")]
 public class ItemObject : ScriptableObject
 {
@@ -14,6 +21,7 @@ public class ItemObject : ScriptableObject
     public int goldAmount = 0;
     public Sprite spawningSprite;
     public float regenerateTime;
+    public List<Recipe> recipes;
 }
 
 

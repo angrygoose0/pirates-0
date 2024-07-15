@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Collections.Generic;
+using System.Collections;
 
 public class PlayerBehaviour : MonoBehaviour
 {
@@ -28,6 +29,11 @@ public class PlayerBehaviour : MonoBehaviour
 
     public ShipGenerator.Direction currentDirection;
     public GoldManager goldManager;
+
+    public float attackRate = 0.5f; // Time between attacks in seconds
+    private bool isFiring = false;
+    private Coroutine fireCoroutine;
+    private float lastFireTime = 0f;
 
     void Start()
     {
@@ -62,10 +68,18 @@ public class PlayerBehaviour : MonoBehaviour
         {
             InteractWithBlock(1);
         }
-        else if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && !isFiring && Time.time >= lastFireTime + attackRate)
         {
-            InteractWithBlock(2);
+            isFiring = true;
+            fireCoroutine = StartCoroutine(FireRoutine());
         }
+
+        if (Input.GetMouseButtonUp(0) && isFiring)
+        {
+            isFiring = false;
+            StopCoroutine(fireCoroutine);
+        }
+
         else if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             ToggleItem();
@@ -78,6 +92,16 @@ public class PlayerBehaviour : MonoBehaviour
         {
             // Set the equipped item's position to the player's position
             equippedItem.transform.localPosition = Vector3.zero;
+        }
+    }
+
+    private IEnumerator FireRoutine()
+    {
+        while (isFiring)
+        {
+            InteractWithBlock(2);
+            lastFireTime = Time.time;
+            yield return new WaitForSeconds(attackRate);
         }
     }
 

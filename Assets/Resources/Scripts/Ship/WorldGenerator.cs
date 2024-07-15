@@ -8,7 +8,7 @@ public class ChunkData
     public Vector3Int chunkPosition;
     public Dictionary<Vector3Int, int> tileDepths;
     public Dictionary<Vector3Int, int> tileTemperatures;
-    public Dictionary<Vector3Int, int> tileHostility;
+    public int chunkHostility;
     public int chunkPopulation;
     public int chunkWeirdness;
 
@@ -17,7 +17,6 @@ public class ChunkData
         chunkPosition = position;
         tileDepths = new Dictionary<Vector3Int, int>();
         tileTemperatures = new Dictionary<Vector3Int, int>();
-        tileHostility = new Dictionary<Vector3Int, int>();
         chunkPopulation = 0;
         chunkWeirdness = 0;
 
@@ -114,7 +113,7 @@ public class WorldGenerator : MonoBehaviour
 
         // Calculate the distance from the initial chunk position to determine hostility range
         float distanceFromInitialChunk = Vector3Int.Distance(chunkPosition, initialChunkPosition);
-        int hostilityRange = Mathf.RoundToInt(distanceFromInitialChunk);
+        chunkData.chunkHostility = Mathf.RoundToInt(distanceFromInitialChunk);
 
 
         float seedMultiplier = worldSeed;
@@ -147,15 +146,13 @@ public class WorldGenerator : MonoBehaviour
                 // Store the depth, temperature, and hostility values
                 chunkData.tileDepths[tilePosition] = depth;
                 chunkData.tileTemperatures[tilePosition] = temperature;
-                chunkData.tileHostility[tilePosition] = hostilityRange;
 
                 // Determine the correct tile based on the data ranges
                 TileBase selectedTile = null;
                 foreach (TileObject tileObject in tileObjects)
                 {
                     if (depth >= tileObject.depthRange.x && depth <= tileObject.depthRange.y &&
-                        temperature >= tileObject.temperatureRange.x && temperature <= tileObject.temperatureRange.y &&
-                        hostilityRange >= tileObject.hostilityRange.x && hostilityRange <= tileObject.hostilityRange.y)
+                        temperature >= tileObject.temperatureRange.x && temperature <= tileObject.temperatureRange.y)
                     {
                         selectedTile = tileObject.tileBase;
                         break;
@@ -249,13 +246,11 @@ public class WorldGenerator : MonoBehaviour
         foreach (var chunkData in generatedChunks.Values)
         {
             if (chunkData.tileDepths.ContainsKey(tilePosition) &&
-                chunkData.tileTemperatures.ContainsKey(tilePosition) &&
-                chunkData.tileHostility.ContainsKey(tilePosition))
+                chunkData.tileTemperatures.ContainsKey(tilePosition))
             {
                 // Log the values to the console
                 int depth = chunkData.tileDepths[tilePosition];
                 int temperature = chunkData.tileTemperatures[tilePosition];
-                int hostility = chunkData.tileHostility[tilePosition];
                 int chunkPopulation = chunkData.chunkPopulation;
                 float chunkWeirdness = chunkData.chunkWeirdness; // Add this line
                 //Debug.Log(chunkData.chunkPosition);

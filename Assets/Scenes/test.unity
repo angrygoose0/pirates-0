@@ -531,70 +531,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18cf8c9b947f2f743afe03b5b36ddf7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefab: {fileID: 6285872198284085077, guid: 8505bef393acbbf4cab79a22a9e93f5a, type: 3}
-  tentaclesList:
-  - segments:
-    - size: 0.2
-      gameObject: {fileID: 0}
-      collider: {fileID: 0}
-      renderer: {fileID: 0}
-    - size: 0.2
-      gameObject: {fileID: 0}
-      collider: {fileID: 0}
-      renderer: {fileID: 0}
-    - size: 0.2
-      gameObject: {fileID: 0}
-      collider: {fileID: 0}
-      renderer: {fileID: 0}
-    - size: 0.2
-      gameObject: {fileID: 0}
-      collider: {fileID: 0}
-      renderer: {fileID: 0}
-    - size: 0.2
-      gameObject: {fileID: 0}
-      collider: {fileID: 0}
-      renderer: {fileID: 0}
-    - size: 0.2
-      gameObject: {fileID: 0}
-      collider: {fileID: 0}
-      renderer: {fileID: 0}
-    endTarget: {fileID: 1428441415}
-    setDistance: 1
-    moveSpeed: 5
-    pullStrength: 0.5
-    wiggleFrequency: 0
-    wiggleAmplitude: 0.1
-  - segments:
-    - size: 0.2
-      gameObject: {fileID: 0}
-      collider: {fileID: 0}
-      renderer: {fileID: 0}
-    - size: 0.2
-      gameObject: {fileID: 0}
-      collider: {fileID: 0}
-      renderer: {fileID: 0}
-    - size: 0.2
-      gameObject: {fileID: 0}
-      collider: {fileID: 0}
-      renderer: {fileID: 0}
-    - size: 0.2
-      gameObject: {fileID: 0}
-      collider: {fileID: 0}
-      renderer: {fileID: 0}
-    - size: 0.2
-      gameObject: {fileID: 0}
-      collider: {fileID: 0}
-      renderer: {fileID: 0}
-    - size: 0.2
-      gameObject: {fileID: 0}
-      collider: {fileID: 0}
-      renderer: {fileID: 0}
-    endTarget: {fileID: 0}
-    setDistance: 1
-    moveSpeed: 5
-    pullStrength: 0.5
-    wiggleFrequency: 0
-    wiggleAmplitude: 0.1
 --- !u!4 &1733385282
 Transform:
   m_ObjectHideFlags: 0
@@ -714,47 +650,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefab: {fileID: 5267379056819402957, guid: be8d6e329fdffda4fa171ef36ceee80b, type: 3}
+  gooMaterial: {fileID: 2100000, guid: 2464f688243c2e745a3f1d4f6eecb417, type: 2}
   tentaclesList:
   - segments:
     - size: 0.1
       gameObject: {fileID: 0}
       collider: {fileID: 0}
       renderer: {fileID: 0}
+      lineRenderer: {fileID: 0}
       direction: {x: 0, y: 0, z: 0}
     - size: 0.1
       gameObject: {fileID: 0}
       collider: {fileID: 0}
       renderer: {fileID: 0}
+      lineRenderer: {fileID: 0}
       direction: {x: 0, y: 0, z: 0}
     - size: 0.1
       gameObject: {fileID: 0}
       collider: {fileID: 0}
       renderer: {fileID: 0}
+      lineRenderer: {fileID: 0}
       direction: {x: 0, y: 0, z: 0}
     - size: 0.1
       gameObject: {fileID: 0}
       collider: {fileID: 0}
       renderer: {fileID: 0}
+      lineRenderer: {fileID: 0}
       direction: {x: 0, y: 0, z: 0}
     - size: 0.1
       gameObject: {fileID: 0}
       collider: {fileID: 0}
       renderer: {fileID: 0}
+      lineRenderer: {fileID: 0}
       direction: {x: 0, y: 0, z: 0}
     - size: 0.1
       gameObject: {fileID: 0}
       collider: {fileID: 0}
       renderer: {fileID: 0}
+      lineRenderer: {fileID: 0}
       direction: {x: 0, y: 0, z: 0}
     - size: 0.1
       gameObject: {fileID: 0}
       collider: {fileID: 0}
       renderer: {fileID: 0}
+      lineRenderer: {fileID: 0}
       direction: {x: 0, y: 0, z: 0}
     - size: 0.1
       gameObject: {fileID: 0}
       collider: {fileID: 0}
       renderer: {fileID: 0}
+      lineRenderer: {fileID: 0}
       direction: {x: 0, y: 0, z: 0}
     endTarget: {fileID: 0}
     setDistance: 0.2
@@ -762,6 +707,7 @@ MonoBehaviour:
     pullStrength: 0.1
     wiggleFrequency: 4
     wiggleAmplitude: 0.3
+    organicMaterial: {fileID: 2100000, guid: 2464f688243c2e745a3f1d4f6eecb417, type: 2}
 --- !u!1 &1747814159
 GameObject:
   m_ObjectHideFlags: 0

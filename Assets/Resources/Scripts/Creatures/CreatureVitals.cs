@@ -19,7 +19,6 @@ public class CreatureVitals : MonoBehaviour
 
     private Color originalColor;
     //private Procedural procedural;
-    //CircleCollider2D circleCollider;
 
 
     void Start()

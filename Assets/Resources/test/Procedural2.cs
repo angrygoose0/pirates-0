@@ -8,15 +8,17 @@ public class TentacleSegment2
     public GameObject gameObject;
     public CircleCollider2D collider;
     public SpriteRenderer renderer;
-    public Vector3 direction;  // New property for direction
+    public LineRenderer lineRenderer;
+    public Vector3 direction;
 
-    public TentacleSegment2(float size, GameObject gameObject, CircleCollider2D collider, SpriteRenderer renderer)
+    public TentacleSegment2(float size, GameObject gameObject, CircleCollider2D collider, SpriteRenderer renderer, LineRenderer lineRenderer)
     {
         this.size = size;
         this.gameObject = gameObject;
         this.collider = collider;
         this.renderer = renderer;
-        this.direction = Vector3.zero;  // Initialize direction
+        this.lineRenderer = lineRenderer;
+        this.direction = Vector3.zero;
     }
 }
 
@@ -30,8 +32,9 @@ public class Tentacles2
     public float pullStrength = 0.5f;
     public float wiggleFrequency = 2.0f;
     public float wiggleAmplitude = 0.5f;
+    public Material organicMaterial;
 
-    public Tentacles2(List<TentacleSegment2> segments, GameObject endTarget, float setDistance, float moveSpeed, float pullStrength, float wiggleFrequency, float wiggleAmplitude)
+    public Tentacles2(List<TentacleSegment2> segments, GameObject endTarget, float setDistance, float moveSpeed, float pullStrength, float wiggleFrequency, float wiggleAmplitude, Material organicMaterial)
     {
         this.segments = segments;
         this.endTarget = endTarget;
@@ -40,12 +43,14 @@ public class Tentacles2
         this.pullStrength = pullStrength;
         this.wiggleFrequency = wiggleFrequency;
         this.wiggleAmplitude = wiggleAmplitude;
+        this.organicMaterial = organicMaterial;
     }
 }
 
 public class Procedural2 : MonoBehaviour
 {
     public GameObject prefab;
+    public Material gooMaterial; // Add this line
     public List<Tentacles2> tentaclesList = new List<Tentacles2>();
 
     void Start()
@@ -69,6 +74,7 @@ public class Procedural2 : MonoBehaviour
 
                 CircleCollider2D collider = newGameObject.GetComponent<CircleCollider2D>();
                 SpriteRenderer renderer = newGameObject.GetComponent<SpriteRenderer>();
+                LineRenderer lineRenderer = newGameObject.AddComponent<LineRenderer>();
 
                 if (collider != null)
                 {
@@ -81,14 +87,20 @@ public class Procedural2 : MonoBehaviour
                     newGameObject.transform.localScale = new Vector3(diameter, diameter, 1);
                 }
 
-                TentacleSegment2 segment = new TentacleSegment2(size.size, newGameObject, collider, renderer);
+                // Configure LineRenderer
+                lineRenderer.startWidth = 0.1f;
+                lineRenderer.endWidth = 0.1f;
+                lineRenderer.material = gooMaterial; // Use the custom material
+                lineRenderer.startColor = Color.black;
+                lineRenderer.endColor = Color.black;
+
+                TentacleSegment2 segment = new TentacleSegment2(size.size, newGameObject, collider, renderer, lineRenderer);
                 tentacleSegments.Add(segment);
             }
 
             tentacles.segments = tentacleSegments;
         }
     }
-
 
     void Update()
     {
@@ -98,9 +110,15 @@ public class Procedural2 : MonoBehaviour
             Vector3 endPosition = tentacles.endTarget != null ? tentacles.endTarget.transform.position : targetPosition;
 
             ApplyForcesToAllSegments(tentacles.segments, targetPosition, endPosition, tentacles);
+
+            // Animate shader properties
+            float distortion = Mathf.PingPong(Time.time * 0.1f, 0.05f) + 0.05f;
+            foreach (var segment in tentacles.segments)
+            {
+                segment.lineRenderer.material.SetFloat("_Distortion", distortion);
+            }
         }
     }
-
 
 
     void FixedUpdate()
@@ -115,7 +133,6 @@ public class Procedural2 : MonoBehaviour
             }
         }
     }
-
 
     void ApplyForcesToAllSegments(List<TentacleSegment2> tentacleSegments, Vector3 targetPosition, Vector3 endPosition, Tentacles2 tentacles)
     {
@@ -150,7 +167,6 @@ public class Procedural2 : MonoBehaviour
                     desiredPosition = previousSegment.gameObject.transform.position + directionPrev.normalized * tentacles.setDistance;
                 }
 
-                // Add wiggling motion
                 float offset = Mathf.Sin(time * tentacles.wiggleFrequency + i * 0.5f) * tentacles.wiggleAmplitude;
                 Vector3 perpendicular = Vector3.Cross(directionPrev, Vector3.forward).normalized;
                 desiredPosition += perpendicular * offset;
@@ -186,17 +202,57 @@ public class Procedural2 : MonoBehaviour
                 }
             }
         }
+
+        // Generate Catmull-Rom spline points
+        List<Vector3> splinePoints = GenerateCatmullRomSpline(tentacleSegments);
+
+        // Update LineRenderer with spline points
+        for (int i = 0; i < tentacleSegments.Count; i++)
+        {
+            tentacleSegments[i].lineRenderer.positionCount = splinePoints.Count;
+            tentacleSegments[i].lineRenderer.SetPositions(splinePoints.ToArray());
+        }
     }
 
     void MoveTowards(GameObject gameObject, Vector3 targetPosition, float moveSpeed)
     {
         Vector3 currentPosition = gameObject.transform.position;
         Vector3 direction = targetPosition - currentPosition;
-
-        // Adjust direction to slow down movement in the y-axis
         direction.y *= 0.5f;
-
         Vector3 adjustedTargetPosition = currentPosition + direction;
         gameObject.transform.position = Vector3.Lerp(currentPosition, adjustedTargetPosition, moveSpeed * Time.deltaTime);
+    }
+
+    List<Vector3> GenerateCatmullRomSpline(List<TentacleSegment2> segments, int resolution = 10)
+    {
+        List<Vector3> splinePoints = new List<Vector3>();
+        for (int i = 0; i < segments.Count - 1; i++)
+        {
+            Vector3 p0 = segments[Mathf.Max(i - 1, 0)].gameObject.transform.position;
+            Vector3 p1 = segments[i].gameObject.transform.position;
+            Vector3 p2 = segments[i + 1].gameObject.transform.position;
+            Vector3 p3 = segments[Mathf.Min(i + 2, segments.Count - 1)].gameObject.transform.position;
+
+            for (int j = 0; j < resolution; j++)
+            {
+                float t = j / (float)resolution;
+                Vector3 position = GetCatmullRomPosition(t, p0, p1, p2, p3);
+                splinePoints.Add(position);
+            }
+        }
+        return splinePoints;
+    }
+
+    Vector3 GetCatmullRomPosition(float t, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
+    {
+        float t2 = t * t;
+        float t3 = t2 * t;
+
+        float a = -0.5f * t3 + t2 - 0.5f * t;
+        float b = 1.5f * t3 - 2.5f * t2 + 1.0f;
+        float c = -1.5f * t3 + 2.0f * t2 + 0.5f * t;
+        float d = 0.5f * t3 - 0.5f * t2;
+
+        return a * p0 + b * p1 + c * p2 + d * p3;
     }
 }

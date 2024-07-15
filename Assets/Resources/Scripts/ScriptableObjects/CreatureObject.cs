@@ -48,4 +48,5 @@ public class CreatureObject : ScriptableObject
     public float aggressionThreshold;
     public List<TentacleValue> tentacleList;
     public Vector2 goldDropRange;
+    public float hostilityMultiplier;
 }

@@ -1,4 +1,4 @@
-using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,6 +17,26 @@ public class InteractionManager : MonoBehaviour
             cannonBehaviour.cannonSelector();
         }
 
+    }
+
+    public List<Vector3Int> GetSurroundingTiles(Vector3Int centerTile, float range)
+    {
+        List<Vector3Int> tiles = new List<Vector3Int>();
+        int rangeInt = Mathf.CeilToInt(range);
+
+        for (int x = -rangeInt; x <= rangeInt; x++)
+        {
+            for (int y = -rangeInt; y <= rangeInt; y++)
+            {
+                Vector3Int tile = new Vector3Int(centerTile.x + x, centerTile.y + y, centerTile.z);
+                if (Vector3Int.Distance(centerTile, tile) <= range)
+                {
+                    tiles.Add(tile);
+                }
+            }
+        }
+
+        return tiles;
     }
 
     public void InteractWithBlock(int interaction, GameObject player) // 0=primary 1=secondary interaction  
@@ -141,7 +161,19 @@ public class InteractionManager : MonoBehaviour
                         Vector3 blockPosition = blockPrefab.transform.position;
                         Vector3 selectorPosition = cannonBehaviour.GetSelectorPosition();
                         Vector3Int selectorTilePosition = cannonBehaviour.WorldToCell(selectorPosition);
-                        cannonBehaviour.FireInTheHole(blockPosition, selectorTilePosition, blockItemObject);
+
+
+                        float deltaX = blockPosition.x - selectorPosition.x;
+                        float deltaY = (blockPosition.y - selectorPosition.y) * 0.5f;
+                        float distance = Mathf.Sqrt(deltaX * deltaX + deltaY * deltaY);
+                        List<Vector3Int> tilesList = GetSurroundingTiles(selectorTilePosition, distance);
+
+                        for (int i = 0; i < 7; i++)
+                        {
+                            Vector3Int targetTile = tilesList[Random.Range(0, tilesList.Count)];
+                            cannonBehaviour.FireInTheHole(blockPosition, targetTile, blockItemObject);
+                        }
+
                     }
                     else
                     {
