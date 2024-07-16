@@ -290,7 +290,9 @@ public class CreatureManager : MonoBehaviour
         {
             if (damageMagnitude > hitCreatureData.currentDamage)
             {
-                hitCreatureData.currentDamage = damageMagnitude;
+                float damage = damageMagnitude - hitCreatureData.currentDamage;
+                hitCreatureData.health -= damage;
+
             }
         }
         else
@@ -298,7 +300,6 @@ public class CreatureManager : MonoBehaviour
             hitCreatureData.currentDamage = damageMagnitude;
             StartCoroutine(DamageCoroutine(hitCreatureObject));
         }
-
     }
 
     public void CreatureDeath(GameObject creatureObject)
@@ -338,12 +339,12 @@ public class CreatureManager : MonoBehaviour
     }
     private IEnumerator DamageCoroutine(GameObject creatureObject)
     {
-
         CreatureData creatureData = creatures[creatureObject];
         creatureData.isDamaged = true;
 
         float damageDone = Mathf.Max(creatureData.currentDamage - creatureData.creatureObject.armor, 0);
         creatureData.health -= damageDone;
+
         if (creatureData.health <= 0)
         {
             Vector3 creaturePosition = creatureObject.transform.position;
@@ -381,10 +382,11 @@ public class CreatureManager : MonoBehaviour
             SpriteRenderer spriteRenderer = segmentKey.GetComponent<SpriteRenderer>();
             spriteRenderer.color = Color.white;
         }
+
+        creatureData.currentDamage = 0f;
+
         creatureData.isDamaged = false;
 
-        Debug.Log(creatureData.health);
-        creatureData.currentDamage = 0f;
     }
 
     void TrackObjectChunk()

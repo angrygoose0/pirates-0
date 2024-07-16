@@ -16,9 +16,10 @@ MonoBehaviour:
   itemSprite: {fileID: 0}
   mass: 1
   damageMultiplier: 1
-  explosionMultiplier: -30
+  explosionMultiplier: 2
   explosionRange: 4
   goldAmount: 0
   spawningSprite: {fileID: 46604427, guid: eccc8b95d0cd88e4eb091f0228ffd6e7, type: 3}
   regenerateTime: 0
   recipes: []
+  activeAbility: 0

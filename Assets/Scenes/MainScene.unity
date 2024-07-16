@@ -425,6 +425,7 @@ GameObject:
   - component: {fileID: 383585328}
   - component: {fileID: 383585330}
   - component: {fileID: 383585329}
+  - component: {fileID: 383585331}
   m_Layer: 0
   m_Name: ghost
   m_TagString: Untagged
@@ -690,7 +691,6 @@ MonoBehaviour:
   maxGlobalMobCount: 1
   maxGlobalChunkPopulation: 4
   creaturePrefab: {fileID: 6939055558043858172, guid: 00a94a03bb1f99f4d953fb2b17f1056a, type: 3}
-  tentaclePrefab: {fileID: 2915069436650555665, guid: 57ecd34c1f573154d815dfef9213d165, type: 3}
   tentacleSegmentprefab: {fileID: 6285872198284085077, guid: 8505bef393acbbf4cab79a22a9e93f5a, type: 3}
   itemManager: {fileID: 383585326}
   worldTilemap: {fileID: 170296654}
@@ -776,6 +776,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   globalLight: {fileID: 383585329}
   dayDuration: 2000
+--- !u!114 &383585331
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 383585313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52cd6e4cc9a700a4a8c4c244cbca2044, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shipHealth: 50
 --- !u!1 &485961737
 GameObject:
   m_ObjectHideFlags: 0
@@ -834,6 +847,7 @@ GameObject:
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
   - component: {fileID: 519420033}
+  - component: {fileID: 519420034}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -884,7 +898,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 3
+  orthographic size: 1.6775461
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -909,7 +923,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 1.191649, y: -0.73718125, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -959,6 +973,18 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!114 &519420034
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 587cefc43684a8847a72ca851046fd1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &762235064 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7643066971796696554, guid: a02dfe49a58e0af428c86086ccfa3b23, type: 3}
