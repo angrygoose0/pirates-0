@@ -8,6 +8,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2097549323571931536, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2608855381030885501, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
       propertyPath: range
       value: 5
@@ -103,6 +107,7 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 3519153156418283130, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
     - {fileID: 2608855381030885501, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
+    - {fileID: 2097549323571931536, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
     m_RemovedGameObjects:
     - {fileID: 4951504727248566143, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
     m_AddedGameObjects: []
@@ -110,9 +115,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3853018371985993264, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6758094151740418470}
-    - targetCorrespondingSourceObject: {fileID: 3853018371985993264, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1522023867025635350}
   m_SourcePrefab: {fileID: 100100000, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
 --- !u!1 &6939055558043858172 stripped
 GameObject:
@@ -154,59 +156,3 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.5
---- !u!114 &1522023867025635350
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6939055558043858172}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 27f01d6113d3a204fae077633d0676b8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  prefab: {fileID: 6285872198284085077, guid: 8505bef393acbbf4cab79a22a9e93f5a, type: 3}
-  tentaclesList:
-  - segments:
-    - size: 0.1
-      gameObject: {fileID: 0}
-      collider: {fileID: 0}
-      renderer: {fileID: 0}
-      direction: {x: 0, y: 0, z: 0}
-    - size: 0.1
-      gameObject: {fileID: 0}
-      collider: {fileID: 0}
-      renderer: {fileID: 0}
-      direction: {x: 0, y: 0, z: 0}
-    - size: 0.1
-      gameObject: {fileID: 0}
-      collider: {fileID: 0}
-      renderer: {fileID: 0}
-      direction: {x: 0, y: 0, z: 0}
-    - size: 0.1
-      gameObject: {fileID: 0}
-      collider: {fileID: 0}
-      renderer: {fileID: 0}
-      direction: {x: 0, y: 0, z: 0}
-    - size: 0.1
-      gameObject: {fileID: 0}
-      collider: {fileID: 0}
-      renderer: {fileID: 0}
-      direction: {x: 0, y: 0, z: 0}
-    - size: 0.1
-      gameObject: {fileID: 0}
-      collider: {fileID: 0}
-      renderer: {fileID: 0}
-      direction: {x: 0, y: 0, z: 0}
-    - size: 0.1
-      gameObject: {fileID: 0}
-      collider: {fileID: 0}
-      renderer: {fileID: 0}
-      direction: {x: 0, y: 0, z: 0}
-    endTarget: {fileID: 0}
-    setDistance: 0.2
-    moveSpeed: 5
-    pullStrength: 0.1
-    wiggleFrequency: 0.2
-    wiggleAmplitude: 0.1

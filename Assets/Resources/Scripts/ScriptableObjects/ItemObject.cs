@@ -22,6 +22,7 @@ public class ItemObject : ScriptableObject
     public Sprite spawningSprite;
     public float regenerateTime;
     public List<Recipe> recipes;
+    public bool activeAbility;
 }
 
 

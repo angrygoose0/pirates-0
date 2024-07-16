@@ -119,7 +119,13 @@ public class InteractionManager : MonoBehaviour
                 }
                 else if (blockObject.blockType == BlockType.Payload)
                 {
-
+                    if (blockItemObject != null)
+                    {
+                        if (blockItemObject.activeAbility = true)
+                        {
+                            
+                        }
+                    }
                 }
                 break;
 

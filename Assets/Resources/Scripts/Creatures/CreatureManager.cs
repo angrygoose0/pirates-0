@@ -27,7 +27,9 @@ public class TentacleData
     public Vector3 velocity;
     public Dictionary<GameObject, TentacleSegment> segments = new Dictionary<GameObject, TentacleSegment>();
     public float setDistance = 1.0f;
-    public float moveSpeed = 5.0f;
+    public float maxMoveSpeed = 5.0f;
+    public float deceleration;
+    public float acceleration;
     public float pullStrength = 0.5f;
     public float wiggleFrequency = 2.0f;
     public float wiggleAmplitude = 0.5f;
@@ -67,7 +69,6 @@ public class CreatureManager : MonoBehaviour
     public int maxGlobalMobCount = 70; // Maximum global mob count
     public int maxGlobalChunkPopulation = 50;
     public GameObject creaturePrefab;
-    public GameObject tentaclePrefab;
     public GameObject tentacleSegmentprefab;
     public ItemManager itemManager;
     public Tilemap worldTilemap;
@@ -119,6 +120,8 @@ public class CreatureManager : MonoBehaviour
             int deltaCreatureTargetX = Mathf.Abs(creatureTargetTilemapPosition.x - creatureData.currentTilePosition.x);
             int deltaCreatureTargetY = Mathf.Abs(creatureTargetTilemapPosition.y - creatureData.currentTilePosition.y);
 
+            float movementMultiplier = 1f;
+
             if (deltaCreatureTargetX + deltaCreatureTargetY == 0)
             {
                 if (currentState == State.Idle)
@@ -128,6 +131,7 @@ public class CreatureManager : MonoBehaviour
                 }
                 else if (currentState == State.Aggressive)
                 {
+                    movementMultiplier = 2f;
                     Vector3 targetShipPartLocalPosition = worldTilemap.WorldToCell(creatureData.targetShipPart.transform.position);
                     Vector3Int targetTile = Vector3Int.FloorToInt(targetShipPartLocalPosition);
 
@@ -139,7 +143,7 @@ public class CreatureManager : MonoBehaviour
             creatureTargetTilemapPosition = worldTilemap.WorldToCell(creatureData.targetPosition);
             List<Vector3Int> creatureTargetSurroundingTiles = GetSurroundingTiles(creatureTargetTilemapPosition, creatureData.creatureObject.range);
 
-            UpdateMovement(creatureData.targetPosition, creatureObject.acceleration * 2f, creatureObject.maxMoveSpeed * 2f, creatureObject.deceleration, creatureObject.rotationSpeed, 1f, ref creatureData.velocity, creatureGameObject.transform);
+            UpdateMovement(creatureData.targetPosition, creatureObject.acceleration, creatureObject.maxMoveSpeed, creatureObject.deceleration, creatureObject.rotationSpeed, movementMultiplier, ref creatureData.velocity, creatureGameObject.transform);
 
 
             foreach (KeyValuePair<GameObject, TentacleData> tentacleEntry in creatureData.tentacles)
@@ -155,21 +159,18 @@ public class CreatureManager : MonoBehaviour
 
                 if (tentacleData.endTarget == true)
                 {
-                    int deltaCurrentX = Mathf.Abs(tentacleData.currentTilePosition.x - creatureTargetTilemapPosition.x);
-                    int deltaCurrentY = Mathf.Abs(tentacleData.currentTilePosition.y - creatureTargetTilemapPosition.y);
+                    int deltaCurrentX = Mathf.Abs(tentacleData.currentTilePosition.x - creatureData.currentTilePosition.x);
+                    int deltaCurrentY = Mathf.Abs(tentacleData.currentTilePosition.x - creatureData.currentTilePosition.y);
 
                     Vector3Int tentacleTargetTilemapPosition = worldTilemap.WorldToCell(tentacleData.targetPosition);
 
-                    int deltaTargetX = Mathf.Abs(tentacleTargetTilemapPosition.x - creatureTargetTilemapPosition.x);
-                    int deltaTargetY = Mathf.Abs(tentacleTargetTilemapPosition.y - creatureTargetTilemapPosition.y);
-
-
-                    if (deltaTargetX + deltaTargetY > 5 && deltaCurrentX + deltaCurrentY > 3)
+                    if (tentacleTargetTilemapPosition == tentacleData.currentTilePosition)
+                    //
                     {
                         Vector3Int targetTile = creatureTargetSurroundingTiles[Random.Range(0, creatureTargetSurroundingTiles.Count)];
                         tentacleData.targetPosition = worldTilemap.GetCellCenterLocal(targetTile);
                     }
-                    UpdateMovement(tentacleData.targetPosition, 3f, 5f, 2f, 200f, 1f, ref tentacleData.velocity, tentacleGameObject.transform);
+                    UpdateMovement(tentacleData.targetPosition, tentacleData.acceleration, tentacleData.maxMoveSpeed, tentacleData.deceleration, creatureObject.rotationSpeed, movementMultiplier, ref tentacleData.velocity, tentacleGameObject.transform);
                 }
                 else
                 {
@@ -238,7 +239,7 @@ public class CreatureManager : MonoBehaviour
                     direction.y *= 0.5f;
 
                     Vector3 adjustedTargetPosition = currentPosition + direction;
-                    segmentKey.transform.position = Vector3.Lerp(currentPosition, adjustedTargetPosition, tentacleData.moveSpeed * Time.deltaTime);
+                    segmentKey.transform.position = Vector3.Lerp(currentPosition, adjustedTargetPosition, tentacleData.acceleration * Time.deltaTime);
                     currentSegment.direction = (segmentKey.transform.position - currentPosition).normalized;
 
                     if (nextSegmentKey != null)
@@ -437,8 +438,10 @@ public class CreatureManager : MonoBehaviour
 
     void UpdateCreatureChunks()
     {
-        foreach (var creature in creatures.Keys)
+        foreach (var kvp in creatures)
         {
+            GameObject creature = kvp.Key;
+            CreatureData creatureData = kvp.Value;
             if (creature != null)
             {
                 Vector3 creaturePosition = creature.transform.position;
@@ -446,8 +449,7 @@ public class CreatureManager : MonoBehaviour
 
                 if (newChunk != null)
                 {
-                    CreatureVitals vitals = creature.GetComponent<CreatureVitals>();
-                    int populationValue = vitals.creatureObject.populationValue;
+                    int populationValue = creatureData.creatureObject.populationValue;
 
                     if (creatureChunks.TryGetValue(creature, out ChunkData oldChunk))
                     {
@@ -578,7 +580,6 @@ public class CreatureManager : MonoBehaviour
                     for (int i = 0; i < packSize; i++)
                     {
                         GameObject newCreature = Instantiate(creaturePrefab, worldPosition, Quaternion.identity, worldGenerator.seaTilemap.transform);
-                        newCreature.GetComponent<CreatureVitals>().creatureObject = randomCreatureObject;
 
 
 
@@ -607,13 +608,15 @@ public class CreatureManager : MonoBehaviour
                         foreach (TentacleValue tentacle in tentacleList)
                         {
 
-                            GameObject newTentacle = Instantiate(tentaclePrefab, worldPosition, Quaternion.identity, worldGenerator.seaTilemap.transform);
+                            GameObject newTentacle = Instantiate(creaturePrefab, worldPosition, Quaternion.identity, worldGenerator.seaTilemap.transform);
                             TentacleData tentacleData = new TentacleData
                             {
                                 targetPosition = newCreature.transform.position,
                                 currentTilePosition = currentTilePosition,
                                 setDistance = tentacle.setDistance,
-                                moveSpeed = tentacle.moveSpeed,
+                                maxMoveSpeed = tentacle.maxMoveSpeed,
+                                deceleration = tentacle.deceleration,
+                                acceleration = tentacle.acceleration,
                                 pullStrength = tentacle.pullStrength,
                                 wiggleFrequency = tentacle.wiggleFrequency,
                                 wiggleAmplitude = tentacle.wiggleAmplitude,

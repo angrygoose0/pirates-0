@@ -20,7 +20,10 @@ public class TentacleValue
 {
     public List<float> segmentSizes;
     public float setDistance = 1.0f;
-    public float moveSpeed = 5.0f;
+    public float acceleration;
+    public float maxMoveSpeed;
+    public float deceleration;
+
     public float pullStrength = 0.5f;
     public float wiggleFrequency = 2.0f;
     public float wiggleAmplitude = 0.5f;
