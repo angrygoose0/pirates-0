@@ -24,6 +24,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: creaturePrefab Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 3853018371985993264, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
+      propertyPath: m_TagString
+      value: Creature
+      objectReference: {fileID: 0}
     - target: {fileID: 4171011091443591820, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
       propertyPath: m_Mass
       value: 1
@@ -35,6 +39,10 @@ PrefabInstance:
     - target: {fileID: 4171011091443591820, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
       propertyPath: m_Constraints
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4171011091443591820, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8112100835143601025, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
       propertyPath: m_LocalScale.x

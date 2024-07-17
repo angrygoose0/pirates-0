@@ -1,12 +1,17 @@
 using UnityEngine;
 
-
 public class DayNightCycle : MonoBehaviour
 {
     public UnityEngine.Rendering.Universal.Light2D globalLight;
     public float dayDuration = 120f; // Duration of a full day in seconds
 
-    private float currentTime = 0f;
+    private float currentTime;
+
+    void Start()
+    {
+        // Set currentTime to start during the day period
+        currentTime = dayDuration * 0.25f;
+    }
 
     void Update()
     {

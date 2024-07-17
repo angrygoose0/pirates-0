@@ -72,6 +72,7 @@ public class CreatureManager : MonoBehaviour
     public GameObject tentacleSegmentprefab;
     public ItemManager itemManager;
     public Tilemap worldTilemap;
+    public ShipVitals shipVitals;
 
     void Start()
     {
@@ -474,6 +475,13 @@ public class CreatureManager : MonoBehaviour
         }
     }
 
+    public void AttackShip(GameObject creature)
+    {
+        CreatureData creatureData = creatures[creature];
+
+        shipVitals.ApplyImpact(creatureData.creatureObject.damage);
+    }
+
 
     public List<Vector3Int> GetSurroundingTiles(Vector3Int centerTile, float range)
     {
@@ -582,6 +590,8 @@ public class CreatureManager : MonoBehaviour
                     for (int i = 0; i < packSize; i++)
                     {
                         GameObject newCreature = Instantiate(creaturePrefab, worldPosition, Quaternion.identity, worldGenerator.seaTilemap.transform);
+                        CreatureBehaviour creatureBehaviour = newCreature.AddComponent<CreatureBehaviour>();
+                        creatureBehaviour.creatureManager = this;
 
 
 

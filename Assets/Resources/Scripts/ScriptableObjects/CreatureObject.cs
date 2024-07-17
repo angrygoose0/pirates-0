@@ -43,6 +43,8 @@ public class CreatureObject : ScriptableObject
     public List<CreatureValue> creatureValues;
     public int tentacles;
 
+    public float damage;
+
     public float rotationSpeed;
     public float maxMoveSpeed;
     public float acceleration;

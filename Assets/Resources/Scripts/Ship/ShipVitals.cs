@@ -6,6 +6,8 @@ public class ShipVitals : MonoBehaviour
     public float shipHealth = 100f;  // Initialize shipHealth with a value, for example 100.
     private bool isDamaged = false;
     private float currentDamage = 0f;
+    public DamageFlash damageFlash;
+    public GameObject shipObject;
 
     void Update()
     {
@@ -17,7 +19,7 @@ public class ShipVitals : MonoBehaviour
         {
             ApplyImpact(10f);
         }
-        Debug.Log("Ship health: " + shipHealth);
+        //Debug.Log("Ship health: " + shipHealth);
     }
 
     public void ApplyImpact(float damageMagnitude)
@@ -34,12 +36,6 @@ public class ShipVitals : MonoBehaviour
         {
             currentDamage = damageMagnitude;
             StartCoroutine(DamageCoroutine());
-
-            // Trigger screen shake effect
-            if (ScreenShake.instance != null)
-            {
-                ScreenShake.instance.Shake(0.2f, damageMagnitude * 0.1f);
-            }
         }
     }
 
@@ -49,6 +45,8 @@ public class ShipVitals : MonoBehaviour
 
         // Apply damage
         shipHealth -= currentDamage;
+
+        damageFlash.Flash(shipObject);
 
         // Check if health is less than or equal to zero
         if (shipHealth <= 0)
