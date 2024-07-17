@@ -657,57 +657,77 @@ MonoBehaviour:
       gameObject: {fileID: 0}
       collider: {fileID: 0}
       renderer: {fileID: 0}
-      lineRenderer: {fileID: 0}
       direction: {x: 0, y: 0, z: 0}
-    - size: 0.1
+    - size: 0.4
       gameObject: {fileID: 0}
       collider: {fileID: 0}
       renderer: {fileID: 0}
-      lineRenderer: {fileID: 0}
       direction: {x: 0, y: 0, z: 0}
-    - size: 0.1
+    - size: 0.53
       gameObject: {fileID: 0}
       collider: {fileID: 0}
       renderer: {fileID: 0}
-      lineRenderer: {fileID: 0}
       direction: {x: 0, y: 0, z: 0}
-    - size: 0.1
+    - size: 0.8
       gameObject: {fileID: 0}
       collider: {fileID: 0}
       renderer: {fileID: 0}
-      lineRenderer: {fileID: 0}
       direction: {x: 0, y: 0, z: 0}
-    - size: 0.1
+    - size: 0.6
       gameObject: {fileID: 0}
       collider: {fileID: 0}
       renderer: {fileID: 0}
-      lineRenderer: {fileID: 0}
       direction: {x: 0, y: 0, z: 0}
-    - size: 0.1
+    - size: 0.5
       gameObject: {fileID: 0}
       collider: {fileID: 0}
       renderer: {fileID: 0}
-      lineRenderer: {fileID: 0}
-      direction: {x: 0, y: 0, z: 0}
-    - size: 0.1
-      gameObject: {fileID: 0}
-      collider: {fileID: 0}
-      renderer: {fileID: 0}
-      lineRenderer: {fileID: 0}
-      direction: {x: 0, y: 0, z: 0}
-    - size: 0.1
-      gameObject: {fileID: 0}
-      collider: {fileID: 0}
-      renderer: {fileID: 0}
-      lineRenderer: {fileID: 0}
       direction: {x: 0, y: 0, z: 0}
     endTarget: {fileID: 0}
-    setDistance: 0.2
+    setDistance: 0.1
     moveSpeed: 5
     pullStrength: 0.1
-    wiggleFrequency: 4
-    wiggleAmplitude: 0.3
-    organicMaterial: {fileID: 2100000, guid: 2464f688243c2e745a3f1d4f6eecb417, type: 2}
+    wiggleFrequency: 0
+    wiggleAmplitude: 0
+    lineRenderer: {fileID: 0}
+  - segments:
+    - size: 0.1
+      gameObject: {fileID: 0}
+      collider: {fileID: 0}
+      renderer: {fileID: 0}
+      direction: {x: 0, y: 0, z: 0}
+    - size: 0.4
+      gameObject: {fileID: 0}
+      collider: {fileID: 0}
+      renderer: {fileID: 0}
+      direction: {x: 0, y: 0, z: 0}
+    - size: 0.53
+      gameObject: {fileID: 0}
+      collider: {fileID: 0}
+      renderer: {fileID: 0}
+      direction: {x: 0, y: 0, z: 0}
+    - size: 0.8
+      gameObject: {fileID: 0}
+      collider: {fileID: 0}
+      renderer: {fileID: 0}
+      direction: {x: 0, y: 0, z: 0}
+    - size: 0.6
+      gameObject: {fileID: 0}
+      collider: {fileID: 0}
+      renderer: {fileID: 0}
+      direction: {x: 0, y: 0, z: 0}
+    - size: 0.5
+      gameObject: {fileID: 0}
+      collider: {fileID: 0}
+      renderer: {fileID: 0}
+      direction: {x: 0, y: 0, z: 0}
+    endTarget: {fileID: 1428441415}
+    setDistance: 0.1
+    moveSpeed: 5
+    pullStrength: 0.1
+    wiggleFrequency: 0
+    wiggleAmplitude: 0
+    lineRenderer: {fileID: 0}
 --- !u!1 &1747814159
 GameObject:
   m_ObjectHideFlags: 0

@@ -18,6 +18,9 @@ public class ItemObject : ScriptableObject
     public float damageMultiplier;
     public float explosionMultiplier;
     public float explosionRange;
+    public float accuracy;
+    public bool explosionInverse = false;
+    public float explosionSpeed;
     public int goldAmount = 0;
     public Sprite spawningSprite;
     public float regenerateTime;

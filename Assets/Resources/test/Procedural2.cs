@@ -8,16 +8,14 @@ public class TentacleSegment2
     public GameObject gameObject;
     public CircleCollider2D collider;
     public SpriteRenderer renderer;
-    public LineRenderer lineRenderer;
     public Vector3 direction;
 
-    public TentacleSegment2(float size, GameObject gameObject, CircleCollider2D collider, SpriteRenderer renderer, LineRenderer lineRenderer)
+    public TentacleSegment2(float size, GameObject gameObject, CircleCollider2D collider, SpriteRenderer renderer)
     {
         this.size = size;
         this.gameObject = gameObject;
         this.collider = collider;
         this.renderer = renderer;
-        this.lineRenderer = lineRenderer;
         this.direction = Vector3.zero;
     }
 }
@@ -32,9 +30,9 @@ public class Tentacles2
     public float pullStrength = 0.5f;
     public float wiggleFrequency = 2.0f;
     public float wiggleAmplitude = 0.5f;
-    public Material organicMaterial;
+    public LineRenderer lineRenderer;  // Added LineRenderer for each tentacle
 
-    public Tentacles2(List<TentacleSegment2> segments, GameObject endTarget, float setDistance, float moveSpeed, float pullStrength, float wiggleFrequency, float wiggleAmplitude, Material organicMaterial)
+    public Tentacles2(List<TentacleSegment2> segments, GameObject endTarget, float setDistance, float moveSpeed, float pullStrength, float wiggleFrequency, float wiggleAmplitude)
     {
         this.segments = segments;
         this.endTarget = endTarget;
@@ -43,14 +41,14 @@ public class Tentacles2
         this.pullStrength = pullStrength;
         this.wiggleFrequency = wiggleFrequency;
         this.wiggleAmplitude = wiggleAmplitude;
-        this.organicMaterial = organicMaterial;
+        this.lineRenderer = null;  // Initialize LineRenderer as null
     }
 }
 
 public class Procedural2 : MonoBehaviour
 {
     public GameObject prefab;
-    public Material gooMaterial; // Add this line
+    public Material gooMaterial;
     public List<Tentacles2> tentaclesList = new List<Tentacles2>();
 
     void Start()
@@ -64,41 +62,7 @@ public class Procedural2 : MonoBehaviour
 
         foreach (var tentacles in tentaclesList)
         {
-            List<TentacleSegment2> tentacleSegments = new List<TentacleSegment2>();
-            Vector3 targetPosition = transform.position;
-
-            foreach (var size in tentacles.segments)
-            {
-                GameObject newGameObject = Instantiate(prefab, targetPosition, Quaternion.identity);
-                newGameObject.transform.SetParent(tentacleContainer.transform);
-
-                CircleCollider2D collider = newGameObject.GetComponent<CircleCollider2D>();
-                SpriteRenderer renderer = newGameObject.GetComponent<SpriteRenderer>();
-                LineRenderer lineRenderer = newGameObject.AddComponent<LineRenderer>();
-
-                if (collider != null)
-                {
-                    collider.radius = size.size;
-                }
-
-                if (renderer != null)
-                {
-                    float diameter = size.size * 2.0f;
-                    newGameObject.transform.localScale = new Vector3(diameter, diameter, 1);
-                }
-
-                // Configure LineRenderer
-                lineRenderer.startWidth = 0.1f;
-                lineRenderer.endWidth = 0.1f;
-                lineRenderer.material = gooMaterial; // Use the custom material
-                lineRenderer.startColor = Color.black;
-                lineRenderer.endColor = Color.black;
-
-                TentacleSegment2 segment = new TentacleSegment2(size.size, newGameObject, collider, renderer, lineRenderer);
-                tentacleSegments.Add(segment);
-            }
-
-            tentacles.segments = tentacleSegments;
+            InitializeTentacles(tentacles, tentacleContainer);
         }
     }
 
@@ -106,121 +70,144 @@ public class Procedural2 : MonoBehaviour
     {
         foreach (var tentacles in tentaclesList)
         {
-            Vector3 targetPosition = transform.position;
-            Vector3 endPosition = tentacles.endTarget != null ? tentacles.endTarget.transform.position : targetPosition;
-
-            ApplyForcesToAllSegments(tentacles.segments, targetPosition, endPosition, tentacles);
-
-            // Animate shader properties
-            float distortion = Mathf.PingPong(Time.time * 0.1f, 0.05f) + 0.05f;
-            foreach (var segment in tentacles.segments)
-            {
-                segment.lineRenderer.material.SetFloat("_Distortion", distortion);
-            }
+            UpdateTentaclePositions(tentacles);
         }
     }
 
-
-    void FixedUpdate()
+    void InitializeTentacles(Tentacles2 tentacles, GameObject tentacleContainer)
     {
-        foreach (var tentacles in tentaclesList)
+        List<TentacleSegment2> tentacleSegments = new List<TentacleSegment2>();
+
+        foreach (var segment in tentacles.segments)
         {
-            if (tentacles.segments.Count > 0 && tentacles.segments[0].gameObject != null)
+            GameObject newGameObject = Instantiate(prefab, transform.position, Quaternion.identity);
+            newGameObject.transform.SetParent(tentacleContainer.transform);
+
+            CircleCollider2D collider = newGameObject.GetComponent<CircleCollider2D>();
+            SpriteRenderer renderer = newGameObject.GetComponent<SpriteRenderer>();
+
+            if (collider != null)
             {
-                Vector3 targetPosition = transform.position;
-                Vector3 endPosition = tentacles.endTarget != null ? tentacles.endTarget.transform.position : targetPosition;
-                ApplyForcesToAllSegments(tentacles.segments, targetPosition, endPosition, tentacles);
+                collider.radius = segment.size;
             }
+
+            if (renderer != null)
+            {
+                float diameter = segment.size * 2.0f;
+                newGameObject.transform.localScale = new Vector3(diameter, diameter, 1);
+            }
+
+            tentacleSegments.Add(new TentacleSegment2(segment.size, newGameObject, collider, renderer));
         }
+
+        tentacles.segments = tentacleSegments;
+
+        // Add a LineRenderer to the first segment of the tentacle
+        if (tentacles.segments.Count > 0)
+        {
+            TentacleSegment2 firstSegment = tentacles.segments[0];
+            tentacles.lineRenderer = firstSegment.gameObject.AddComponent<LineRenderer>();
+            tentacles.lineRenderer.material = gooMaterial;
+            tentacles.lineRenderer.startColor = Color.white;
+            tentacles.lineRenderer.endColor = Color.white;
+
+            // Set up width curve based on segment sizes
+            AnimationCurve widthCurve = new AnimationCurve();
+            for (int i = 0; i < tentacles.segments.Count; i++)
+            {
+                float t = (float)i / (tentacles.segments.Count - 1); // Normalized position along the line
+                float width = tentacles.segments[i].size * 2.0f; // Diameter
+                widthCurve.AddKey(t, width);
+            }
+            tentacles.lineRenderer.widthCurve = widthCurve;
+
+            // Set the width multiplier to smooth out the edges
+            tentacles.lineRenderer.widthMultiplier = 1.0f;
+
+            // Ensure corner and end caps are rounded by default (using a proper shader)
+            tentacles.lineRenderer.numCapVertices = 10;  // Add vertices to round the caps
+        }
+
+
     }
 
-    void ApplyForcesToAllSegments(List<TentacleSegment2> tentacleSegments, Vector3 targetPosition, Vector3 endPosition, Tentacles2 tentacles)
+    void UpdateTentaclePositions(Tentacles2 tentacles)
+    {
+        Vector3 targetPosition = transform.position;
+        Vector3 endPosition = tentacles.endTarget != null ? tentacles.endTarget.transform.position : targetPosition;
+
+        ApplyForcesToAllSegments(tentacles.segments, targetPosition, endPosition, tentacles);
+
+        float distortion = Mathf.PingPong(Time.time * 0.1f, 0.05f) + 0.05f;
+
+        List<Vector3> splinePoints = GenerateCatmullRomSpline(tentacles.segments);
+        UpdateLineRenderer(tentacles.lineRenderer, splinePoints);
+    }
+
+    void ApplyForcesToAllSegments(List<TentacleSegment2> segments, Vector3 targetPosition, Vector3 endPosition, Tentacles2 tentacles)
     {
         float time = Time.time;
-
-        for (int i = 0; i < tentacleSegments.Count; i++)
+        for (int i = 0; i < segments.Count; i++)
         {
-            TentacleSegment2 currentSegment = tentacleSegments[i];
-            Vector3 desiredPosition;
-
-            if (i == 0)
-            {
-                desiredPosition = targetPosition;
-            }
-            else if (i == tentacleSegments.Count - 3 && tentacles.endTarget != null)
-            {
-                desiredPosition = endPosition;
-            }
-            else
-            {
-                TentacleSegment2 previousSegment = tentacleSegments[i - 1];
-                TentacleSegment2 nextSegment = i < tentacleSegments.Count - 1 ? tentacleSegments[i + 1] : null;
-                Vector3 directionPrev = currentSegment.gameObject.transform.position - previousSegment.gameObject.transform.position;
-                Vector3 directionNext = nextSegment != null ? nextSegment.gameObject.transform.position - currentSegment.gameObject.transform.position : Vector3.zero;
-
-                if (tentacles.endTarget != null)
-                {
-                    desiredPosition = nextSegment != null ? (previousSegment.gameObject.transform.position + nextSegment.gameObject.transform.position) / 2.0f : previousSegment.gameObject.transform.position;
-                }
-                else
-                {
-                    desiredPosition = previousSegment.gameObject.transform.position + directionPrev.normalized * tentacles.setDistance;
-                }
-
-                float offset = Mathf.Sin(time * tentacles.wiggleFrequency + i * 0.5f) * tentacles.wiggleAmplitude;
-                Vector3 perpendicular = Vector3.Cross(directionPrev, Vector3.forward).normalized;
-                desiredPosition += perpendicular * offset;
-            }
-
-            Vector3 previousPosition = currentSegment.gameObject.transform.position;
+            TentacleSegment2 currentSegment = segments[i];
+            Vector3 desiredPosition = GetDesiredPosition(i, segments, targetPosition, endPosition, tentacles, time);
             MoveTowards(currentSegment.gameObject, desiredPosition, tentacles.moveSpeed);
-            currentSegment.direction = (currentSegment.gameObject.transform.position - previousPosition).normalized;
+            currentSegment.direction = (currentSegment.gameObject.transform.position - desiredPosition).normalized;
+            ApplyPullForces(i, segments, tentacles);
+        }
+    }
 
-            if (i < tentacleSegments.Count - 1)
+    Vector3 GetDesiredPosition(int index, List<TentacleSegment2> segments, Vector3 targetPosition, Vector3 endPosition, Tentacles2 tentacles, float time)
+    {
+        if (index == 0) return targetPosition;
+
+        TentacleSegment2 previousSegment = segments[index - 1];
+        TentacleSegment2 nextSegment = index < segments.Count - 1 ? segments[index + 1] : null;
+        Vector3 directionPrev = segments[index].gameObject.transform.position - previousSegment.gameObject.transform.position;
+
+        Vector3 desiredPosition = previousSegment.gameObject.transform.position + directionPrev.normalized * tentacles.setDistance;
+        if (index > 0 && tentacles.endTarget != null)
+        {
+            desiredPosition = nextSegment != null ?
+                (previousSegment.gameObject.transform.position + nextSegment.gameObject.transform.position) / 2.0f :
+                previousSegment.gameObject.transform.position;
+        }
+
+        float offset = Mathf.Sin(time * tentacles.wiggleFrequency + index * 0.5f) * tentacles.wiggleAmplitude;
+        Vector3 perpendicular = Vector3.Cross(directionPrev, Vector3.forward).normalized;
+        return desiredPosition + perpendicular * offset;
+    }
+
+    void ApplyPullForces(int index, List<TentacleSegment2> segments, Tentacles2 tentacles)
+    {
+        if (index < segments.Count - 1)
+        {
+            TentacleSegment2 nextSegment = segments[index + 1];
+            Vector3 pullDirection = segments[index].gameObject.transform.position - nextSegment.gameObject.transform.position;
+            float distance = pullDirection.magnitude;
+            if (distance > tentacles.setDistance)
             {
-                TentacleSegment2 nextSegment = tentacleSegments[i + 1];
-                Vector3 pullDirectionNext = currentSegment.gameObject.transform.position - nextSegment.gameObject.transform.position;
-                float distanceNext = pullDirectionNext.magnitude;
-
-                if (distanceNext > tentacles.setDistance)
-                {
-                    Vector3 pullForceNext = pullDirectionNext.normalized * (distanceNext - tentacles.setDistance) * tentacles.pullStrength;
-                    currentSegment.gameObject.transform.position -= pullForceNext * Time.deltaTime;
-                }
-            }
-
-            if (i > 0 && tentacles.endTarget != null)
-            {
-                TentacleSegment2 previousSegment = tentacleSegments[i - 1];
-                Vector3 pullDirectionPrev = previousSegment.gameObject.transform.position - currentSegment.gameObject.transform.position;
-                float distancePrev = pullDirectionPrev.magnitude;
-
-                if (distancePrev > tentacles.setDistance)
-                {
-                    Vector3 pullForcePrev = pullDirectionPrev.normalized * (distancePrev - tentacles.setDistance) * tentacles.pullStrength;
-                    currentSegment.gameObject.transform.position += pullForcePrev * Time.deltaTime;
-                }
+                Vector3 pullForce = pullDirection.normalized * (distance - tentacles.setDistance) * tentacles.pullStrength;
+                segments[index].gameObject.transform.position -= pullForce * Time.deltaTime;
             }
         }
 
-        // Generate Catmull-Rom spline points
-        List<Vector3> splinePoints = GenerateCatmullRomSpline(tentacleSegments);
-
-        // Update LineRenderer with spline points
-        for (int i = 0; i < tentacleSegments.Count; i++)
+        if (index > 0 && tentacles.endTarget != null)
         {
-            tentacleSegments[i].lineRenderer.positionCount = splinePoints.Count;
-            tentacleSegments[i].lineRenderer.SetPositions(splinePoints.ToArray());
+            TentacleSegment2 previousSegment = segments[index - 1];
+            Vector3 pullDirection = previousSegment.gameObject.transform.position - segments[index].gameObject.transform.position;
+            float distance = pullDirection.magnitude;
+            if (distance > tentacles.setDistance)
+            {
+                Vector3 pullForce = pullDirection.normalized * (distance - tentacles.setDistance) * tentacles.pullStrength;
+                segments[index].gameObject.transform.position += pullForce * Time.deltaTime;
+            }
         }
     }
 
     void MoveTowards(GameObject gameObject, Vector3 targetPosition, float moveSpeed)
     {
-        Vector3 currentPosition = gameObject.transform.position;
-        Vector3 direction = targetPosition - currentPosition;
-        direction.y *= 0.5f;
-        Vector3 adjustedTargetPosition = currentPosition + direction;
-        gameObject.transform.position = Vector3.Lerp(currentPosition, adjustedTargetPosition, moveSpeed * Time.deltaTime);
+        gameObject.transform.position = Vector3.Lerp(gameObject.transform.position, targetPosition, moveSpeed * Time.deltaTime);
     }
 
     List<Vector3> GenerateCatmullRomSpline(List<TentacleSegment2> segments, int resolution = 10)
@@ -254,5 +241,13 @@ public class Procedural2 : MonoBehaviour
         float d = 0.5f * t3 - 0.5f * t2;
 
         return a * p0 + b * p1 + c * p2 + d * p3;
+    }
+
+    void UpdateLineRenderer(LineRenderer lineRenderer, List<Vector3> splinePoints)
+    {
+        if (lineRenderer == null) return;
+
+        lineRenderer.positionCount = splinePoints.Count;
+        lineRenderer.SetPositions(splinePoints.ToArray());
     }
 }

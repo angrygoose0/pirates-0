@@ -643,7 +643,8 @@ public class CreatureManager : MonoBehaviour
 
                                 CircleCollider2D collider = newTentacleSegment.GetComponent<CircleCollider2D>();
                                 //SpriteRenderer renderer = newTentacleSegment.GetComponent<SpriteRenderer>();
-                                collider.radius = segmentSize;
+                                //collider.radius = segmentSize;
+                                collider.radius = 0f;
                                 float diameter = segmentSize * 2.0f;
                                 newTentacleSegment.transform.localScale = new Vector3(diameter, diameter, 1);
                                 TentacleSegment tentacleSegmentData = new TentacleSegment

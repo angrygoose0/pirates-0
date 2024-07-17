@@ -22,7 +22,7 @@ public class InteractionManager : MonoBehaviour
     public List<Vector3Int> GetSurroundingTiles(Vector3Int centerTile, float range)
     {
         List<Vector3Int> tiles = new List<Vector3Int>();
-        int rangeInt = Mathf.CeilToInt(range);
+        int rangeInt = Mathf.Max(1, Mathf.CeilToInt(range));
 
         for (int x = -rangeInt; x <= rangeInt; x++)
         {
@@ -123,7 +123,7 @@ public class InteractionManager : MonoBehaviour
                     {
                         if (blockItemObject.activeAbility = true)
                         {
-                            
+
                         }
                     }
                 }
@@ -172,9 +172,9 @@ public class InteractionManager : MonoBehaviour
                         float deltaX = blockPosition.x - selectorPosition.x;
                         float deltaY = (blockPosition.y - selectorPosition.y) * 0.5f;
                         float distance = Mathf.Sqrt(deltaX * deltaX + deltaY * deltaY);
-                        List<Vector3Int> tilesList = GetSurroundingTiles(selectorTilePosition, distance);
+                        List<Vector3Int> tilesList = GetSurroundingTiles(selectorTilePosition, distance * 0.5f);
 
-                        for (int i = 0; i < 7; i++)
+                        for (int i = 0; i < 1; i++)
                         {
                             Vector3Int targetTile = tilesList[Random.Range(0, tilesList.Count)];
                             cannonBehaviour.FireInTheHole(blockPosition, targetTile, blockItemObject);

@@ -4,7 +4,6 @@ using UnityEngine;
 public class Explosions : MonoBehaviour
 {
     public int raycastCount = 36; // Number of raycasts
-    public float raySpeed = 10f; // Speed at which rays progress
     public CreatureManager creatureManager;
 
     public void Explode(Vector3 explosionPosition, ItemObject itemObject)
@@ -26,20 +25,22 @@ public class Explosions : MonoBehaviour
     private IEnumerator CastRayUntilDissipated(Vector3 startPosition, Vector3 direction, ItemObject itemObject)
     {
         float dissipationRate = 1 / itemObject.explosionRange;
-        float currentRayForce = 1f; // Start the ray force at 1
+        float currentRayForce = itemObject.explosionInverse ? 0f : 1f; // Start the ray force based on the itemObject.explosionInverse parameter
         Vector3 currentPosition = startPosition;
 
-        while (currentRayForce > 0)
+        while (itemObject.explosionInverse ? currentRayForce < 1 : currentRayForce > 0)
         {
-            RaycastHit2D hit = Physics2D.Raycast(currentPosition, direction, raySpeed * Time.deltaTime);
+            RaycastHit2D hit = Physics2D.Raycast(currentPosition, direction, itemObject.explosionSpeed * Time.deltaTime);
 
             if (hit.collider != null)
             {
                 Debug.Log("Hit detected");
                 float distance = Vector2.Distance(currentPosition, hit.point);
-                currentRayForce = Mathf.Max(currentRayForce - distance * dissipationRate, 0);
+                currentRayForce = itemObject.explosionInverse
+                    ? Mathf.Min(currentRayForce + distance * dissipationRate, 1)
+                    : Mathf.Max(currentRayForce - distance * dissipationRate, 0);
 
-                if (currentRayForce > 0)
+                if (itemObject.explosionInverse ? currentRayForce < 1 : currentRayForce > 0)
                 {
                     Rigidbody2D rigidBody = hit.collider.GetComponent<Rigidbody2D>();
 
@@ -73,23 +74,33 @@ public class Explosions : MonoBehaviour
                 }
 
                 // Draw the ray in the scene view for visualization
-                Debug.DrawRay(startPosition, direction * distance, Color.red, 0.1f);
+                //Debug.DrawRay(startPosition, direction * distance, Color.red, 0.1f);
+                // No collider hit, adjust the ray force based on the dissipation rate over distance
+                currentPosition += direction * itemObject.explosionSpeed * Time.deltaTime;
+                currentRayForce = itemObject.explosionInverse
+                    ? Mathf.Min(currentRayForce + dissipationRate * itemObject.explosionSpeed * Time.deltaTime, 1)
+                    : currentRayForce - dissipationRate * itemObject.explosionSpeed * Time.deltaTime;
 
+                // Draw the ray in the scene view for visualization
+                Debug.DrawRay(startPosition, direction * (itemObject.explosionInverse ? currentRayForce : (1 - currentRayForce) / dissipationRate), Color.red, 0.1f);
                 // Break out of the loop to stop casting the ray
                 break;
             }
             else
             {
-                // No collider hit, just reduce the ray force based on the dissipation rate over distance
-                currentPosition += direction * raySpeed * Time.deltaTime;
-                currentRayForce -= dissipationRate * raySpeed * Time.deltaTime;
+                // No collider hit, adjust the ray force based on the dissipation rate over distance
+                currentPosition += direction * itemObject.explosionSpeed * Time.deltaTime;
+                currentRayForce = itemObject.explosionInverse
+                    ? Mathf.Min(currentRayForce + dissipationRate * itemObject.explosionSpeed * Time.deltaTime, 1)
+                    : currentRayForce - dissipationRate * itemObject.explosionSpeed * Time.deltaTime;
 
                 // Draw the ray in the scene view for visualization
-                Debug.DrawRay(startPosition, direction * (1 - currentRayForce) / dissipationRate, Color.red, 0.1f);
+                Debug.DrawRay(startPosition, direction * (itemObject.explosionInverse ? currentRayForce : (1 - currentRayForce) / dissipationRate), Color.red, 0.1f);
             }
 
             yield return null;
         }
     }
+
 
 }

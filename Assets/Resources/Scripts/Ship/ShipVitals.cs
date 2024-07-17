@@ -56,7 +56,7 @@ public class ShipVitals : MonoBehaviour
         }
 
         // Wait for invincibility duration
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.1f);
 
         // Reset damage
         currentDamage = 0f;
