@@ -95,7 +95,7 @@ public class CreatureManager : MonoBehaviour
             GameObject creatureGameObject = creatureEntry.Key;
             CreatureData creatureData = creatureEntry.Value;
 
-            Vector3Int newTilePosition = worldGenerator.seaTilemap.WorldToCell(creatureGameObject.transform.position);
+            Vector3Int newTilePosition = worldTilemap.WorldToCell(creatureGameObject.transform.position);
             if (creatureData.currentTilePosition != newTilePosition)
             {
                 creatureData.currentTilePosition = newTilePosition;
@@ -119,13 +119,14 @@ public class CreatureManager : MonoBehaviour
 
             Vector3Int creatureTargetTilemapPosition = worldTilemap.WorldToCell(creatureData.targetPosition);
 
+            Debug.Log(creatureTargetTilemapPosition + "target");
+            Debug.Log(creatureData.currentTilePosition + "current");
+            Debug.Log(worldTilemap.WorldToCell(creatureGameObject.transform.localPosition) + "gameobject");
 
-            int deltaCreatureTargetX = Mathf.Abs(creatureTargetTilemapPosition.x - creatureData.currentTilePosition.x);
-            int deltaCreatureTargetY = Mathf.Abs(creatureTargetTilemapPosition.y - creatureData.currentTilePosition.y);
 
             float movementMultiplier = 1f;
 
-            if (deltaCreatureTargetX + deltaCreatureTargetY == 0)
+            if (creatureTargetTilemapPosition == creatureData.currentTilePosition)
             {
                 if (currentState == State.Idle)
                 {
@@ -134,7 +135,6 @@ public class CreatureManager : MonoBehaviour
                 }
                 else if (currentState == State.Aggressive)
                 {
-                    movementMultiplier = 2f;
                     Vector3 targetShipPartLocalPosition = worldTilemap.WorldToCell(creatureData.targetShipPart.transform.position);
                     Vector3Int targetTile = Vector3Int.FloorToInt(targetShipPartLocalPosition);
 
@@ -559,27 +559,35 @@ public class CreatureManager : MonoBehaviour
     }
     public void UpdateMovement(Vector3 targetPosition, float acceleration, float maxMoveSpeed, float deceleration, float rotationSpeed, float movementMultiplier, ref Vector3 velocity, Transform transform)
     {
+        // Calculate effective acceleration and max speed with movement multiplier
         float currentAcceleration = acceleration * movementMultiplier;
         float currentMaxMoveSpeed = maxMoveSpeed * movementMultiplier;
 
+        // Calculate direction to the target position
         Vector3 direction = targetPosition - transform.localPosition;
-        float distance = direction.magnitude;
-        direction.Normalize();
+        // Adjust direction for isometric movement
+        Vector3 adjustedDirection = new Vector3(direction.x, direction.y * 0.5f, direction.z);
+        float distance = adjustedDirection.magnitude;
+        adjustedDirection.Normalize();
 
-        Vector3 targetVelocity = direction * currentMaxMoveSpeed;
-        targetVelocity.y *= 0.5f;
+        // Calculate the target velocity based on the direction and max speed
+        Vector3 targetVelocity = adjustedDirection * currentMaxMoveSpeed;
 
-        if (distance > 0.1f)
+        if (distance > 0.1f) // If not close enough to the target
         {
+            // Move towards the target velocity with given acceleration
             velocity = Vector3.MoveTowards(velocity, targetVelocity, currentAcceleration * Time.deltaTime);
         }
-        else
+        else // Close to the target, start deceleration
         {
+            // Slow down the velocity to zero with deceleration
             velocity = Vector3.MoveTowards(velocity, Vector3.zero, deceleration * Time.deltaTime);
         }
 
+        // Update position based on current velocity
         transform.localPosition += velocity * Time.deltaTime;
 
+        // If the object is moving, update its rotation
         if (velocity.magnitude > 0.1f)
         {
             float targetAngle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg;
@@ -587,6 +595,8 @@ public class CreatureManager : MonoBehaviour
             transform.rotation = Quaternion.Euler(0, 0, angle);
         }
     }
+
+
 
 
     CreatureObject PickRandomCreatureObject(int hostilityLevel)

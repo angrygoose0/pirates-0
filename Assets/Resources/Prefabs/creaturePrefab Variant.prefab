@@ -105,8 +105,28 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
     - target: {fileID: 9155594814630643418, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
-      propertyPath: m_Enabled
+      propertyPath: m_Color.b
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9155594814630643418, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9155594814630643418, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9155594814630643418, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9155594814630643418, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
+      propertyPath: m_SortingLayer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 9155594814630643418, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 76177347
       objectReference: {fileID: 0}
     - target: {fileID: 9155594814630643418, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
       propertyPath: m_WasSpriteAssigned
