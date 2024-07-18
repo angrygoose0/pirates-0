@@ -34,6 +34,7 @@ public class TentacleData
     public float wiggleFrequency = 2.0f;
     public float wiggleAmplitude = 0.5f;
     public bool endTarget = true;
+    public LineRenderer lineRenderer;
 }
 
 public class CreatureData
@@ -73,6 +74,7 @@ public class CreatureManager : MonoBehaviour
     public ItemManager itemManager;
     public Tilemap worldTilemap;
     public ShipVitals shipVitals;
+    public Material creatureMaterial;
 
     void Start()
     {
@@ -214,11 +216,16 @@ public class CreatureManager : MonoBehaviour
                         previousSegmentKey = segmentKeys[i - 1];
                         TentacleSegment previousSegment = segments[previousSegmentKey];
 
-                        nextSegmentKey = segmentKeys[i + 1];
-                        TentacleSegment nextSegment = segments[nextSegmentKey];
+                        if (i != segmentKeys.Count - 1)
+                        {
+                            nextSegmentKey = segmentKeys[i + 1];
+                            TentacleSegment nextSegment = segments[nextSegmentKey];
+                        }
+
+
 
                         Vector3 directionPrev = segmentKey.transform.position - previousSegmentKey.transform.position;
-                        Vector3 directionNext = nextSegment != null ? nextSegmentKey.transform.position - segmentKey.transform.position : Vector3.zero;
+                        Vector3 directionNext = nextSegmentKey != null ? nextSegmentKey.transform.position - segmentKey.transform.position : Vector3.zero;
 
                         if (tentacleData.endTarget == true)
                         {
@@ -240,7 +247,7 @@ public class CreatureManager : MonoBehaviour
                     direction.y *= 0.5f;
 
                     Vector3 adjustedTargetPosition = currentPosition + direction;
-                    segmentKey.transform.position = Vector3.Lerp(currentPosition, adjustedTargetPosition, tentacleData.acceleration * Time.deltaTime);
+                    segmentKey.transform.position = Vector3.Lerp(currentPosition, adjustedTargetPosition, tentacleData.acceleration * Time.deltaTime * movementMultiplier);
                     currentSegment.direction = (segmentKey.transform.position - currentPosition).normalized;
 
                     if (nextSegmentKey != null)
@@ -266,9 +273,11 @@ public class CreatureManager : MonoBehaviour
                         }
                     }
                 }
+
+                List<Vector3> splinePoints = GenerateCatmullRomSpline(segmentKeys);
+                UpdateLineRenderer(tentacleData.lineRenderer, splinePoints);
             }
         }
-
 
 
 
@@ -277,6 +286,52 @@ public class CreatureManager : MonoBehaviour
             mobSpawner();
         }
         HandleDespawning();
+    }
+
+    void UpdateLineRenderer(LineRenderer lineRenderer, List<Vector3> splinePoints)
+    {
+        if (lineRenderer == null) return;
+        List<Vector3> squashedPoints = new List<Vector3>();
+        foreach (var point in splinePoints)
+        {
+            squashedPoints.Add(new Vector3(point.x, point.y * 2f, point.z));
+        }
+        lineRenderer.positionCount = squashedPoints.Count;
+        lineRenderer.SetPositions(squashedPoints.ToArray());
+    }
+
+
+    List<Vector3> GenerateCatmullRomSpline(List<GameObject> segments, int resolution = 10)
+    {
+        List<Vector3> splinePoints = new List<Vector3>();
+        for (int i = 0; i < segments.Count - 1; i++)
+        {
+            Vector3 p0 = segments[Mathf.Max(i - 1, 0)].transform.position;
+            Vector3 p1 = segments[i].transform.position;
+            Vector3 p2 = segments[i + 1].transform.position;
+            Vector3 p3 = segments[Mathf.Min(i + 2, segments.Count - 1)].transform.position;
+
+            for (int j = 0; j < resolution; j++)
+            {
+                float t = j / (float)resolution;
+                Vector3 position = GetCatmullRomPosition(t, p0, p1, p2, p3);
+                splinePoints.Add(position);
+            }
+        }
+        return splinePoints;
+    }
+
+    Vector3 GetCatmullRomPosition(float t, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
+    {
+        float t2 = t * t;
+        float t3 = t2 * t;
+
+        float a = -0.5f * t3 + t2 - 0.5f * t;
+        float b = 1.5f * t3 - 2.5f * t2 + 1.0f;
+        float c = -1.5f * t3 + 2.0f * t2 + 0.5f * t;
+        float d = 0.5f * t3 - 0.5f * t2;
+
+        return a * p0 + b * p1 + c * p2 + d * p3;
     }
 
 
@@ -634,7 +689,7 @@ public class CreatureManager : MonoBehaviour
                                 wiggleAmplitude = tentacle.wiggleAmplitude,
                                 endTarget = tentacle.endTarget,
                             };
-
+                            bool firstSegment = true;
                             List<float> segmentSizeList = tentacle.segmentSizes;
                             foreach (float segmentSize in segmentSizeList)
                             {
@@ -645,8 +700,8 @@ public class CreatureManager : MonoBehaviour
                                 //SpriteRenderer renderer = newTentacleSegment.GetComponent<SpriteRenderer>();
                                 //collider.radius = segmentSize;
                                 collider.radius = 0f;
-                                float diameter = segmentSize * 2.0f;
-                                newTentacleSegment.transform.localScale = new Vector3(diameter, diameter, 1);
+                                //float diameter = segmentSize * 2.0f;
+                                //newTentacleSegment.transform.localScale = new Vector3(diameter, diameter, 1);
                                 TentacleSegment tentacleSegmentData = new TentacleSegment
                                 {
                                     creature = newCreature,
@@ -657,6 +712,26 @@ public class CreatureManager : MonoBehaviour
 
                                 segmentToCreature[newTentacleSegment] = newCreature; // Add to reverse lookup
 
+                                if (firstSegment)
+                                {
+                                    firstSegment = false;
+                                    tentacleData.lineRenderer = newTentacleSegment.AddComponent<LineRenderer>();
+                                    tentacleData.lineRenderer.material = creatureMaterial;
+                                    tentacleData.lineRenderer.sortingLayerName = "creature";
+
+                                    AnimationCurve widthCurve = new AnimationCurve();
+                                    for (int o = 0; o < segmentSizeList.Count; o++)
+                                    {
+                                        float t = (float)o / (segmentSizeList.Count - 1); // Normalized position along the line
+                                        float width = segmentSizeList[o] * 2.0f; // Diameter
+                                        widthCurve.AddKey(t, width);
+                                    }
+                                    tentacleData.lineRenderer.widthCurve = widthCurve;
+                                    tentacleData.lineRenderer.widthMultiplier = 1.0f;
+                                    tentacleData.lineRenderer.numCapVertices = 10;
+
+
+                                }
 
                             }
                             creatureData.tentacles.Add(newTentacle, tentacleData);

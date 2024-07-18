@@ -108,8 +108,6 @@ public class Procedural2 : MonoBehaviour
             TentacleSegment2 firstSegment = tentacles.segments[0];
             tentacles.lineRenderer = firstSegment.gameObject.AddComponent<LineRenderer>();
             tentacles.lineRenderer.material = gooMaterial;
-            tentacles.lineRenderer.startColor = Color.white;
-            tentacles.lineRenderer.endColor = Color.white;
 
             // Set up width curve based on segment sizes
             AnimationCurve widthCurve = new AnimationCurve();
@@ -138,7 +136,6 @@ public class Procedural2 : MonoBehaviour
 
         ApplyForcesToAllSegments(tentacles.segments, targetPosition, endPosition, tentacles);
 
-        float distortion = Mathf.PingPong(Time.time * 0.1f, 0.05f) + 0.05f;
 
         List<Vector3> splinePoints = GenerateCatmullRomSpline(tentacles.segments);
         UpdateLineRenderer(tentacles.lineRenderer, splinePoints);
@@ -247,7 +244,14 @@ public class Procedural2 : MonoBehaviour
     {
         if (lineRenderer == null) return;
 
-        lineRenderer.positionCount = splinePoints.Count;
-        lineRenderer.SetPositions(splinePoints.ToArray());
+        List<Vector3> squashedPoints = new List<Vector3>();
+        foreach (var point in splinePoints)
+        {
+            squashedPoints.Add(new Vector3(point.x, point.y * 2f, point.z));
+        }
+
+        lineRenderer.positionCount = squashedPoints.Count;
+        lineRenderer.SetPositions(squashedPoints.ToArray());
     }
+
 }

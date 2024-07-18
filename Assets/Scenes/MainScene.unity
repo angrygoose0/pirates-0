@@ -695,6 +695,7 @@ MonoBehaviour:
   itemManager: {fileID: 383585326}
   worldTilemap: {fileID: 170296654}
   shipVitals: {fileID: 383585331}
+  creatureMaterial: {fileID: -876546973899608171, guid: 75bcb048b2b629a4caae376d0826fb04, type: 3}
 --- !u!114 &383585328
 MonoBehaviour:
   m_ObjectHideFlags: 0
