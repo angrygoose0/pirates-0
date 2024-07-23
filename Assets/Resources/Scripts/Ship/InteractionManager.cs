@@ -164,6 +164,11 @@ public class InteractionManager : MonoBehaviour
 
                     if (playerBlockRelations.ContainsKey(player))
                     {
+                        if (blockItemObject == null)
+                        {
+                            Debug.Log("shoot blanks");
+                            break;
+                        }
                         Vector3 blockPosition = blockPrefab.transform.position;
                         Vector3 selectorPosition = cannonBehaviour.GetSelectorPosition();
                         Vector3Int selectorTilePosition = cannonBehaviour.WorldToCell(selectorPosition);
@@ -174,16 +179,13 @@ public class InteractionManager : MonoBehaviour
                         float distance = Mathf.Sqrt(deltaX * deltaX + deltaY * deltaY);
                         List<Vector3Int> tilesList = GetSurroundingTiles(selectorTilePosition, distance * 0.5f);
 
-                        for (int i = 0; i < 1; i++)
+                        Debug.Log(blockItemObject.fireAmount);
+                        for (int i = 0; i < blockItemObject.fireAmount; i++)
                         {
                             Vector3Int targetTile = tilesList[Random.Range(0, tilesList.Count)];
                             cannonBehaviour.FireInTheHole(blockPosition, targetTile, blockItemObject);
                         }
 
-                    }
-                    else
-                    {
-                        Debug.Log("shoot blanks");
                     }
                 }
                 break;

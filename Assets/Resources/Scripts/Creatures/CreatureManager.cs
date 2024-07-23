@@ -119,9 +119,9 @@ public class CreatureManager : MonoBehaviour
 
             Vector3Int creatureTargetTilemapPosition = worldTilemap.WorldToCell(creatureData.targetPosition);
 
-            Debug.Log(creatureTargetTilemapPosition + "target");
-            Debug.Log(creatureData.currentTilePosition + "current");
-            Debug.Log(worldTilemap.WorldToCell(creatureGameObject.transform.localPosition) + "gameobject");
+            //Debug.Log(creatureTargetTilemapPosition + "target");
+            //Debug.Log(creatureData.currentTilePosition + "current");
+            //Debug.Log(worldTilemap.WorldToCell(creatureGameObject.transform.localPosition) + "gameobject");
 
 
             float movementMultiplier = 1f;
@@ -294,7 +294,7 @@ public class CreatureManager : MonoBehaviour
         List<Vector3> squashedPoints = new List<Vector3>();
         foreach (var point in splinePoints)
         {
-            squashedPoints.Add(new Vector3(point.x, point.y * 2f, point.z));
+            squashedPoints.Add(new Vector3(point.x * 0.5f, point.y, point.z));
         }
         lineRenderer.positionCount = squashedPoints.Count;
         lineRenderer.SetPositions(squashedPoints.ToArray());
@@ -703,13 +703,12 @@ public class CreatureManager : MonoBehaviour
                             List<float> segmentSizeList = tentacle.segmentSizes;
                             foreach (float segmentSize in segmentSizeList)
                             {
-                                GameObject newTentacleSegment = Instantiate(tentacleSegmentprefab, worldPosition, Quaternion.identity);
+                                GameObject newTentacleSegment = Instantiate(tentacleSegmentprefab, worldPosition, Quaternion.identity, worldGenerator.seaTilemap.transform);
                                 //newTentacleSegment.transform.SetParent();
 
                                 CircleCollider2D collider = newTentacleSegment.GetComponent<CircleCollider2D>();
                                 //SpriteRenderer renderer = newTentacleSegment.GetComponent<SpriteRenderer>();
-                                //collider.radius = segmentSize;
-                                collider.radius = 0f;
+                                collider.radius = segmentSize;
                                 //float diameter = segmentSize * 2.0f;
                                 //newTentacleSegment.transform.localScale = new Vector3(diameter, diameter, 1);
                                 TentacleSegment tentacleSegmentData = new TentacleSegment

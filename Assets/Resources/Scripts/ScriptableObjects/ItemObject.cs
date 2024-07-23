@@ -20,6 +20,7 @@ public class ItemObject : ScriptableObject
     public float explosionRange;
     public float accuracy;
     public bool explosionInverse = false;
+    public int fireAmount;
     public float explosionSpeed;
     public int goldAmount = 0;
     public Sprite spawningSprite;
