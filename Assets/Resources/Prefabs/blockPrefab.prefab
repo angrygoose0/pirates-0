@@ -99,7 +99,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blockObject: {fileID: 0}
   blockDirection: {x: 0, y: 1}
-  itemPrefabObject: {fileID: 0}
+  itemPrefabObject: []
   player: {fileID: 0}
   itemPrefab: {fileID: 7643066971796696554, guid: a02dfe49a58e0af428c86086ccfa3b23, type: 3}
   spawnedItem: {fileID: 0}
+  itemObjectList:
+  - {fileID: 11400000, guid: 7b55d8d53a0e517439cc01d10dff5395, type: 2}

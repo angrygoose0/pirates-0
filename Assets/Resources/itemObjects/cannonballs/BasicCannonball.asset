@@ -14,16 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: BasicCannonball
   itemSprite: {fileID: 0}
-  mass: 100
+  mass: 1
   damageMultiplier: 1
   explosionMultiplier: 10
   explosionRange: 3
-  accuracy: 10
+  accuracy: 2
   explosionInverse: 0
-  fireAmount: 10
+  fireAmount: 2
   explosionSpeed: 100
   goldAmount: 0
   spawningSprite: {fileID: 46604427, guid: eccc8b95d0cd88e4eb091f0228ffd6e7, type: 3}
   regenerateTime: 0
   recipes: []
-  activeAbility: 0
+  activeAbility: 1

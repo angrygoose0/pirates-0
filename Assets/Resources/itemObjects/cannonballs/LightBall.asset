@@ -18,6 +18,15 @@ MonoBehaviour:
   damageMultiplier: 1
   explosionMultiplier: 1
   explosionRange: 1
+  accuracy: 0
+  explosionInverse: 0
+  fireAmount: 0
+  explosionSpeed: 0
   goldAmount: 0
   spawningSprite: {fileID: 0}
   regenerateTime: 0
+  recipes:
+  - materials:
+    - {fileID: 11400000, guid: 81de5d4855b024e4f98add07aea7d9e3, type: 2}
+    - {fileID: 11400000, guid: 81de5d4855b024e4f98add07aea7d9e3, type: 2}
+  activeAbility: 0

@@ -5,6 +5,8 @@ using UnityEngine;
 public class InteractionManager : MonoBehaviour
 {
     public Dictionary<GameObject, GameObject> playerBlockRelations = new Dictionary<GameObject, GameObject>(); // adds two instances where block/players are swapped key/value to make it more efficient when searching.
+
+
     public GameObject equippedCannon;
     public CannonBehaviour cannonBehaviour;
 
@@ -65,7 +67,7 @@ public class InteractionManager : MonoBehaviour
         ItemScript equippedItemScript = null;
 
         ItemObject equippedItemObject = null;
-        if (equippedItem != null)
+        if (playerScript.equippedItem != null)
         {
             equippedItemScript = equippedItem.GetComponent<ItemScript>();
             equippedItemObject = equippedItemScript.itemObject;
@@ -76,7 +78,11 @@ public class InteractionManager : MonoBehaviour
         BlockObject blockObject = blockScript.blockObject;
         GameObject blockItem = null;
 
-        blockItem = blockScript.itemPrefabObject;
+        if (blockScript.itemPrefabObject != null && blockScript.itemPrefabObject.Count == 1)
+        {
+            blockItem = blockScript.itemPrefabObject[0];
+        }
+
 
         ItemScript blockItemScript = null;
         ItemObject blockItemObject = null;
@@ -123,7 +129,7 @@ public class InteractionManager : MonoBehaviour
                     {
                         if (blockItemObject.activeAbility = true)
                         {
-
+                            break;
                         }
                     }
                 }
@@ -138,19 +144,10 @@ public class InteractionManager : MonoBehaviour
                         equippedItemScript.SetItemVisibility(false);
                         equippedItemScript.NewParent(blockPrefab);
                         equippedItemScript.itemPickupable = false;
+                        blockScript.itemPrefabObject.Add(equippedItem);
+                        playerScript.equippedItem = null;
                     }
 
-
-                    blockScript.itemPrefabObject = equippedItem;
-
-                    if (blockItemScript != null)
-                    {
-                        blockItemScript.SetItemVisibility(true);
-                        blockItemScript.NewParent(player);
-                        equippedItemScript.itemPickupable = true;
-                    }
-
-                    playerScript.equippedItem = blockItem;
                 }
                 else if (blockObject.blockType == BlockType.Mast)
                 {

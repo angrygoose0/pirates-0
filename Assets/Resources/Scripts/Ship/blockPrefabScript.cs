@@ -1,54 +1,131 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class blockPrefabScript : MonoBehaviour
 {
     public BlockObject blockObject; // Variable to store block objects
     public Vector2 blockDirection = Vector2.up; // Variable to store the direction as a Vector2                                  
-    public GameObject itemPrefabObject;
+    public List<GameObject> itemPrefabObject = new List<GameObject>(); //items that are in the block
     private ItemObject itemObject;
     public GameObject player;
     public GameObject itemPrefab;
     public GameObject spawnedItem;
 
+
+    public List<ItemObject> itemObjectList; // list for the global item scriptable objectlist
     private ItemScript spawnedItemScript;
     private Collider2D spawnedItemCollider;
+
 
     private bool isSpawning = false;
 
     void Update()
     {
-        DisplayItemInfo();
-        if (blockObject.blockType == BlockType.Payload && !isSpawning && itemObject != null)
+        if (blockObject.blockType == BlockType.Payload)
         {
-            if (spawnedItem == null || (spawnedItemScript?.itemTaken == true))
+            if (itemPrefabObject.Count > 1) // this should only be done when the itemPrefabObject list is changed,  not every frame.
             {
-                spawnedItem = null;
-                spawnedItemCollider = null;
-                spawnedItemScript = null;
-                if (itemObject.spawningSprite != null)
+                Debug.Log("crafting");
+
+                List<List<ItemObject>> craftedItems = new List<List<ItemObject>>();
+
+                for (int i = 0; i < itemPrefabObject.Count; i++)
                 {
-                    Debug.Log("started");
-                    StartCoroutine(SpawnItemWithDelay(2f));
+                    ItemScript itemScript = itemPrefabObject[i].GetComponent<ItemScript>();
+                    ItemObject itemObject = itemScript.itemObject;
+
+                    List<ItemObject> craftedItem = FilterByRecipe(itemObject);
+
+                    craftedItems.Add(craftedItem);
+
 
                 }
+
+
+                List<ItemObject> intersectionList = craftedItems.Skip(1)
+                    .Aggregate(
+                        new HashSet<ItemObject>(craftedItems.First()),
+                        (h, e) => { h.IntersectWith(e); return h; }
+                    ).ToList();  // Convert to List
+
+
+                if (intersectionList.Count > 0)
+                {
+                    foreach (GameObject item in itemPrefabObject)
+                    {
+                        Destroy(item);
+                    }
+                    itemPrefabObject.Clear();
+                    foreach (ItemObject resultItem in intersectionList)
+                    {
+                        GameObject craftedItemObject = Instantiate(itemPrefab, gameObject.transform.position, Quaternion.identity);
+
+                        ItemScript craftedItemScript = craftedItemObject.GetComponent<ItemScript>();
+
+                        craftedItemScript.SetItemVisibility(false);
+                        craftedItemScript.NewParent(gameObject);
+                        craftedItemScript.itemPickupable = false;
+                        craftedItemScript.itemObject = resultItem;
+
+                        itemPrefabObject.Add(craftedItemObject);
+                    }
+
+
+                }
+                else
+                {
+                    Debug.Log("no recipes"); //shoot out both ingredients
+                    return;
+                }
+
             }
+            else if (itemPrefabObject.Count == 1)
+            {
+                ItemScript itemScript = itemPrefabObject[0].GetComponent<ItemScript>();
+                ItemObject spawningItemObject = itemScript.itemObject; //the item doing the spawning
+                ItemObject spawningItem = spawningItemObject.spawningItem; //the item being spanwed
+                if (!isSpawning && spawningItem != null)
+                {
+                    if (spawnedItem == null || (spawnedItemScript?.itemTaken == true))
+                    {
+                        spawnedItem = null;
+                        spawnedItemCollider = null;
+                        spawnedItemScript = null;
+
+                        StartCoroutine(SpawnItemWithDelay(2f, spawningItemObject));
+                    }
+                }
+            }
+
         }
+
+
     }
 
-    private IEnumerator SpawnItemWithDelay(float delay)
+
+
+    public List<ItemObject> FilterByRecipe(ItemObject targetItem)
+    {
+        return itemObjectList.Where(item => item.recipes != null && item.recipes.Any(recipe => recipe.materials.Contains(targetItem))).ToList();
+    }
+
+
+
+
+    private IEnumerator SpawnItemWithDelay(float delay, ItemObject itemObject)
     {
         isSpawning = true;
         yield return new WaitForSeconds(delay);
-        SpawnItem();
+        SpawnItem(itemObject);
         isSpawning = false;
     }
 
-    private void SpawnItem()
+    private void SpawnItem(ItemObject itemObject)
     {
-        Sprite spawningSprite = itemObject.spawningSprite;
-        if (spawningSprite != null)
+        ItemObject spawningItem = itemObject.spawningItem;
+        if (spawningItem != null)
         {
             Vector3 offset = new Vector3(0f, 0.5f, 0f);
             spawnedItem = Instantiate(itemPrefab, gameObject.transform.position + offset, Quaternion.identity);
@@ -59,6 +136,7 @@ public class blockPrefabScript : MonoBehaviour
 
             spawnedItemCollider.enabled = false;
             spawnedItemScript.NewParent(gameObject);
+            spawnedItemScript.itemObject = spawningItem;
             spawnedItemScript.itemTaken = false;
             spawnedItemScript.itemPickupable = true;
 
@@ -113,18 +191,6 @@ public class blockPrefabScript : MonoBehaviour
         {
             Debug.LogWarning("BlockObject is not assigned.");
             return float.NaN;
-        }
-    }
-
-    public void DisplayItemInfo()
-    {
-        if (itemPrefabObject != null)
-        {
-            ItemScript itemScript = itemPrefabObject.GetComponent<ItemScript>();
-            if (itemScript != null)
-            {
-                itemObject = itemScript.itemObject;
-            }
         }
     }
 }

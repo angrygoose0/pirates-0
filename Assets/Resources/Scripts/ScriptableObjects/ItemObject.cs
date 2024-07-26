@@ -23,7 +23,7 @@ public class ItemObject : ScriptableObject
     public int fireAmount;
     public float explosionSpeed;
     public int goldAmount = 0;
-    public Sprite spawningSprite;
+    public ItemObject spawningItem;
     public float regenerateTime;
     public List<Recipe> recipes;
     public bool activeAbility;
