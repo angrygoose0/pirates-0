@@ -30,6 +30,13 @@ public class TentacleValue
     public bool endTarget;
 }
 
+[System.Serializable]
+public class CreatureDrops
+{
+    public ItemObject droppedItemObject;
+    public int dropWeight;
+}
+
 [CreateAssetMenu(fileName = "creatureObject", menuName = "Creature", order = 1)]
 public class CreatureObject : ScriptableObject
 {
@@ -41,6 +48,7 @@ public class CreatureObject : ScriptableObject
     public int minPackSpawn;
     public int maxPackSpawn;
     public List<CreatureValue> creatureValues;
+    public List<CreatureDrops> creatureDrops;
     public int tentacles;
 
     public float damage;
