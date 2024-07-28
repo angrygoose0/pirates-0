@@ -2,13 +2,39 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using System.Linq;
 
 
+[System.Serializable]
 public enum State
 {
     Idle,
     Aggressive,
     // Add more states here as needed
+}
+
+[System.Serializable]
+public enum Effect
+{
+    Bleed,
+    Slow,
+
+}
+
+[System.Serializable]
+public class EffectData
+{
+    public Effect effect;
+    public int tier;
+    public float duration;
+
+    // Constructor to initialize the EffectData
+    public EffectData(Effect effect, int tier, float duration)
+    {
+        this.effect = effect;
+        this.tier = tier;
+        this.duration = duration;
+    }
 }
 
 public class TentacleSegment
@@ -52,6 +78,7 @@ public class CreatureData
     public float health;
     public bool isDamaged;
     public float currentDamage;
+    public List<EffectData> effects = new List<EffectData>();
 }
 
 public class CreatureManager : MonoBehaviour
@@ -83,7 +110,11 @@ public class CreatureManager : MonoBehaviour
         globalMobCount = creatures.Count; // Initialize the global mob count
         worldTilemap = GameObject.Find("world").GetComponent<Tilemap>();
         GameObject tentacleContainer = GameObject.Find("tentacleContainer");
+
+        // Start the coroutine to update effects periodically
+        StartCoroutine(UpdateEffectsRoutine());
     }
+
 
     void Update()
     {
@@ -123,8 +154,23 @@ public class CreatureManager : MonoBehaviour
             //Debug.Log(creatureData.currentTilePosition + "current");
             //Debug.Log(worldTilemap.WorldToCell(creatureGameObject.transform.localPosition) + "gameobject");
 
-
             float movementMultiplier = 1f;
+
+
+            var slowEffect = creatureData.effects
+            .Where(effect => effect.effect == Effect.Slow)
+            .OrderByDescending(effect => effect.tier)
+            .FirstOrDefault();
+
+
+
+            if (slowEffect != null)
+            {
+                int highestSlowTier = slowEffect.tier;
+                float result = 1.0f - (highestSlowTier * 0.15f);
+                movementMultiplier = Mathf.Max(result, 0); // Ensure the result is not negative
+            }
+
 
             if (creatureTargetTilemapPosition == creatureData.currentTilePosition)
             {
@@ -173,7 +219,7 @@ public class CreatureManager : MonoBehaviour
                         Vector3Int targetTile = creatureTargetSurroundingTiles[Random.Range(0, creatureTargetSurroundingTiles.Count)];
                         tentacleData.targetPosition = worldTilemap.GetCellCenterLocal(targetTile);
                     }
-                    UpdateMovement(tentacleData.targetPosition, tentacleData.acceleration, tentacleData.maxMoveSpeed, tentacleData.deceleration, creatureObject.rotationSpeed, movementMultiplier, ref tentacleData.velocity, tentacleGameObject.transform);
+                    UpdateMovement(tentacleData.targetPosition, tentacleData.acceleration, tentacleData.maxMoveSpeed, tentacleData.deceleration, creatureObject.rotationSpeed, 1f, ref tentacleData.velocity, tentacleGameObject.transform);
                 }
                 else
                 {
@@ -288,6 +334,54 @@ public class CreatureManager : MonoBehaviour
         HandleDespawning();
     }
 
+    IEnumerator UpdateEffectsRoutine()
+    {
+        while (true)
+        {
+            UpdateEffects();
+            yield return new WaitForSeconds(1f);
+        }
+    }
+
+    void UpdateEffects()
+    {
+        foreach (var creaturePair in creatures)
+        {
+            CreatureData creatureData = creaturePair.Value;
+
+            // Create a dictionary to track the longest effect by type and tier
+            Dictionary<(Effect, int), EffectData> effectDict = new Dictionary<(Effect, int), EffectData>();
+
+            // Iterate through the effects list
+            foreach (var effect in creatureData.effects)
+            {
+                var key = (effect.effect, effect.tier);
+
+                // If the effect type and tier is not in the dictionary, add it
+                // or if it has a longer duration than the existing one, update it
+                if (!effectDict.ContainsKey(key) || effectDict[key].duration < effect.duration)
+                {
+                    effectDict[key] = effect;
+                }
+            }
+
+            // Update the effects list to contain only the longest duration effects
+            creatureData.effects = new List<EffectData>(effectDict.Values);
+
+            // Reduce the duration of each effect
+            for (int i = creatureData.effects.Count - 1; i >= 0; i--)
+            {
+                creatureData.effects[i].duration -= 1f;
+
+                // If the duration is zero or less, remove the effect
+                if (creatureData.effects[i].duration <= 0)
+                {
+                    creatureData.effects.RemoveAt(i);
+                }
+            }
+        }
+    }
+
     void UpdateLineRenderer(LineRenderer lineRenderer, List<Vector3> splinePoints)
     {
         if (lineRenderer == null) return;
@@ -335,13 +429,21 @@ public class CreatureManager : MonoBehaviour
     }
 
 
-    public void ApplyImpact(GameObject hitSegmentObject, float damageMagnitude)
+    public void ApplyImpact(GameObject hitSegmentObject, float damageMagnitude, List<EffectData> effectsList)
     {
-        Debug.Log(hitSegmentObject);
-        Debug.Log(damageMagnitude);
 
         GameObject hitCreatureObject = segmentToCreature[hitSegmentObject];
         CreatureData hitCreatureData = creatures[hitCreatureObject];
+
+        
+
+
+
+        foreach (EffectData effectData in effectsList)
+        {
+            EffectData newEffect = new EffectData(effectData.effect, effectData.tier, effectData.duration);
+            hitCreatureData.effects.Add(newEffect);
+        }
         if (hitCreatureData.isDamaged)
         {
             if (damageMagnitude > hitCreatureData.currentDamage)

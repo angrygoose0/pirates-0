@@ -26,7 +26,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3853018371985993264, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
       propertyPath: m_TagString
-      value: Creature
+      value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 4171011091443591820, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
       propertyPath: m_Mass
@@ -118,7 +118,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9155594814630643418, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9155594814630643418, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
       propertyPath: m_SortingLayer
@@ -156,7 +156,7 @@ CircleCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6939055558043858172}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:

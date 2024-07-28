@@ -23,7 +23,7 @@ MonoBehaviour:
   fireAmount: 0
   explosionSpeed: 0
   goldAmount: 0
-  spawningSprite: {fileID: 0}
+  spawningItem: {fileID: 0}
   regenerateTime: 0
   recipes:
   - materials:

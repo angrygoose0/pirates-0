@@ -2,6 +2,11 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Collections.Generic;
 
+public class ShipData
+{
+    
+}
+
 public class ShipGenerator : MonoBehaviour
 {
     public Tilemap tilemap;
@@ -10,13 +15,14 @@ public class ShipGenerator : MonoBehaviour
     public GameObject blockPrefab; // Reference to the block prefab
     public List<BlockObject> blockObjects; // List of all BlockObject ScriptableObjects
 
+    public 
     public float[,] ship = new float[,]
     {
         { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f },
         { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f },
         { 1.0f, 1.0f, 4.0f, 1.0f, 1.0f },
         { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f },
-        { 0.0f, 1.0f, 1.0f, 2.0f, 2.1f }
+        { 1.0f, 1.0f, 1.0f, 2.0f, 2.1f }
     };
 
     private Dictionary<Vector3Int, GameObject> tileToBlockPrefabMap;

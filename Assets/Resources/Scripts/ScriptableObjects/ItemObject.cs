@@ -27,6 +27,8 @@ public class ItemObject : ScriptableObject
     public float regenerateTime;
     public List<Recipe> recipes;
     public bool activeAbility;
+    public List<EffectData> effects;
+    
 }
 
 

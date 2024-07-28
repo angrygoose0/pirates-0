@@ -18,12 +18,16 @@ MonoBehaviour:
   damageMultiplier: 1
   explosionMultiplier: 10
   explosionRange: 3
-  accuracy: 2
+  accuracy: 100000
   explosionInverse: 0
-  fireAmount: 2
+  fireAmount: 1
   explosionSpeed: 100
   goldAmount: 0
-  spawningSprite: {fileID: 46604427, guid: eccc8b95d0cd88e4eb091f0228ffd6e7, type: 3}
+  spawningItem: {fileID: 11400000, guid: 00eab698b11a3c044868628264fb3665, type: 2}
   regenerateTime: 0
   recipes: []
   activeAbility: 1
+  effects:
+  - effect: 1
+    tier: 6
+    duration: 9
