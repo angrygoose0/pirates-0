@@ -9,6 +9,11 @@ public class ShipVitals : MonoBehaviour
     public DamageFlash damageFlash;
     public GameObject shipObject;
 
+    void Start()
+    {
+        Material shipMaterial; //  get this gameobjects material
+    }
+
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))

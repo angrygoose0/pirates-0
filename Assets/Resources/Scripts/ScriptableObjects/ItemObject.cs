@@ -9,6 +9,13 @@ public class Recipe
 
 }
 
+[System.Serializable]
+public class LightEmission
+{
+    public float radius;
+
+}
+
 [CreateAssetMenu(fileName = "NewItem", menuName = "Item/Item")]
 public class ItemObject : ScriptableObject
 {
@@ -28,7 +35,8 @@ public class ItemObject : ScriptableObject
     public List<Recipe> recipes;
     public bool activeAbility;
     public List<EffectData> effects;
-    
+
+
 }
 
 

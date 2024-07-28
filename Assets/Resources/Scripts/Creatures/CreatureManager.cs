@@ -89,10 +89,12 @@ public class CreatureManager : MonoBehaviour
     public List<CreatureObject> creatureObjects;
     public int minRadius = 5;
     public int maxRadius = 10;
+    public Material damagedMaterial;
     private ChunkData currentChunk;
     private HashSet<Vector3Int> viableChunks = new HashSet<Vector3Int>();
     private Dictionary<GameObject, ChunkData> creatureChunks = new Dictionary<GameObject, ChunkData>();
     private Dictionary<GameObject, GameObject> segmentToCreature = new Dictionary<GameObject, GameObject>();
+    private Dictionary<GameObject, GameObject> segmentToTentacle = new Dictionary<GameObject, GameObject>();
     public int globalMobCount; // New global mob count
     public int maxGlobalMobCount = 70; // Maximum global mob count
     public int maxGlobalChunkPopulation = 50;
@@ -368,6 +370,35 @@ public class CreatureManager : MonoBehaviour
             // Update the effects list to contain only the longest duration effects
             creatureData.effects = new List<EffectData>(effectDict.Values);
 
+            // Check if the creature has the Bleed effect and get the strongest tier
+            EffectData strongestBleedEffect = null;
+            foreach (var effect in creatureData.effects)
+            {
+                if (effect.effect == Effect.Bleed)
+                {
+                    if (strongestBleedEffect == null || effect.tier > strongestBleedEffect.tier)
+                    {
+                        strongestBleedEffect = effect;
+                    }
+                }
+            }
+
+
+            // Get the first tentacle segment
+            if (creatureData.tentacles.Count > 0 && strongestBleedEffect != null)
+            {
+                var firstTentacle = creatureData.tentacles.Values.FirstOrDefault();
+                if (firstTentacle != null && firstTentacle.segments.Count > 0)
+                {
+                    var firstSegmentKey = firstTentacle.segments.Keys.FirstOrDefault();
+                    if (firstSegmentKey != null)
+                    {
+                        float bleedDamageMagnitude = 1.5f * strongestBleedEffect.tier;
+                        ApplyImpact(firstSegmentKey, bleedDamageMagnitude, null);
+                    }
+                }
+            }
+
             // Reduce the duration of each effect
             for (int i = creatureData.effects.Count - 1; i >= 0; i--)
             {
@@ -381,6 +412,7 @@ public class CreatureManager : MonoBehaviour
             }
         }
     }
+
 
     void UpdateLineRenderer(LineRenderer lineRenderer, List<Vector3> splinePoints)
     {
@@ -429,15 +461,21 @@ public class CreatureManager : MonoBehaviour
     }
 
 
+
     public void ApplyImpact(GameObject hitSegmentObject, float damageMagnitude, List<EffectData> effectsList)
     {
 
         GameObject hitCreatureObject = segmentToCreature[hitSegmentObject];
+        GameObject hitTentacleObject = segmentToTentacle[hitSegmentObject];
         CreatureData hitCreatureData = creatures[hitCreatureObject];
 
-        
 
+        TentacleData hitTentacleData = hitCreatureData.tentacles[hitTentacleObject];
 
+        if (hitCreatureObject.tag != "creature")
+        {
+            return;
+        }
 
         foreach (EffectData effectData in effectsList)
         {
@@ -456,7 +494,7 @@ public class CreatureManager : MonoBehaviour
         else
         {
             hitCreatureData.currentDamage = damageMagnitude;
-            StartCoroutine(DamageCoroutine(hitCreatureObject));
+            StartCoroutine(DamageCoroutine(hitCreatureObject, hitTentacleData.lineRenderer));
         }
     }
 
@@ -473,10 +511,15 @@ public class CreatureManager : MonoBehaviour
 
                 if (segmentToCreature.TryGetValue(segmentObject, out GameObject creature))
                 {
-                    // Remove tentacle to creature mapping
                     segmentToCreature.Remove(segmentObject);
 
                 }
+                if (segmentToTentacle.TryGetValue(segmentObject, out GameObject tentacle))
+                {
+                    segmentToTentacle.Remove(segmentObject);
+
+                }
+
                 Destroy(segmentObject);
             }
             Destroy(tentacleEntry.Key);
@@ -495,7 +538,7 @@ public class CreatureManager : MonoBehaviour
         Destroy(creatureObject);
 
     }
-    private IEnumerator DamageCoroutine(GameObject creatureObject)
+    private IEnumerator DamageCoroutine(GameObject creatureObject, LineRenderer lineRenderer)
     {
         CreatureData creatureData = creatures[creatureObject];
         creatureData.isDamaged = true;
@@ -528,18 +571,11 @@ public class CreatureManager : MonoBehaviour
             segmentKeys.AddRange(tentacle.segments.Keys);
         }
 
-        foreach (GameObject segmentKey in segmentKeys)
-        {
-            SpriteRenderer spriteRenderer = segmentKey.GetComponent<SpriteRenderer>();
-            spriteRenderer.color = Color.red;
-        }
+        Material originalMaterial = lineRenderer.material;
+        lineRenderer.material; // change the white flash of the material
         yield return new WaitForSeconds(0.1f);
 
-        foreach (GameObject segmentKey in segmentKeys)
-        {
-            SpriteRenderer spriteRenderer = segmentKey.GetComponent<SpriteRenderer>();
-            spriteRenderer.color = Color.white;
-        }
+        lineRenderer.material = originalMaterial;
 
         creatureData.currentDamage = 0f;
 
@@ -822,6 +858,7 @@ public class CreatureManager : MonoBehaviour
                                 tentacleData.segments.Add(newTentacleSegment, tentacleSegmentData);
 
                                 segmentToCreature[newTentacleSegment] = newCreature; // Add to reverse lookup
+                                segmentToTentacle[newTentacleSegment] = newTentacle;
 
                                 if (firstSegment)
                                 {

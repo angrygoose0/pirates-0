@@ -28,7 +28,7 @@ MonoBehaviour:
   acceleration: 3
   deceleration: 2
   range: 5
-  aggressionThreshold: 100
+  aggressionThreshold: 1
   tentacleList:
   - segmentSizes:
     - 0.1

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class ShipData
 {
-    
+
 }
 
 public class ShipGenerator : MonoBehaviour
@@ -15,7 +15,6 @@ public class ShipGenerator : MonoBehaviour
     public GameObject blockPrefab; // Reference to the block prefab
     public List<BlockObject> blockObjects; // List of all BlockObject ScriptableObjects
 
-    public 
     public float[,] ship = new float[,]
     {
         { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f },

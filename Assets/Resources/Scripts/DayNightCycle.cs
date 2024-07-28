@@ -23,7 +23,8 @@ public class DayNightCycle : MonoBehaviour
 
         // Calculate the light level based on the elapsed time
         lightLevel = (Mathf.Sin((elapsedTime / dayDuration) * 2f * Mathf.PI) + 1f) / 2f;
-        globalLight.intensity = lightLevel;
+        //globalLight.intensity = lightLevel;
+        globalLight.intensity = 1;
 
         // Calculate the difficulty factor
         difficultyFactor = (1f - lightLevel) * elapsedTime * dampingConstant;
