@@ -175,8 +175,7 @@ public class InteractionManager : MonoBehaviour
                         float deltaY = (blockPosition.y - selectorPosition.y) * 0.5f;
                         float distance = Mathf.Sqrt(deltaX * deltaX + deltaY * deltaY);
                         List<Vector3Int> tilesList = GetSurroundingTiles(selectorTilePosition, distance * 0.5f);
-
-                        Debug.Log(blockItemObject.fireAmount);
+                        
                         for (int i = 0; i < blockItemObject.fireAmount; i++)
                         {
                             Vector3Int targetTile = tilesList[Random.Range(0, tilesList.Count)];

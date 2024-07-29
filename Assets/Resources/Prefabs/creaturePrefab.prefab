@@ -9,10 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8112100835143601025}
-  - component: {fileID: 2608855381030885501}
   - component: {fileID: 9155594814630643418}
   - component: {fileID: 4171011091443591820}
-  - component: {fileID: 2097549323571931536}
   - component: {fileID: 3519153156418283130}
   m_Layer: 0
   m_Name: creaturePrefab
@@ -37,29 +35,6 @@ Transform:
   - {fileID: 3988594465754552175}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2608855381030885501
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3853018371985993264}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8aa576627884fe949bf88c7429bc8b14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  creatureObject: {fileID: 0}
-  rotationSpeed: 1000
-  maxMoveSpeed: 3
-  acceleration: 2
-  deceleration: 2
-  movementDelay: 2
-  targetShipPart: {fileID: 0}
-  range: 5
-  hostility: 50
-  aggressionThreshold: 75
-  currentState: 0
 --- !u!212 &9155594814630643418
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -139,25 +114,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &2097549323571931536
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3853018371985993264}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f794321ed1689345844bbdaf7484447, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  health: 5
-  armor: 0
-  creatureObject: {fileID: 11400000, guid: 7f9693fa9cac6954684e38dfebcd0f51, type: 2}
-  minGoldDrop: 5
-  maxGoldDrop: 10
-  itemManager: {fileID: 0}
-  creatureBehaviour: {fileID: 0}
 --- !u!70 &3519153156418283130
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -353,7 +309,6 @@ MonoBehaviour:
   wiggleMagnitude: 10
   wiggleDir: {fileID: 81624865442338971}
   creature: {fileID: 8112100835143601025}
-  segmentPrefab: {fileID: 3258447280453129342, guid: fa707123ad2c9244da06a6adc4df02dd, type: 3}
 --- !u!1 &8876104013410284966
 GameObject:
   m_ObjectHideFlags: 0

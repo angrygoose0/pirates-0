@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class ShipVitals : MonoBehaviour
 {
@@ -9,9 +10,14 @@ public class ShipVitals : MonoBehaviour
     public DamageFlash damageFlash;
     public GameObject shipObject;
 
+    private TilemapRenderer tilemapRenderer;
+
     void Start()
     {
-        Material shipMaterial; //  get this gameobjects material
+        tilemapRenderer = shipObject.GetComponent<TilemapRenderer>();
+
+        tilemapRenderer.material.SetFloat("_StretchInX", 1f);
+
     }
 
     void Update()
@@ -51,7 +57,7 @@ public class ShipVitals : MonoBehaviour
         // Apply damage
         shipHealth -= currentDamage;
 
-        damageFlash.Flash(shipObject);
+        tilemapRenderer.material.SetFloat("_WhiteAmount", 1f);
 
         // Check if health is less than or equal to zero
         if (shipHealth <= 0)
@@ -62,6 +68,8 @@ public class ShipVitals : MonoBehaviour
 
         // Wait for invincibility duration
         yield return new WaitForSeconds(0.1f);
+
+        tilemapRenderer.material.SetFloat("_WhiteAmount", 0f);
 
         // Reset damage
         currentDamage = 0f;

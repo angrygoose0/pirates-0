@@ -40,6 +40,7 @@ public class EffectData
 public class TentacleSegment
 {
     public GameObject creature;
+    public GameObject tentacle;
     public CircleCollider2D collider;
     public SpriteRenderer renderer;
     public Vector3 direction;
@@ -472,10 +473,6 @@ public class CreatureManager : MonoBehaviour
 
         TentacleData hitTentacleData = hitCreatureData.tentacles[hitTentacleObject];
 
-        if (hitCreatureObject.tag != "creature")
-        {
-            return;
-        }
 
         foreach (EffectData effectData in effectsList)
         {
@@ -494,6 +491,7 @@ public class CreatureManager : MonoBehaviour
         else
         {
             hitCreatureData.currentDamage = damageMagnitude;
+            hitTentacleData.lineRenderer.material.SetFloat("_WhiteAmount", 1f);
             StartCoroutine(DamageCoroutine(hitCreatureObject, hitTentacleData.lineRenderer));
         }
     }
@@ -571,14 +569,13 @@ public class CreatureManager : MonoBehaviour
             segmentKeys.AddRange(tentacle.segments.Keys);
         }
 
-        Material originalMaterial = lineRenderer.material;
-        lineRenderer.material; // change the white flash of the material
+        
+        
+        Debug.Log("white");
         yield return new WaitForSeconds(0.1f);
 
-        lineRenderer.material = originalMaterial;
-
+        lineRenderer.material.SetFloat("_WhiteAmount", 0f);
         creatureData.currentDamage = 0f;
-
         creatureData.isDamaged = false;
 
     }
@@ -852,6 +849,7 @@ public class CreatureManager : MonoBehaviour
                                 TentacleSegment tentacleSegmentData = new TentacleSegment
                                 {
                                     creature = newCreature,
+                                    tentacle = newTentacle,
                                     collider = collider,
                                     //renderer = renderer,
                                 };
@@ -865,6 +863,8 @@ public class CreatureManager : MonoBehaviour
                                     firstSegment = false;
                                     tentacleData.lineRenderer = newTentacleSegment.AddComponent<LineRenderer>();
                                     tentacleData.lineRenderer.material = creatureMaterial;
+                                    tentacleData.lineRenderer.material.SetFloat("_StretchInX", 2f);
+                                    tentacleData.lineRenderer.material.SetColor("_OriginalColor", Color.black);
                                     tentacleData.lineRenderer.sortingLayerName = "creature";
 
                                     AnimationCurve widthCurve = new AnimationCurve();

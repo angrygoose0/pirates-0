@@ -39,7 +39,6 @@ public class Explosions : MonoBehaviour
             if (hit.collider != null)
             {
                 GameObject hitObject = hit.collider.gameObject;
-                Debug.Log(hitObject.tag);
                 float distance = Vector2.Distance(currentPosition, hit.point);
                 currentRayForce = itemObject.explosionInverse
                     ? Mathf.Min(currentRayForce + distance * dissipationRate, 1)
@@ -60,16 +59,8 @@ public class Explosions : MonoBehaviour
 
                     if (hitObject != null)
                     {
-                        Debug.Log("Hit Object: " + hitObject);
-                        if (creatureManager != null)
-                        {
-                            Debug.Log("Applying impact to " + hitObject);
-                            creatureManager.ApplyImpact(hitObject, appliedDamage, itemObject.effects);
-                        }
-                        else
-                        {
-                            Debug.LogError("CreatureManager is not assigned.");
-                        }
+                        creatureManager.ApplyImpact(hitObject, appliedDamage, itemObject.effects);
+
                     }
                     else
                     {
