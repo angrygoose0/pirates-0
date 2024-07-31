@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: basicCreature
   m_EditorClassIdentifier: 
   id: 0
-  startingHealth: 2
+  startingHealth: 109
   armor: 0.1
   populationValue: 2
   spawnWeight: 1000
@@ -28,7 +28,7 @@ MonoBehaviour:
   acceleration: 3
   deceleration: 2
   range: 5
-  aggressionThreshold: 1000
+  aggressionThreshold: 1
   tentacleList:
   - segmentSizes:
     - 0.1

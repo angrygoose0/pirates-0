@@ -1,10 +1,13 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using TMPro;
 
 public class ShipVitals : MonoBehaviour
 {
     public float shipHealth = 100f;  // Initialize shipHealth with a value, for example 100.
+
+    public TextMeshProUGUI healthUI; // Reference to the UI Text component that displays the timer
     private bool isDamaged = false;
     private float currentDamage = 0f;
     public DamageFlash damageFlash;
@@ -30,7 +33,8 @@ public class ShipVitals : MonoBehaviour
         {
             ApplyImpact(10f);
         }
-        //Debug.Log("Ship health: " + shipHealth);
+
+        healthUI.text = shipHealth.ToString("F2");
     }
 
     public void ApplyImpact(float damageMagnitude)

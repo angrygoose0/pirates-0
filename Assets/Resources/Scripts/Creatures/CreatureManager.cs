@@ -91,6 +91,7 @@ public class CreatureManager : MonoBehaviour
     public int minRadius = 5;
     public int maxRadius = 10;
     public Material damagedMaterial;
+    public AbilityManager abilityManager;
     private ChunkData currentChunk;
     private HashSet<Vector3Int> viableChunks = new HashSet<Vector3Int>();
     private Dictionary<GameObject, ChunkData> creatureChunks = new Dictionary<GameObject, ChunkData>();
@@ -194,7 +195,10 @@ public class CreatureManager : MonoBehaviour
             creatureTargetTilemapPosition = worldTilemap.WorldToCell(creatureData.targetPosition);
             List<Vector3Int> creatureTargetSurroundingTiles = GetSurroundingTiles(creatureTargetTilemapPosition, creatureData.creatureObject.range);
 
-            UpdateMovement(creatureData.targetPosition, creatureObject.acceleration, creatureObject.maxMoveSpeed, creatureObject.deceleration, creatureObject.rotationSpeed, movementMultiplier, ref creatureData.velocity, creatureGameObject.transform);
+            if (creatureData.isDamaged == false)
+            {
+                UpdateMovement(creatureData.targetPosition, creatureObject.acceleration, creatureObject.maxMoveSpeed, creatureObject.deceleration, creatureObject.rotationSpeed, movementMultiplier, ref creatureData.velocity, creatureGameObject.transform);
+            }
 
 
             foreach (KeyValuePair<GameObject, TentacleData> tentacleEntry in creatureData.tentacles)
@@ -397,6 +401,8 @@ public class CreatureManager : MonoBehaviour
                         float bleedDamageMagnitude = 1.5f * strongestBleedEffect.tier;
                         Debug.Log("bleed damage");
                         ApplyImpact(firstSegmentKey, bleedDamageMagnitude, emptyEffectsList);
+
+
                     }
                 }
             }
@@ -472,6 +478,10 @@ public class CreatureManager : MonoBehaviour
         CreatureData hitCreatureData = creatures[hitCreatureObject];
 
 
+        hitCreatureObject.transform.position = hitSegmentObject.transform.position;
+
+
+
         TentacleData hitTentacleData = hitCreatureData.tentacles[hitTentacleObject];
 
 
@@ -494,6 +504,13 @@ public class CreatureManager : MonoBehaviour
             hitCreatureData.currentDamage = damageMagnitude;
             hitTentacleData.lineRenderer.material.SetFloat("_WhiteAmount", 1f);
             StartCoroutine(DamageCoroutine(hitCreatureObject, hitTentacleData.lineRenderer));
+        }
+
+        AbilityData lifeSteal = abilityManager.GetAbilityData(Ability.LifeSteal);
+
+        if (lifeSteal != null)
+        {
+            shipVitals.shipHealth += damageMagnitude * abilityManager.lifeStealValue * lifeSteal.tier;
         }
     }
 
@@ -544,6 +561,8 @@ public class CreatureManager : MonoBehaviour
 
         float damageDone = Mathf.Max(creatureData.currentDamage - creatureData.creatureObject.armor, 0);
         creatureData.health -= damageDone;
+
+
 
         if (creatureData.health <= 0)
         {

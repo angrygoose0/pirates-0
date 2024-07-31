@@ -29,5 +29,5 @@ MonoBehaviour:
   activeAbility: 1
   effects:
   - effect: 0
-    tier: 5
+    tier: 1
     duration: 100
