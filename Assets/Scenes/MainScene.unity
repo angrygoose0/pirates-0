@@ -284,7 +284,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2, y: 0.275, z: 0}
-  m_LocalScale: {x: 2, y: 1, z: 1}
+  m_LocalScale: {x: 10, y: 5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1833,6 +1833,7 @@ GameObject:
   - component: {fileID: 383585329}
   - component: {fileID: 383585331}
   - component: {fileID: 383585332}
+  - component: {fileID: 383585333}
   m_Layer: 0
   m_Name: ghost
   m_TagString: Untagged
@@ -2095,6 +2096,7 @@ MonoBehaviour:
   minRadius: 1
   maxRadius: 4
   damagedMaterial: {fileID: 0}
+  abilityManager: {fileID: 383585333}
   globalMobCount: 10
   maxGlobalMobCount: 1
   maxGlobalChunkPopulation: 4
@@ -2205,6 +2207,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shipHealth: 50
+  healthUI: {fileID: 804013979}
   damageFlash: {fileID: 383585332}
   shipObject: {fileID: 1604011098}
 --- !u!114 &383585332
@@ -2221,6 +2224,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   flashColor: {r: 1, g: 1, b: 1, a: 1}
   flashTime: 0.25
+--- !u!114 &383585333
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 383585313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b178d3c4c9e347543982438131326988, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  abilityList:
+  - ability: 0
+    tier: 3
+  lifeStealValue: 0.5
 --- !u!1 &485961737
 GameObject:
   m_ObjectHideFlags: 0

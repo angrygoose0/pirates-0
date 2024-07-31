@@ -512,6 +512,7 @@ public class CreatureManager : MonoBehaviour
         {
             shipVitals.shipHealth += damageMagnitude * abilityManager.lifeStealValue * lifeSteal.tier;
         }
+        // need to move this to damagecoroutine, but it lags out the dmageflash
     }
 
     public void CreatureDeath(GameObject creatureObject)
