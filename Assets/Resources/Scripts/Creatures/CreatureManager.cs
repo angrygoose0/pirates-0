@@ -109,7 +109,6 @@ public class CreatureManager : MonoBehaviour
     void Start()
     {
         creatures = new Dictionary<GameObject, CreatureData>();
-        segmentToCreature = new Dictionary<GameObject, GameObject>(); // Initialize the reverse lookup dictionary
         globalMobCount = creatures.Count; // Initialize the global mob count
         worldTilemap = GameObject.Find("world").GetComponent<Tilemap>();
         GameObject tentacleContainer = GameObject.Find("tentacleContainer");
@@ -348,6 +347,7 @@ public class CreatureManager : MonoBehaviour
 
     void UpdateEffects()
     {
+        List<EffectData> emptyEffectsList = new List<EffectData>();
         foreach (var creaturePair in creatures)
         {
             CreatureData creatureData = creaturePair.Value;
@@ -395,7 +395,8 @@ public class CreatureManager : MonoBehaviour
                     if (firstSegmentKey != null)
                     {
                         float bleedDamageMagnitude = 1.5f * strongestBleedEffect.tier;
-                        ApplyImpact(firstSegmentKey, bleedDamageMagnitude, null);
+                        Debug.Log("bleed damage");
+                        ApplyImpact(firstSegmentKey, bleedDamageMagnitude, emptyEffectsList);
                     }
                 }
             }
@@ -569,8 +570,8 @@ public class CreatureManager : MonoBehaviour
             segmentKeys.AddRange(tentacle.segments.Keys);
         }
 
-        
-        
+
+
         Debug.Log("white");
         yield return new WaitForSeconds(0.1f);
 

@@ -28,6 +28,6 @@ MonoBehaviour:
   recipes: []
   activeAbility: 1
   effects:
-  - effect: 1
-    tier: 4
+  - effect: 0
+    tier: 5
     duration: 100

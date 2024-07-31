@@ -59,7 +59,11 @@ public class Explosions : MonoBehaviour
 
                     if (hitObject != null)
                     {
-                        creatureManager.ApplyImpact(hitObject, appliedDamage, itemObject.effects);
+                        if (hitObject.tag == "Creature")
+                        {
+                            creatureManager.ApplyImpact(hitObject, appliedDamage, itemObject.effects);
+                        }
+
 
                     }
                     else
