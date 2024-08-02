@@ -6,7 +6,7 @@ public class InteractionManager : MonoBehaviour
 {
     public Dictionary<GameObject, GameObject> playerBlockRelations = new Dictionary<GameObject, GameObject>(); // adds two instances where block/players are swapped key/value to make it more efficient when searching.
 
-
+    public AbilityManager abilityManager;
     public GameObject equippedCannon;
     public CannonBehaviour cannonBehaviour;
 
@@ -174,10 +174,32 @@ public class InteractionManager : MonoBehaviour
                         float deltaX = blockPosition.x - selectorPosition.x;
                         float deltaY = (blockPosition.y - selectorPosition.y) * 0.5f;
                         float distance = Mathf.Sqrt(deltaX * deltaX + deltaY * deltaY);
-                        List<Vector3Int> tilesList = GetSurroundingTiles(selectorTilePosition, distance * 0.5f);
-                        
-                        for (int i = 0; i < blockItemObject.fireAmount; i++)
+
+
+                        AbilityData multiple = abilityManager.GetAbilityData(Ability.Multiple);
+                        int fireAmount = blockItemObject.fireAmount;
+                        float accuracy = distance * 1f / blockItemObject.accuracy;
+                        List<Vector3Int> additionalTilesList = null;
+
+                        if (multiple != null)
                         {
+                            fireAmount = fireAmount + multiple.tier * abilityManager.multipleValue;
+                            if (accuracy < 1.5f)
+                            {
+                                additionalTilesList = GetSurroundingTiles(selectorTilePosition, 2f);
+                            }
+                        }
+
+
+
+                        List<Vector3Int> tilesList = GetSurroundingTiles(selectorTilePosition, accuracy);
+
+                        for (int i = 0; i < fireAmount; i++)
+                        {
+                            if (i == 1 && additionalTilesList != null)
+                            {
+                                tilesList = additionalTilesList;
+                            }
                             Vector3Int targetTile = tilesList[Random.Range(0, tilesList.Count)];
                             cannonBehaviour.FireInTheHole(blockPosition, targetTile, blockItemObject);
                         }
