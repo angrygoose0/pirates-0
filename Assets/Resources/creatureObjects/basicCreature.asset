@@ -17,8 +17,8 @@ MonoBehaviour:
   armor: 0.1
   populationValue: 2
   spawnWeight: 1000
-  minPackSpawn: 1
-  maxPackSpawn: 1
+  minPackSpawn: 10
+  maxPackSpawn: 10
   creatureValues: []
   creatureDrops: []
   tentacles: 0
@@ -28,14 +28,14 @@ MonoBehaviour:
   acceleration: 3
   deceleration: 2
   range: 5
-  aggressionThreshold: 1
+  aggressionThreshold: 10
   tentacleList:
   - segmentSizes:
-    - 0.1
-    - 0.11
-    - 0.13
-    - 0.1
-    setDistance: 0.1
+    - 0.05
+    - 0.04
+    - 0.01
+    - 0.01
+    setDistance: 0.001
     acceleration: 10
     maxMoveSpeed: 10
     deceleration: 2

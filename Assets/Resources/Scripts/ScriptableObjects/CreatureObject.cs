@@ -62,4 +62,9 @@ public class CreatureObject : ScriptableObject
     public List<TentacleValue> tentacleList;
     public Vector2 goldDropRange;
     public float hostilityMultiplier;
+    /* hostility
+    how fast it goes up, 
+    how much it goes down, depending on hp
+    how much it goes down after attacking.
+    */
 }

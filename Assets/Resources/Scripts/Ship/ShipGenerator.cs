@@ -9,11 +9,13 @@ public class ShipData
 
 public class ShipGenerator : MonoBehaviour
 {
-    public Tilemap tilemap;
+    public GameObject shipTilemapObject;
+
     public TileBase tile;
     public Vector3Int offset;
     public GameObject blockPrefab; // Reference to the block prefab
     public List<BlockObject> blockObjects; // List of all BlockObject ScriptableObjects
+    public Tilemap tilemap;
 
     public float[,] ship = new float[,]
     {
@@ -23,6 +25,9 @@ public class ShipGenerator : MonoBehaviour
         { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f },
         { 1.0f, 1.0f, 1.0f, 2.0f, 2.1f }
     };
+
+
+
 
     private Dictionary<Vector3Int, GameObject> tileToBlockPrefabMap;
     public List<GameObject> mastBlocks; // List to store blocks of type Mast
@@ -34,22 +39,36 @@ public class ShipGenerator : MonoBehaviour
 
     void Start()
     {
+        tilemap = shipTilemapObject.GetComponent<Tilemap>();
         tileToBlockPrefabMap = new Dictionary<Vector3Int, GameObject>();
         mastBlocks = new List<GameObject>();
         GenerateTilemap(ship);
         CenterGhostOnShip();
         FindMastBlocks(); // Find all mast blocks after generating the ship
 
+
     }
 
     public void GenerateTilemap(float[,] ship)
     {
+        PolygonCollider2D shipCollider = shipTilemapObject.GetComponent<PolygonCollider2D>();
         tilemap.ClearAllTiles();
         tileToBlockPrefabMap.Clear();
         mastBlocks.Clear(); // Clear the list in case of regeneration
 
         int rows = ship.GetLength(0);
         int cols = ship.GetLength(1);
+
+        Vector2[] colliderPoints = new Vector2[]
+        {
+            new Vector2(cols/2f-0.5f, cols/4f),
+            new Vector2(-0.5f, 0f),
+            new Vector2(rows/2f-0.5f, rows/-4f),
+            new Vector2((cols/2f-0.5f + rows/2f-0.5f + 0.5f), (cols-rows)/4f),
+        };
+
+
+        shipCollider.points = colliderPoints;
 
         for (int y = 0; y < rows; y++)
         {
@@ -70,7 +89,7 @@ public class ShipGenerator : MonoBehaviour
                         // Adjust the position as required
                         worldPosition.x -= 0.5f;
                         worldPosition.y -= 0.225f;
-                        
+
 
                         // Instantiate the block prefab
                         GameObject blockInstance = Instantiate(blockPrefab, worldPosition, Quaternion.identity);

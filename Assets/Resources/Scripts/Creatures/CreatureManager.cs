@@ -115,7 +115,7 @@ public class CreatureManager : MonoBehaviour
         GameObject tentacleContainer = GameObject.Find("tentacleContainer");
 
         // Start the coroutine to update effects periodically
-        StartCoroutine(UpdateEffectsRoutine());
+        StartCoroutine(CreatureTickRoutine());
     }
 
 
@@ -139,15 +139,19 @@ public class CreatureManager : MonoBehaviour
             float hostility = creatureData.hostility;
             float aggressionThreshold = creatureData.creatureObject.aggressionThreshold;
             State currentState = creatureData.currentState;
-
+            bool stateChanged = false;
             if (hostility >= aggressionThreshold && currentState != State.Aggressive)
             {
                 creatureData.currentState = State.Aggressive;
+                stateChanged = true;
+
             }
             else if (hostility < aggressionThreshold && currentState != State.Idle)
             {
                 creatureData.currentState = State.Idle;
+                stateChanged = true;
             }
+            Debug.Log(creatureData.currentState);
             CreatureObject creatureObject = creatureData.creatureObject;
 
 
@@ -175,7 +179,7 @@ public class CreatureManager : MonoBehaviour
             }
 
 
-            if (creatureTargetTilemapPosition == creatureData.currentTilePosition)
+            if (creatureTargetTilemapPosition == creatureData.currentTilePosition || stateChanged == true)
             {
                 if (currentState == State.Idle)
                 {
@@ -340,12 +344,23 @@ public class CreatureManager : MonoBehaviour
         HandleDespawning();
     }
 
-    IEnumerator UpdateEffectsRoutine()
+    IEnumerator CreatureTickRoutine()
     {
         while (true)
         {
             UpdateEffects();
+            UpdateHostility();
             yield return new WaitForSeconds(1f);
+        }
+    }
+
+    void UpdateHostility()
+    {
+        foreach (var creaturePair in creatures)
+        {
+            CreatureData creatureData = creaturePair.Value;
+
+            creatureData.hostility += 1f;
         }
     }
 
@@ -689,6 +704,7 @@ public class CreatureManager : MonoBehaviour
     public void AttackShip(GameObject creature)
     {
         CreatureData creatureData = creatures[creature];
+        //creatureData.hostility = 0f;
 
         shipVitals.ApplyImpact(creatureData.creatureObject.damage);
     }
@@ -823,7 +839,7 @@ public class CreatureManager : MonoBehaviour
                             currentTilePosition = currentTilePosition,
                             surroundingTiles = GetSurroundingTiles(currentTilePosition, randomCreatureObject.range),
                             targetPosition = newCreature.transform.position,
-                            hostility = 50,
+                            hostility = 0,
                             health = randomCreatureObject.startingHealth,
                         });
 
