@@ -4,6 +4,7 @@ using TMPro;
 public class DayNightCycle : MonoBehaviour
 {
     public UnityEngine.Rendering.Universal.Light2D globalLight;
+    public UnityEngine.Rendering.Universal.Light2D shipLight;
     public float dayDuration = 120f; // Duration of a full day in seconds
 
     public TextMeshProUGUI timerText; // Reference to the UI Text component that displays the timer
@@ -23,12 +24,12 @@ public class DayNightCycle : MonoBehaviour
 
         // Calculate the light level based on the elapsed time
         lightLevel = (Mathf.Sin((elapsedTime / dayDuration) * 2f * Mathf.PI) + 1f) / 2f;
-        //globalLight.intensity = lightLevel;
-        globalLight.intensity = 0;
+        globalLight.intensity = lightLevel;
+        shipLight.intensity = 1 - lightLevel;
 
         // Calculate the difficulty factor
         difficultyFactor = (1f - lightLevel) * elapsedTime * dampingConstant;
-        //creatureManager.maxGlobalMobCount = Mathf.RoundToInt(difficultyFactor);
+        creatureManager.maxGlobalMobCount = Mathf.RoundToInt(difficultyFactor);
     }
 
     void UpdateTimer()

@@ -22,6 +22,7 @@ public class ItemObject : ScriptableObject
     public string itemName;
     public Sprite itemSprite;
     public float mass;
+    public float reloadSpeed = 1f;
     public float damageMultiplier;
     public float explosionMultiplier;
     public float explosionRange;

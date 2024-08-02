@@ -25,6 +25,8 @@ public class AbilityManager : MonoBehaviour
 {
     public List<AbilityData> abilityList = new List<AbilityData>();
     public float lifeStealValue;
+    public float hasteValue;
+
 
 
 

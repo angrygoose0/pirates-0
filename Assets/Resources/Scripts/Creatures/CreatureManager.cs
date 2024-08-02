@@ -151,7 +151,7 @@ public class CreatureManager : MonoBehaviour
                 creatureData.currentState = State.Idle;
                 stateChanged = true;
             }
-            Debug.Log(creatureData.currentState);
+            //Debug.Log(creatureData.currentState);
             CreatureObject creatureObject = creatureData.creatureObject;
 
 

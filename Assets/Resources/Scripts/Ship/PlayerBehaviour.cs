@@ -22,6 +22,7 @@ public class PlayerBehaviour : MonoBehaviour
     public GameObject selectedBlockPrefab;
 
     public InteractionManager interactionManager; // Reference to the InteractionManager script
+    public AbilityManager abilityManager;
     public GameObject equippedItem;
     public GameObject closestItem;
     public GameObject equippedBlock;
@@ -30,7 +31,6 @@ public class PlayerBehaviour : MonoBehaviour
     public ShipGenerator.Direction currentDirection;
     public GoldManager goldManager;
 
-    public float attackRate = 0.5f; // Time between attacks in seconds
     private bool isFiring = false;
     private Coroutine fireCoroutine;
     private float lastFireTime = 0f;
@@ -59,7 +59,11 @@ public class PlayerBehaviour : MonoBehaviour
         UpdateDirection();
         FindClosestItem();
 
-        // Check if the player presses the "E" key to interact with a block
+        if (previousInteractableTilePosition.HasValue)
+        {
+            Vector3Int tilePosition = previousInteractableTilePosition.Value;
+            selectedBlockPrefab = shipGenerator.GetBlockPrefabAtTile(tilePosition);
+        }
         if (Input.GetKeyDown(KeyCode.E))
         {
             InteractWithBlock(0);
@@ -68,10 +72,46 @@ public class PlayerBehaviour : MonoBehaviour
         {
             InteractWithBlock(1);
         }
-        if (Input.GetMouseButtonDown(0) && !isFiring && Time.time >= lastFireTime + attackRate)
+        if (Input.GetMouseButtonDown(0) && !isFiring)
         {
-            isFiring = true;
-            fireCoroutine = StartCoroutine(FireRoutine());
+
+            blockPrefabScript blockScript = selectedBlockPrefab.GetComponent<blockPrefabScript>();
+            BlockObject blockObject = blockScript.blockObject;
+            GameObject blockItem = null;
+
+            if (blockScript.itemPrefabObject != null && blockScript.itemPrefabObject.Count == 1)
+            {
+                blockItem = blockScript.itemPrefabObject[0];
+            }
+
+
+            ItemScript blockItemScript = null;
+            ItemObject blockItemObject = null;
+            if (blockItem != null)
+            {
+                blockItemScript = blockItem.GetComponent<ItemScript>();
+                blockItemObject = blockItemScript.itemObject;
+            }
+
+            if (blockItemObject != null)
+            {
+
+                float attackRate = blockItemObject.reloadSpeed;
+                AbilityData haste = abilityManager.GetAbilityData(Ability.Haste);
+
+                if (haste != null)
+                {
+                    attackRate = attackRate * 1 / (haste.tier * abilityManager.hasteValue);
+                }
+
+                if (Time.time >= lastFireTime + attackRate)
+                {
+                    isFiring = true;
+                    fireCoroutine = StartCoroutine(FireRoutine(attackRate));
+                }
+
+            }
+
         }
 
         if (Input.GetMouseButtonUp(0) && isFiring)
@@ -95,7 +135,7 @@ public class PlayerBehaviour : MonoBehaviour
         }
     }
 
-    private IEnumerator FireRoutine()
+    private IEnumerator FireRoutine(float attackRate)
     {
         while (isFiring)
         {
