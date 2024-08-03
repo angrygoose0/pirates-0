@@ -779,6 +779,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worldGenerator: {fileID: 383585319}
   trackedObject: {fileID: 383585313}
+  canvas: {fileID: 1923651454}
   creatureObjects:
   - {fileID: 11400000, guid: 7f9693fa9cac6954684e38dfebcd0f51, type: 2}
   - {fileID: 11400000, guid: 3368a91c624a7134ab47e93f99cb0a11, type: 2}
@@ -796,6 +797,7 @@ MonoBehaviour:
   shipVitals: {fileID: 383585331}
   creatureMaterial: {fileID: -876546973899608171, guid: 9465104cb197b38409f7571ad8659332, type: 3}
   goldItemObject: {fileID: 11400000, guid: 853124c3c476fd24aaf407a880fb3fa5, type: 2}
+  damageCounterPrefab: {fileID: 3155849065046819490, guid: 6eedf5176de703041bd31a9db3e79248, type: 3}
 --- !u!114 &383585328
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1504,7 +1506,6 @@ GameObject:
   - component: {fileID: 1604011099}
   - component: {fileID: 1604011100}
   - component: {fileID: 1604011104}
-  - component: {fileID: 1604011105}
   - component: {fileID: 1604011106}
   m_Layer: 0
   m_Name: ship
@@ -1907,55 +1908,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 7
---- !u!60 &1604011105
-PolygonCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1604011098}
-  m_Enabled: 0
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Points:
-    m_Paths:
-    - - {x: 2.5, y: 1.5}
-      - {x: -0.5, y: 0}
-      - {x: 1.5, y: -1}
-      - {x: 4.5, y: 0.5}
-  m_UseDelaunayMesh: 0
 --- !u!68 &1604011106
 EdgeCollider2D:
   m_ObjectHideFlags: 0

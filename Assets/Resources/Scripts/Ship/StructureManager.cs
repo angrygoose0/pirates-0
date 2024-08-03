@@ -16,24 +16,7 @@ public class StructureManager : MonoBehaviour
         generatedStructure.transform.SetParent(GameObject.Find("world").transform);
         StructureObject structureObject = PickRandomStructureObject();
 
-        Tilemap tilemap = generatedStructure.GetComponent<Tilemap>();
-
-        // Calculate the start position for the rectangle, centering it around the pivot point
-        int startX = -structureObject.width / 2;
-        int startY = -structureObject.height / 2;
-
-        // Loop through the width and height to set tiles in a rectangle pattern
-        for (int x = 0; x < structureObject.width; x++)
-        {
-            for (int y = 0; y < structureObject.height; y++)
-            {
-                // Calculate the tile position in tilemap coordinates
-                Vector3Int tilePosition = new Vector3Int(startX + x, startY + y, 1);
-
-                // Set the tile at the calculated position
-                tilemap.SetTile(tilePosition, tile);
-            }
-        }
+        
 
     }
 

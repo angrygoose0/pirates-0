@@ -335,6 +335,7 @@ public class PlayerBehaviour : MonoBehaviour
         previousInteractableTilePosition = tilePosition;
     }
 
+
     void ResetTile(Vector3Int tilePosition)
     {
         // Reset the tile to the default sprite

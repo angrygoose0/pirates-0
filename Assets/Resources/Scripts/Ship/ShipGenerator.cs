@@ -65,6 +65,7 @@ public class ShipGenerator : MonoBehaviour
             new Vector2(-0.5f, 0f),
             new Vector2(rows/2f-0.5f, rows/-4f),
             new Vector2((cols/2f-0.5f + rows/2f-0.5f + 0.5f), (cols-rows)/4f),
+            new Vector2(cols/2f-0.5f, cols/4f),
         };
 
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Linq;
+using TMPro;
 
 
 [System.Serializable]
@@ -86,6 +87,7 @@ public class CreatureManager : MonoBehaviour
 {
     public WorldGenerator worldGenerator;
     public GameObject trackedObject;
+    public GameObject canvas;
     public Dictionary<GameObject, CreatureData> creatures; // Dictionary of all creatures
     public List<CreatureObject> creatureObjects;
     public int minRadius = 5;
@@ -107,6 +109,7 @@ public class CreatureManager : MonoBehaviour
     public ShipVitals shipVitals;
     public Material creatureMaterial;
     public ItemObject goldItemObject;
+    public GameObject damageCounterPrefab;
 
     void Start()
     {
@@ -484,10 +487,55 @@ public class CreatureManager : MonoBehaviour
         return a * p0 + b * p1 + c * p2 + d * p3;
     }
 
+    public void DamageCounter(GameObject floater, float damage)
+    {
 
+        TextMeshProUGUI damageText = floater.GetComponent<TextMeshProUGUI>();
+        int damageInt = Mathf.RoundToInt(damage);
+        damageText.text = damageInt.ToString();
+
+        StartCoroutine(FadeAndMove(floater));
+    }
+
+    private IEnumerator FadeAndMove(GameObject floater)
+    {
+        float floatSpeed = 1f;
+        float duration = 1.5f;
+        float elapsedTime = 0f;
+
+        CanvasGroup canvasGroup = floater.GetComponent<CanvasGroup>();
+        RectTransform rectTransform = floater.GetComponent<RectTransform>();
+
+        while (elapsedTime < duration)
+        {
+            // Move the text upwards
+            rectTransform.position += Vector3.up * floatSpeed * Time.deltaTime;
+
+            // Fade out over time
+            elapsedTime += Time.deltaTime;
+            canvasGroup.alpha = Mathf.Lerp(1f, 0f, elapsedTime / duration);
+
+            yield return null;
+        }
+
+        // Destroy the game object after the duration
+        Destroy(floater);
+    }
 
     public void ApplyImpact(GameObject hitSegmentObject, float damageMagnitude, List<EffectData> effectsList)
     {
+
+        Vector3 randomOffset = new Vector3(
+            Random.Range(-2f, 2f),
+            Random.Range(-1f, 1f),
+            0f
+        );
+
+        Vector3 spawnPosition = hitSegmentObject.transform.position + randomOffset;
+        spawnPosition.x += 6;
+        GameObject floater = Instantiate(damageCounterPrefab, spawnPosition, Quaternion.identity, canvas.transform);
+        DamageCounter(floater, damageMagnitude);
+
 
         GameObject hitCreatureObject = segmentToCreature[hitSegmentObject];
         GameObject hitTentacleObject = segmentToTentacle[hitSegmentObject];

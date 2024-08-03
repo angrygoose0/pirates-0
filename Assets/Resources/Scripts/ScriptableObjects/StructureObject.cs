@@ -5,7 +5,6 @@ using UnityEngine.Tilemaps;
 public class StructureObject : ScriptableObject
 {
     public int spawnWeight;
-    public int height;
-    public int width;
+
 
 }
