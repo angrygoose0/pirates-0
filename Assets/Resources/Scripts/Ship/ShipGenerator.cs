@@ -51,7 +51,7 @@ public class ShipGenerator : MonoBehaviour
 
     public void GenerateTilemap(float[,] ship)
     {
-        PolygonCollider2D shipCollider = shipTilemapObject.GetComponent<PolygonCollider2D>();
+        EdgeCollider2D shipCollider = shipTilemapObject.GetComponent<EdgeCollider2D>();
         tilemap.ClearAllTiles();
         tileToBlockPrefabMap.Clear();
         mastBlocks.Clear(); // Clear the list in case of regeneration

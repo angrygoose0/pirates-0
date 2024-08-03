@@ -105,3 +105,4 @@ MonoBehaviour:
   spawnedItem: {fileID: 0}
   itemObjectList:
   - {fileID: 11400000, guid: 7b55d8d53a0e517439cc01d10dff5395, type: 2}
+  - {fileID: 11400000, guid: 81de5d4855b024e4f98add07aea7d9e3, type: 2}

@@ -106,7 +106,7 @@ MonoBehaviour:
   lerpDuration: 0.5
   goldManager: {fileID: 0}
   itemTaken: 0
-  itemPickupable: 0
+  itemPickupable: 1
 --- !u!50 &7653777232405761642
 Rigidbody2D:
   serializedVersion: 4

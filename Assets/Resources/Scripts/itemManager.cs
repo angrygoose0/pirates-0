@@ -36,28 +36,22 @@ public class ItemManager : MonoBehaviour
         }
     }
     // Start is called before the first frame update
-    public void CreateItem(ItemObject createItemObject, Vector3 position)
+    public GameObject CreateItem(ItemObject createItemObject, Vector3 position)
     {
-
         if (createItemObject == null)
         {
-            return;
+            return null;
         }
 
         GameObject createdItem = Instantiate(itemPrefab, position, Quaternion.identity);
         createdItem.transform.SetParent(worldTilemap.transform);
 
         SpriteRenderer spriteRenderer = createdItem.GetComponent<SpriteRenderer>();
-        if (spriteRenderer != null)
-        {
-            spriteRenderer.sprite = createItemObject.itemSprite;
-        }
-
         ItemScript itemScript = createdItem.GetComponent<ItemScript>();
-        if (itemScript != null)
-        {
-            itemScript.itemObject = createItemObject;
-        }
+
+        spriteRenderer.sprite = createItemObject.itemSprite;
+        itemScript.itemObject = createItemObject;
+
 
         Rigidbody2D rigidbody2D = createdItem.GetComponent<Rigidbody2D>();
         if (rigidbody2D != null)
@@ -71,6 +65,8 @@ public class ItemManager : MonoBehaviour
             rigidbody2D.mass = createItemObject.mass;
             rigidbody2D.AddForce(forceDirection * forceMagnitude);
         }
+
+        return createdItem;
     }
 
 }

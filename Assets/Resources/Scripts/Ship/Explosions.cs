@@ -7,6 +7,19 @@ public class Explosions : MonoBehaviour
     public CreatureManager creatureManager;
     public GameObject explosionPrefab;
 
+    public float duration;
+
+    // Public variables to set in the editor
+    public float initialLightIntensity = 1.5f;
+    public float finalLightIntensity = 0f;
+    public Vector3 initialLightScale = new Vector3(2, 1, 1);
+    public Vector3 finalLightScale = Vector3.zero;
+    public Color initialLightColor = Color.yellow;
+    public Color finalLightColor = Color.red;
+    public bool enableFlicker = true;
+    public float flickerIntensityRange = 0.5f;
+    public float pulsingSpeed = 4f; // Speed of pulsing effects
+
     public void Explode(Vector3 explosionPosition, ItemObject itemObject, float startAngle, float endAngle)
     {
         // Validate angles to ensure startAngle is less than endAngle
@@ -20,7 +33,22 @@ public class Explosions : MonoBehaviour
         float angleStep = angleRange / raycastCount;
         GameObject explosionInstance = Instantiate(explosionPrefab, explosionPosition, Quaternion.identity);
 
-        Destroy(explosionInstance, explosionInstance.GetComponent<ParticleSystem>().main.duration * 3f);
+        // Get the Light2D component from the explosion instance
+        UnityEngine.Rendering.Universal.Light2D explosionLight = explosionInstance.GetComponent<UnityEngine.Rendering.Universal.Light2D>();
+        if (explosionLight == null)
+        {
+            Debug.LogError("Explosion prefab does not have a Light2D component.");
+            return;
+        }
+
+        // Set the initial properties of the light
+        explosionLight.intensity = initialLightIntensity;
+        explosionLight.transform.localScale = initialLightScale;
+        explosionLight.color = initialLightColor;
+
+        // Start the coroutine to handle the light's behavior
+        StartCoroutine(HandleExplosionLight(explosionLight, duration));
+
         for (int i = 0; i < raycastCount; i++)
         {
             float angle = startAngle + (i * angleStep);
@@ -33,7 +61,35 @@ public class Explosions : MonoBehaviour
         }
     }
 
+    private IEnumerator HandleExplosionLight(UnityEngine.Rendering.Universal.Light2D explosionLight, float duration)
+    {
+        float elapsed = 0f;
+        float initialIntensity = explosionLight.intensity;
+        Vector3 initialScale = explosionLight.transform.localScale;
+        Color initialColor = explosionLight.color;
 
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / duration;
+
+            // Adjust the intensity, scale, and color over time
+            explosionLight.intensity = Mathf.Lerp(initialIntensity, finalLightIntensity, t) * (1 + Mathf.Sin(t * Mathf.PI * pulsingSpeed));
+            explosionLight.transform.localScale = Vector3.Lerp(initialScale, finalLightScale, t);
+            explosionLight.color = Color.Lerp(initialColor, finalLightColor, t);
+
+            // Apply flicker effect if enabled
+            if (enableFlicker)
+            {
+                explosionLight.intensity += Random.Range(-flickerIntensityRange, flickerIntensityRange);
+            }
+
+            yield return null;
+        }
+
+        // Destroy the explosion instance after the duration
+        Destroy(explosionLight.gameObject);
+    }
 
     private IEnumerator CastRayUntilDissipated(Vector3 startPosition, Vector3 direction, ItemObject itemObject)
     {
@@ -72,15 +128,12 @@ public class Explosions : MonoBehaviour
                         {
                             creatureManager.ApplyImpact(hitObject, appliedDamage, itemObject.effects);
                         }
-
-
                     }
                     else
                     {
                         Debug.LogError("Hit object is null.");
                     }
                 }
-
             }
             currentPosition += direction * itemObject.explosionSpeed * Time.deltaTime;
             currentRayForce = itemObject.explosionInverse
@@ -93,6 +146,4 @@ public class Explosions : MonoBehaviour
             yield return null;
         }
     }
-
-
 }

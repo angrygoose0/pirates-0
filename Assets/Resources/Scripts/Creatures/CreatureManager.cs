@@ -603,10 +603,16 @@ public class CreatureManager : MonoBehaviour
             // Instantiate the item prefabs based on the gold drop
             for (int i = 0; i < goldDrop; i++)
             {
-                itemManager.CreateItem(goldItemObject, creaturePosition);
+                GameObject createdItem = itemManager.CreateItem(goldItemObject, creaturePosition);
 
             }
-            itemManager.CreateItem(creatureData.creatureObject.DetermineDrop(), creaturePosition);
+            ItemObject dropItemObject = creatureData.creatureObject.DetermineDrop();
+
+            if (dropItemObject != null)
+            {
+                GameObject droppedItem = itemManager.CreateItem(dropItemObject, creaturePosition);
+            }
+
 
             CreatureDeath(creatureObject);
 

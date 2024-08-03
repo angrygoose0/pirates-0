@@ -23,6 +23,8 @@ MonoBehaviour:
   creatureDrops:
   - droppedItemObject: {fileID: 11400000, guid: f8e85bfddbcee654d945c1060d1f6758, type: 2}
     dropWeight: 1
+  - droppedItemObject: {fileID: 11400000, guid: 1dd939d623bbf704cb90d8de3d1d16dd, type: 2}
+    dropWeight: 1
   tentacles: 0
   damage: 1
   rotationSpeed: 1000
@@ -30,7 +32,7 @@ MonoBehaviour:
   acceleration: 3
   deceleration: 2
   range: 5
-  aggressionThreshold: 10
+  aggressionThreshold: 1
   tentacleList:
   - segmentSizes:
     - 0.05
@@ -45,6 +47,6 @@ MonoBehaviour:
     wiggleFrequency: 10
     wiggleAmplitude: 0.01
     endTarget: 0
-  goldDropRange: {x: 10, y: 15}
+  goldDropRange: {x: 1000, y: 1000}
   hostilityMultiplier: 0
-  emptyWeight: 0
+  emptyWeight: 1

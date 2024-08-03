@@ -12,6 +12,8 @@ public class blockPrefabScript : MonoBehaviour
     public GameObject player;
     public GameObject itemPrefab;
     public GameObject spawnedItem;
+    public ItemManager itemManager;
+    public GameObject shipObject;
 
 
     public List<ItemObject> itemObjectList; // list for the global item scriptable objectlist
@@ -21,6 +23,19 @@ public class blockPrefabScript : MonoBehaviour
 
     private bool isSpawning = false;
 
+
+    void Start()
+    {
+
+        GameObject ghost = GameObject.Find("ghost");
+        itemManager = ghost.GetComponent<ItemManager>();
+
+        shipObject = GameObject.Find("ship");
+
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer.sprite = blockObject.blockSprite;
+
+    }
     void Update()
     {
         if (blockObject.blockType == BlockType.Payload)
@@ -61,13 +76,10 @@ public class blockPrefabScript : MonoBehaviour
                     foreach (ItemObject resultItem in intersectionList)
                     {
                         GameObject craftedItemObject = Instantiate(itemPrefab, gameObject.transform.position, Quaternion.identity);
+                        craftedItemObject = itemManager.CreateItem(resultItem, gameObject.transform.position);
 
                         ItemScript craftedItemScript = craftedItemObject.GetComponent<ItemScript>();
-
-                        craftedItemScript.SetItemVisibility(false);
-                        craftedItemScript.NewParent(gameObject);
-                        craftedItemScript.itemPickupable = false;
-                        craftedItemScript.itemObject = resultItem;
+                        craftedItemScript.NewParent(shipObject);
 
                         itemPrefabObject.Add(craftedItemObject);
                     }
@@ -156,22 +168,7 @@ public class blockPrefabScript : MonoBehaviour
         }
     }
 
-    void Start()
-    {
-        // Ensure the sprite renderer is set up with the correct sprite
-        if (blockObject != null)
-        {
-            SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-            if (spriteRenderer != null)
-            {
-                spriteRenderer.sprite = blockObject.blockSprite;
-            }
-        }
-        else
-        {
-            Debug.LogWarning("BlockObject is not assigned.");
-        }
-    }
+
 
     public float GetBlockValueByName(string name)
     {

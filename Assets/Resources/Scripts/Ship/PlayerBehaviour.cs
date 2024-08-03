@@ -158,6 +158,10 @@ public class PlayerBehaviour : MonoBehaviour
 
     void MovePlayer()
     {
+        if (interactionManager.playerBlockRelations.ContainsKey(gameObject))
+        {
+            return;
+        }
         // Apply acceleration or deceleration
         if (movementInput != Vector2.zero)
         {
