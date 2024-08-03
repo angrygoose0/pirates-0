@@ -10,25 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c2612e6d609656140ad524876ab86968, type: 3}
-  m_Name: BasicCannonball
+  m_Name: Gold
   m_EditorClassIdentifier: 
-  itemName: BasicCannonball
-  itemSprite: {fileID: 0}
-  mass: 1
+  itemName: Gold
+  itemSprite: {fileID: -810512370, guid: eccc8b95d0cd88e4eb091f0228ffd6e7, type: 3}
+  mass: 5
   reloadSpeed: 1
-  damageMultiplier: 100
-  explosionMultiplier: 1.5
-  explosionRange: 3
-  accuracy: 5
+  damageMultiplier: 0
+  explosionMultiplier: 0
+  explosionRange: 0
+  accuracy: 0
   explosionInverse: 0
-  fireAmount: 1
-  explosionSpeed: 100
-  goldAmount: 0
-  spawningItem: {fileID: 11400000, guid: 00eab698b11a3c044868628264fb3665, type: 2}
+  fireAmount: 0
+  explosionSpeed: 0
+  goldAmount: 1
+  spawningItem: {fileID: 0}
   regenerateTime: 0
   recipes: []
-  activeAbility: 1
-  effects:
-  - effect: 0
-    tier: 1
-    duration: 100
+  activeAbility: 0
+  effects: []

@@ -101,6 +101,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemObject: {fileID: 0}
   isActive: 0
+  targetObject: {fileID: 0}
+  lerpDuration: 0.5
+  goldManager: {fileID: 0}
   itemTaken: 0
   itemPickupable: 0
 --- !u!50 &7653777232405761642

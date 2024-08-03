@@ -124,10 +124,12 @@ public class PlayerBehaviour : MonoBehaviour
         {
             ToggleItem();
         }
+        /*
         else if (Input.GetKeyDown(KeyCode.F))
         {
             CollectItem();
         }
+        */
         if (equippedItem != null)
         {
             // Set the equipped item's position to the player's position
@@ -405,6 +407,7 @@ public class PlayerBehaviour : MonoBehaviour
         }
     }
 
+    /*
     void CollectItem()
     {
         if (equippedItem != null)
@@ -433,6 +436,7 @@ public class PlayerBehaviour : MonoBehaviour
             closestItem = null;
         }
     }
+    */
 
 
 

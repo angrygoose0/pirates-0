@@ -123,90 +123,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &23178027
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 23178029}
-  - component: {fileID: 23178028}
-  m_Layer: 0
-  m_Name: Circle
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!212 &23178028
-SpriteRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 23178027}
-  m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
-  m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
---- !u!4 &23178029
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 23178027}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.5739293, y: -1.122072, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &38128035
 GameObject:
   m_ObjectHideFlags: 0
@@ -231,7 +147,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 38128035}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
   m_Name: 
@@ -628,7 +544,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02a63246a92d5584ba48d90dedcbd3ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tilemap: {fileID: 1604011099}
+  shipTilemapObject: {fileID: 1604011098}
   tile: {fileID: 11400000, guid: c14545175a6c0d34e88e004e827cc897, type: 2}
   offset: {x: 0, y: 0, z: 0}
   blockPrefab: {fileID: 1886374172837679357, guid: 13e7d3305d7010943b852a997c1ad432, type: 3}
@@ -637,6 +553,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c133c3e063115c94fb5a3c29ed4211da, type: 2}
   - {fileID: 11400000, guid: ed0e3fc2729aefa42a12bb54c203c74e, type: 2}
   - {fileID: 11400000, guid: de7d847a4a831d6409c2c9291b8fe2ef, type: 2}
+  tilemap: {fileID: 1604011099}
   mastBlocks: []
 --- !u!114 &383585317
 MonoBehaviour:
@@ -667,8 +584,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67e6de42201f8f74189034565c11ac08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  abilityManager: {fileID: 383585333}
   equippedCannon: {fileID: 0}
   cannonBehaviour: {fileID: 383585323}
+  explosions: {fileID: 0}
   playerOne: {fileID: 1722425495}
 --- !u!114 &383585319
 MonoBehaviour:
@@ -947,6 +866,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   globalLight: {fileID: 383585329}
+  shipLight: {fileID: 38128036}
   dayDuration: 60
   timerText: {fileID: 1931540232}
   elapsedTime: 0
@@ -967,9 +887,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shipHealth: 50
+  maxShipHealth: 100
   healthUI: {fileID: 804013979}
   damageFlash: {fileID: 383585332}
   shipObject: {fileID: 1604011098}
+  abilityManager: {fileID: 383585333}
 --- !u!114 &383585332
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -999,7 +921,13 @@ MonoBehaviour:
   abilityList:
   - ability: 0
     tier: 3
+  - ability: 1
+    tier: 5
   lifeStealValue: 0.5
+  hasteValue: 1
+  multipleValue: 1
+  mightValue: 0
+  fragilityValue: 0
 --- !u!1 &485961737
 GameObject:
   m_ObjectHideFlags: 0
@@ -1389,71 +1317,6 @@ MonoBehaviour:
   blendDistance: 0
   weight: 1
   sharedProfile: {fileID: 11400000, guid: e33c36e61b0b65d408691bb94264acc3, type: 2}
---- !u!1001 &1179844715
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 189507199783012625, guid: a02dfe49a58e0af428c86086ccfa3b23, type: 3}
-      propertyPath: isActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 189507199783012625, guid: a02dfe49a58e0af428c86086ccfa3b23, type: 3}
-      propertyPath: itemObject
-      value: 
-      objectReference: {fileID: 11400000, guid: 81de5d4855b024e4f98add07aea7d9e3, type: 2}
-    - target: {fileID: 3867047219889575512, guid: a02dfe49a58e0af428c86086ccfa3b23, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 26.388092
-      objectReference: {fileID: 0}
-    - target: {fileID: 3867047219889575512, guid: a02dfe49a58e0af428c86086ccfa3b23, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -11.476416
-      objectReference: {fileID: 0}
-    - target: {fileID: 3867047219889575512, guid: a02dfe49a58e0af428c86086ccfa3b23, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3867047219889575512, guid: a02dfe49a58e0af428c86086ccfa3b23, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3867047219889575512, guid: a02dfe49a58e0af428c86086ccfa3b23, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3867047219889575512, guid: a02dfe49a58e0af428c86086ccfa3b23, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3867047219889575512, guid: a02dfe49a58e0af428c86086ccfa3b23, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3867047219889575512, guid: a02dfe49a58e0af428c86086ccfa3b23, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3867047219889575512, guid: a02dfe49a58e0af428c86086ccfa3b23, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3867047219889575512, guid: a02dfe49a58e0af428c86086ccfa3b23, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7643066971796696554, guid: a02dfe49a58e0af428c86086ccfa3b23, type: 3}
-      propertyPath: m_Name
-      value: itemPrefab (1)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: a02dfe49a58e0af428c86086ccfa3b23, type: 3}
 --- !u!1 &1291744407
 GameObject:
   m_ObjectHideFlags: 0
@@ -2057,13 +1920,13 @@ MonoBehaviour:
   defaultTileSprite: {fileID: 11400000, guid: c14545175a6c0d34e88e004e827cc897, type: 2}
   selectedBlockPrefab: {fileID: 0}
   interactionManager: {fileID: 383585318}
+  abilityManager: {fileID: 383585333}
   equippedItem: {fileID: 762235064}
   closestItem: {fileID: 762235064}
   equippedBlock: {fileID: 0}
   playerPickupRadius: 1
   currentDirection: 0
   goldManager: {fileID: 383585324}
-  attackRate: 0.5
 --- !u!212 &1722425497
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2617,6 +2480,4 @@ SceneRoots:
   - {fileID: 1830874727}
   - {fileID: 1291744410}
   - {fileID: 1722425498}
-  - {fileID: 1179844715}
   - {fileID: 38128037}
-  - {fileID: 23178029}

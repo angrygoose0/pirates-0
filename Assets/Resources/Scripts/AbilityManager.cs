@@ -10,7 +10,8 @@ public enum Ability
     Haste,
     Nova, //light explosion
     Multiple, //multiple bullets fired
-    Damage,
+    Might, // damage done
+    Fragility, // damage received
     // Add more states here as needed
 }
 
@@ -27,8 +28,8 @@ public class AbilityManager : MonoBehaviour
     public float lifeStealValue;
     public float hasteValue;
     public int multipleValue = 1;
-
-
+    public float mightValue;
+    public float fragilityValue;
 
 
     public AbilityData GetAbilityData(Ability ability)
@@ -59,17 +60,5 @@ public class AbilityManager : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        // Example usage
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            AddOrUpdateAbility(Ability.LifeSteal, 3);
-        }
-        if (Input.GetKeyDown(KeyCode.B))
-        {
-            AddOrUpdateAbility(Ability.Haste, 2);
-        }
-    }
+
 }

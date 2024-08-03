@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: basicCreature
   m_EditorClassIdentifier: 
   id: 0
-  startingHealth: 109
+  startingHealth: 2
   armor: 0.1
   populationValue: 2
   spawnWeight: 1000
@@ -22,7 +22,7 @@ MonoBehaviour:
   creatureValues: []
   creatureDrops: []
   tentacles: 0
-  damage: 0
+  damage: 1
   rotationSpeed: 1000
   maxMoveSpeed: 5
   acceleration: 3
@@ -43,5 +43,5 @@ MonoBehaviour:
     wiggleFrequency: 10
     wiggleAmplitude: 0.01
     endTarget: 0
-  goldDropRange: {x: 1, y: 5}
+  goldDropRange: {x: 10, y: 15}
   hostilityMultiplier: 0

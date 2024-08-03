@@ -144,7 +144,7 @@ public class CannonBehaviour : MonoBehaviour
         finalPosition.z = 0;
 
         // Simulate explosion using raycasts
-        explosionScript.Explode(finalPosition, itemObject);
+        explosionScript.Explode(finalPosition, itemObject, 0f, 360f);
     }
 
 

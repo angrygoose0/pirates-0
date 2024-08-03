@@ -9,6 +9,7 @@ public class InteractionManager : MonoBehaviour
     public AbilityManager abilityManager;
     public GameObject equippedCannon;
     public CannonBehaviour cannonBehaviour;
+    public Explosions explosions;
 
     public GameObject playerOne; //temporary player variable
 
@@ -127,9 +128,17 @@ public class InteractionManager : MonoBehaviour
                 {
                     if (blockItemObject != null)
                     {
-                        if (blockItemObject.activeAbility = true)
+                        if (blockItemObject.activeAbility == true)
                         {
-                            break;
+                            /*
+                            if (blockItemObject.name == "wave")
+                            {
+                                explosions.Explode(finalPosition, itemObject, 0f, 360f);
+                                Vector3 finalPosition = tilemap.GetCellCenterWorld(endTile);
+                                finalPosition.z = 0;
+
+                            }
+                            */
                         }
                     }
                 }

@@ -6,15 +6,27 @@ public class ItemScript : MonoBehaviour
 {
     public ItemObject itemObject;
     public bool isActive;
+    public GameObject targetObject; // The GameObject towards which the item will lerp
+    public float lerpDuration; // Duration of the lerp movement
+
+    public GoldManager goldManager;
 
     private float inactiveTime = 0f;
     private Coroutine fadeCoroutine;
+    private Coroutine lerpCoroutine; // Coroutine for lerping
     public bool itemTaken = false;
     public bool itemPickupable;
 
     void Start()
     {
         itemPickupable = true;
+
+        // Automatically find and assign the GameObject named "ghost" as the target
+        targetObject = GameObject.Find("ghost");
+
+        goldManager = targetObject.GetComponent<GoldManager>();
+
+
         // Check if the GameObject has a parent on startup and that parent is not the world Tilemap
         if (transform.parent != null && transform.parent.name != "world")
         {
@@ -24,6 +36,12 @@ public class ItemScript : MonoBehaviour
         {
             isActive = false;
             StartInactiveTimer();
+        }
+
+        // If the itemObject is gold, start the lerping coroutine
+        if (itemObject != null && itemObject.name == "Gold")
+        {
+            StartCoroutine(StartLerpingAfterDelay(2f)); // Start lerping after a 2-second delay
         }
     }
 
@@ -125,6 +143,40 @@ public class ItemScript : MonoBehaviour
         }
 
         // Destroy the GameObject after fading
+
+        Destroy(gameObject);
+    }
+
+    // Coroutine to start lerping after a delay
+    private IEnumerator StartLerpingAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (targetObject != null)
+        {
+            lerpCoroutine = StartCoroutine(LerpTowardsTarget());
+        }
+    }
+
+    // Coroutine to lerp the item towards the target object
+    private IEnumerator LerpTowardsTarget()
+    {
+        Vector3 startPosition = transform.position;
+        Vector3 endPosition = targetObject.transform.position;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < lerpDuration)
+        {
+            transform.position = Vector3.Lerp(startPosition, endPosition, elapsedTime / lerpDuration);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        // Ensure the item reaches the target position
+        transform.position = endPosition;
+
+        goldManager.AddGold(1);
+
+        // Destroy the GameObject after lerping
         Destroy(gameObject);
     }
 }

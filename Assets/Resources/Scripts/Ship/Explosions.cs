@@ -7,15 +7,23 @@ public class Explosions : MonoBehaviour
     public CreatureManager creatureManager;
     public GameObject explosionPrefab;
 
-    public void Explode(Vector3 explosionPosition, ItemObject itemObject)
+    public void Explode(Vector3 explosionPosition, ItemObject itemObject, float startAngle, float endAngle)
     {
-        float angleStep = 360f / raycastCount;
+        // Validate angles to ensure startAngle is less than endAngle
+        if (startAngle >= endAngle)
+        {
+            Debug.LogError("Start angle must be less than end angle");
+            return;
+        }
+
+        float angleRange = endAngle - startAngle;
+        float angleStep = angleRange / raycastCount;
         GameObject explosionInstance = Instantiate(explosionPrefab, explosionPosition, Quaternion.identity);
 
         Destroy(explosionInstance, explosionInstance.GetComponent<ParticleSystem>().main.duration * 3f);
         for (int i = 0; i < raycastCount; i++)
         {
-            float angle = i * angleStep;
+            float angle = startAngle + (i * angleStep);
             Vector3 rayDirection = Quaternion.Euler(0, 0, angle) * Vector3.right;
 
             // Adjust for isometric perspective by scaling the y component
@@ -24,6 +32,7 @@ public class Explosions : MonoBehaviour
             StartCoroutine(CastRayUntilDissipated(explosionPosition, rayDirection, itemObject));
         }
     }
+
 
 
     private IEnumerator CastRayUntilDissipated(Vector3 startPosition, Vector3 direction, ItemObject itemObject)

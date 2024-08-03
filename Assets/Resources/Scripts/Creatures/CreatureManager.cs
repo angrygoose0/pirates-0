@@ -495,7 +495,11 @@ public class CreatureManager : MonoBehaviour
 
         hitCreatureObject.transform.position = hitSegmentObject.transform.position;
 
-
+        AbilityData might = abilityManager.GetAbilityData(Ability.Might);
+        if (might != null)
+        {
+            damageMagnitude = damageMagnitude * abilityManager.mightValue * might.tier;
+        }
 
         TentacleData hitTentacleData = hitCreatureData.tentacles[hitTentacleObject];
 
@@ -526,6 +530,13 @@ public class CreatureManager : MonoBehaviour
         if (lifeSteal != null)
         {
             shipVitals.shipHealth += damageMagnitude * abilityManager.lifeStealValue * lifeSteal.tier;
+
+            // Check if shipHealth exceeds maxShipHealth
+            if (shipVitals.shipHealth > shipVitals.maxShipHealth)
+            {
+                // Set shipHealth to maxShipHealth if it exceeds the maximum limit
+                shipVitals.shipHealth = shipVitals.maxShipHealth;
+            }
         }
         // need to move this to damagecoroutine, but it lags out the dmageflash
     }
@@ -587,10 +598,11 @@ public class CreatureManager : MonoBehaviour
             CreatureDeath(creatureObject);
 
 
+
             // Instantiate the item prefabs based on the gold drop
             for (int i = 0; i < goldDrop; i++)
             {
-                itemManager.CreateItem("goldOne", creaturePosition);
+                itemManager.CreateItem("Gold", creaturePosition);
             }
 
             yield break;
