@@ -20,7 +20,9 @@ MonoBehaviour:
   minPackSpawn: 10
   maxPackSpawn: 10
   creatureValues: []
-  creatureDrops: []
+  creatureDrops:
+  - droppedItemObject: {fileID: 11400000, guid: f8e85bfddbcee654d945c1060d1f6758, type: 2}
+    dropWeight: 1
   tentacles: 0
   damage: 1
   rotationSpeed: 1000
@@ -45,3 +47,4 @@ MonoBehaviour:
     endTarget: 0
   goldDropRange: {x: 10, y: 15}
   hostilityMultiplier: 0
+  emptyWeight: 0

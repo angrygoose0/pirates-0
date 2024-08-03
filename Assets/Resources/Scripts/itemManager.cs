@@ -36,9 +36,8 @@ public class ItemManager : MonoBehaviour
         }
     }
     // Start is called before the first frame update
-    public void CreateItem(string itemName, Vector3 position)
+    public void CreateItem(ItemObject createItemObject, Vector3 position)
     {
-        ItemObject createItemObject = GetItemByName(itemName);
 
         if (createItemObject == null)
         {

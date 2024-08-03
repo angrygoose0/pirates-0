@@ -68,4 +68,33 @@ public class CreatureObject : ScriptableObject
     how much it goes down, depending on hp
     how much it goes down after attacking.
     */
+
+    public int emptyWeight = 100;  // Add this field to define the empty weight
+
+    // Method to determine which item drops
+    public ItemObject DetermineDrop()
+    {
+        int totalWeight = emptyWeight;
+
+        foreach (var drop in creatureDrops)
+        {
+            totalWeight += drop.dropWeight;
+        }
+
+        int randomValue = Random.Range(0, totalWeight);
+
+        int accumulatedWeight = 0;
+
+        foreach (var drop in creatureDrops)
+        {
+            accumulatedWeight += drop.dropWeight;
+            if (randomValue < accumulatedWeight)
+            {
+                return drop.droppedItemObject;
+            }
+        }
+
+        // If we get here, it means the random value was within the empty weight range
+        return null;
+    }
 }

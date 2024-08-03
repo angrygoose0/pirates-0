@@ -106,6 +106,7 @@ public class CreatureManager : MonoBehaviour
     public Tilemap worldTilemap;
     public ShipVitals shipVitals;
     public Material creatureMaterial;
+    public ItemObject goldItemObject;
 
     void Start()
     {
@@ -595,15 +596,21 @@ public class CreatureManager : MonoBehaviour
         {
             Vector3 creaturePosition = creatureObject.transform.position;
             int goldDrop = Random.Range((int)creatureData.creatureObject.goldDropRange.x, (int)creatureData.creatureObject.goldDropRange.y + 1);
-            CreatureDeath(creatureObject);
+
 
 
 
             // Instantiate the item prefabs based on the gold drop
             for (int i = 0; i < goldDrop; i++)
             {
-                itemManager.CreateItem("Gold", creaturePosition);
+                itemManager.CreateItem(goldItemObject, creaturePosition);
+
             }
+            itemManager.CreateItem(creatureData.creatureObject.DetermineDrop(), creaturePosition);
+
+            CreatureDeath(creatureObject);
+
+
 
             yield break;
         }
@@ -808,10 +815,10 @@ public class CreatureManager : MonoBehaviour
             }
             randomValue -= adjustedWeights[creatureObject];
         }
-
-
         return null;
     }
+
+
 
     void mobSpawner()
     {
