@@ -16,6 +16,7 @@ public class ItemScript : MonoBehaviour
     private Coroutine lerpCoroutine; // Coroutine for lerping
     public bool itemTaken = false;
     public bool itemPickupable;
+    //public GameObject shipObject;
 
     void Start()
     {
@@ -23,6 +24,7 @@ public class ItemScript : MonoBehaviour
 
         // Automatically find and assign the GameObject named "ghost" as the target
         targetObject = GameObject.Find("ghost");
+        //shipObject = GameObject.Find("ship");
 
         goldManager = targetObject.GetComponent<GoldManager>();
 
@@ -39,7 +41,7 @@ public class ItemScript : MonoBehaviour
         }
 
         // If the itemObject is gold, start the lerping coroutine
-        if (itemObject != null)
+        if (itemObject != null && itemObject.ammoCount == 0)
         {
 
             StartCoroutine(StartLerpingAfterDelay(2f, itemObject.name == "Gold")); // Start lerping after a 2-second delay
@@ -125,7 +127,7 @@ public class ItemScript : MonoBehaviour
         }
 
         // Wait for one minute of inactivity
-        yield return new WaitForSeconds(60);
+        yield return new WaitForSeconds(10);
 
         float fadeDuration = 5f; // Duration of the fading period
         float fadeTime = 0f;
@@ -182,6 +184,8 @@ public class ItemScript : MonoBehaviour
             // Destroy the GameObject after lerping
             Destroy(gameObject);
         }
+
+        NewParent(null);
 
     }
 }

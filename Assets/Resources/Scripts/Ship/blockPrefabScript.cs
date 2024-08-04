@@ -14,11 +14,14 @@ public class blockPrefabScript : MonoBehaviour
     public GameObject spawnedItem;
     public ItemManager itemManager;
     public GameObject shipObject;
+    public int ammoCount;
 
 
     public List<ItemObject> itemObjectList; // list for the global item scriptable objectlist
     private ItemScript spawnedItemScript;
     private Collider2D spawnedItemCollider;
+
+    public bool active = false;
 
 
     private bool isSpawning = false;

@@ -30,6 +30,7 @@ public class PlayerBehaviour : MonoBehaviour
 
     public ShipGenerator.Direction currentDirection;
     public GoldManager goldManager;
+    public GameObject pickupRadius;
 
     private bool isFiring = false;
     private Coroutine fireCoroutine;
@@ -45,6 +46,8 @@ public class PlayerBehaviour : MonoBehaviour
             // Set the equipped item's position to the player's position
             equippedItem.transform.localPosition = Vector3.zero;
         }
+
+        pickupRadius.transform.parent = this.transform;
     }
     void Update()
     {

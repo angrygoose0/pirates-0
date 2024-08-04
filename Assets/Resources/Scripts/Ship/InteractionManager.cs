@@ -122,7 +122,7 @@ public class InteractionManager : MonoBehaviour
                 }
                 else if (blockObject.blockType == BlockType.Mast)
                 {
-                    blockScript.blockDirection = RotateVector(blockScript.blockDirection, 45);
+                    blockScript.active = !blockScript.active;
                 }
                 else if (blockObject.blockType == BlockType.Payload)
                 {
@@ -145,22 +145,51 @@ public class InteractionManager : MonoBehaviour
                 break;
 
             case 1:
-                if (blockObject.blockType == BlockType.Cannon || blockObject.blockType == BlockType.Payload)
 
+                if (blockObject.blockType == BlockType.Cannon)
                 {
-                    if (equippedItemScript != null)
+
+                    if (equippedItemObject.ammoCount == 0 || equippedItemScript == null) // so not ammo
                     {
-                        equippedItemScript.SetItemVisibility(false);
-                        equippedItemScript.NewParent(blockPrefab);
-                        equippedItemScript.itemPickupable = false;
-                        blockScript.itemPrefabObject.Add(equippedItem);
-                        playerScript.equippedItem = null;
+                        break;
                     }
 
+                    equippedItemScript.SetItemVisibility(false);
+                    equippedItemScript.NewParent(blockPrefab);
+                    equippedItemScript.itemPickupable = false;
+                    if (blockScript.itemPrefabObject.Count == 0)
+                    {
+                        blockScript.itemPrefabObject.Add(equippedItem);
+                    }
+                    else
+                    {
+                        blockScript.itemPrefabObject[0] = equippedItem;
+                    }
+                    playerScript.equippedItem = null;
+                    Debug.Log(equippedItemObject.ammoCount);
+                    blockScript.ammoCount = equippedItemObject.ammoCount;
+
+
                 }
+
+                if (blockObject.blockType == BlockType.Payload)
+                {
+                    if (equippedItemObject.ammoCount > 0 || equippedItemScript == null) // so is ammo
+                    {
+                        break;
+                    }
+
+                    equippedItemScript.SetItemVisibility(false);
+                    equippedItemScript.NewParent(blockPrefab);
+                    equippedItemScript.itemPickupable = false;
+                    blockScript.itemPrefabObject.Add(equippedItem);
+                    playerScript.equippedItem = null;
+
+                }
+
                 else if (blockObject.blockType == BlockType.Mast)
                 {
-                    blockScript.blockDirection = RotateVector(blockScript.blockDirection, -45);
+                    blockScript.blockDirection = RotateVector(blockScript.blockDirection, 45);
                 }
                 break;
 
@@ -170,11 +199,12 @@ public class InteractionManager : MonoBehaviour
 
                     if (playerBlockRelations.ContainsKey(player))
                     {
-                        if (blockItemObject == null)
+                        if (blockItemObject == null && blockScript.ammoCount == 0)
                         {
                             Debug.Log("shoot blanks");
                             break;
                         }
+
                         Vector3 blockPosition = blockPrefab.transform.position;
                         Vector3 selectorPosition = cannonBehaviour.GetSelectorPosition();
                         Vector3Int selectorTilePosition = cannonBehaviour.WorldToCell(selectorPosition);
@@ -211,6 +241,12 @@ public class InteractionManager : MonoBehaviour
                             }
                             Vector3Int targetTile = tilesList[Random.Range(0, tilesList.Count)];
                             cannonBehaviour.FireInTheHole(blockPosition, targetTile, blockItemObject);
+                            blockScript.ammoCount -= 1;
+                            if (blockScript.ammoCount == 0)
+                            {
+                                blockScript.itemPrefabObject.Clear();
+                                Destroy(blockItem);
+                            }
                         }
 
                     }

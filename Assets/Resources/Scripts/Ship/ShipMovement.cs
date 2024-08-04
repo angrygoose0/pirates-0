@@ -32,7 +32,7 @@ public class ShipMovement : MonoBehaviour
         foreach (GameObject mastBlock in shipGenerator.mastBlocks)
         {
             blockPrefabScript blockScript = mastBlock.GetComponent<blockPrefabScript>();
-            if (blockScript != null)
+            if (blockScript.active)
             {
                 totalForce += blockScript.blockDirection.normalized * blockScript.GetBlockValueByName("mastForce");
             }

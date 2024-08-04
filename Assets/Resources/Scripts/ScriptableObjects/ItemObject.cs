@@ -21,7 +21,7 @@ public class ItemObject : ScriptableObject
 {
     public string itemName;
     public Sprite itemSprite;
-    public float mass;
+    public float mass = 1f;
     public float reloadSpeed = 1f;
     public float damageMultiplier;
     public float explosionMultiplier;
@@ -36,6 +36,8 @@ public class ItemObject : ScriptableObject
     public List<Recipe> recipes;
     public bool activeAbility;
     public List<EffectData> effects;
+    public int ammoCount = 0; //if 0, then it's not a spawned ammo,and doesnt lerp towards center after spawning.
+
 
 
 }

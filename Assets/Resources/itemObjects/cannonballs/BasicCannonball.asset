@@ -24,7 +24,7 @@ MonoBehaviour:
   fireAmount: 1
   explosionSpeed: 100
   goldAmount: 0
-  spawningItem: {fileID: 0}
+  spawningItem: {fileID: 11400000, guid: 00eab698b11a3c044868628264fb3665, type: 2}
   regenerateTime: 0
   recipes:
   - materials:
