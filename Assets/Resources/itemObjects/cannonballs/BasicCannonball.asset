@@ -35,3 +35,4 @@ MonoBehaviour:
   - effect: 0
     tier: 1
     duration: 100
+  ammoCount: 3

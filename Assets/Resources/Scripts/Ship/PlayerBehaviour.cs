@@ -21,6 +21,8 @@ public class PlayerBehaviour : MonoBehaviour
     private Vector3Int? previousInteractableTilePosition; // Store the previous interactable tile position
     public GameObject selectedBlockPrefab;
 
+    public UIManager uiManager;
+
     public InteractionManager interactionManager; // Reference to the InteractionManager script
     public AbilityManager abilityManager;
     public GameObject equippedItem;
@@ -332,10 +334,63 @@ public class PlayerBehaviour : MonoBehaviour
             SpriteRenderer sr = blockPrefab.GetComponent<SpriteRenderer>();
             BlockObject blockObject = sr.GetComponent<blockPrefabScript>().blockObject;
             sr.sprite = blockObject.selectedSprite;
-        }
 
-        // Update the previous interactable tile position
-        previousInteractableTilePosition = tilePosition;
+            blockPrefabScript blockScript = blockPrefab.GetComponent<blockPrefabScript>();
+            GameObject blockItem = null;
+
+            if (blockScript.itemPrefabObject != null && blockScript.itemPrefabObject.Count == 1)
+            {
+                blockItem = blockScript.itemPrefabObject[0];
+
+                ItemScript blockItemScript;
+                ItemObject blockItemObject;
+                if (blockItem != null)
+                {
+                    blockItemScript = blockItem.GetComponent<ItemScript>();
+                    blockItemObject = blockItemScript.itemObject;
+                }
+            }
+            List<string> helpfulUIList = new List<string>(); // Initialize the list
+            switch (blockObject.blockType)
+            {
+                case BlockType.Cannon:
+                    helpfulUIList.Add("[E] Enter / Exit");
+                    if (blockItem != null)
+                    {
+                        helpfulUIList.Add("[Left Click] Fire");
+                    }
+                    else
+                    {
+                        helpfulUIList.Add("[Q] Arm Cannon");
+                    }
+                    break; // Add break statement to prevent fall-through
+
+                case BlockType.Payload:
+                    if (blockItem != null)
+                    {
+                        if (blockItem.active)
+                        {
+                            helpfulUIList.Add("[E] Activate");
+                        }
+                    }
+                    else
+                    {
+                        helpfulUIList.Add("[Q] Arm Payload");
+                    }
+                    break; // Add break statement to prevent fall-through
+
+                // if an item pickable has spawned, shift is available.
+                case BlockType.Mast:
+                    helpfulUIList.Add("[E] Start / Stop");
+                    helpfulUIList.Add("[Q] Rotate");
+                    break; // Add break statement to prevent fall-through
+            }
+
+            uiManager.ToggleHelpfulUI(blockPrefab, helpfulUIList, false);
+
+            // Update the previous interactable tile position
+            previousInteractableTilePosition = tilePosition;
+        }
     }
 
 
@@ -351,6 +406,9 @@ public class PlayerBehaviour : MonoBehaviour
             SpriteRenderer sr = blockPrefab.GetComponent<SpriteRenderer>();
             BlockObject blockObject = sr.GetComponent<blockPrefabScript>().blockObject;
             sr.sprite = blockObject.blockSprite;
+
+            List<string> helpfulUIList = new List<string>();
+            uiManager.ToggleHelpfulUI(blockPrefab, helpfulUIList, false);
         }
     }
 
@@ -449,3 +507,4 @@ public class PlayerBehaviour : MonoBehaviour
 
 
 }
+

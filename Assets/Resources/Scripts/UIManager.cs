@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class UIManager : MonoBehaviour
 {
@@ -8,8 +9,11 @@ public class UIManager : MonoBehaviour
 
     public GameObject ammoCountContainerPrefab;
     public GameObject ammoCountPrefab;
+    public GameObject helpfulContainerPrefab;
 
     public Dictionary<GameObject, GameObject> blockToUIRelations = new Dictionary<GameObject, GameObject>();
+
+    public Dictionary<GameObject, GameObject> blockToHelpfulUIDict = new Dictionary<GameObject, GameObject>();
 
     public void ShowAmmoCount(GameObject blockObject, int currentAmmoCount, int maxAmmoCount)
     {
@@ -58,4 +62,54 @@ public class UIManager : MonoBehaviour
             }
         }
     }
+
+
+
+    public void ToggleHelpfulUI(GameObject blockObject, List<string> helpfulUIList, bool updating)
+    {
+        GameObject uiObject;
+
+        if (blockToHelpfulUIDict.TryGetValue(blockObject, out uiObject))
+        {
+            // If the blockObject is in the dictionary and the helpfulUIList is empty, destroy the UI object.
+            if (helpfulUIList.Count == 0)
+            {
+                if (uiObject != null)
+                {
+                    Debug.Log("destroy");
+                    Destroy(uiObject);
+                    blockToHelpfulUIDict.Remove(blockObject);
+                }
+            }
+            else if (updating)
+            {
+                // If the UI object already exists, update its text.
+                Debug.Log("updating text");
+                TextMeshProUGUI textMesh = uiObject.GetComponent<TextMeshProUGUI>();
+                if (textMesh != null)
+                {
+                    textMesh.text = string.Join("\n", helpfulUIList);
+                }
+            }
+        }
+        else
+        {
+            // If the blockObject is not in the dictionary and the helpfulUIList is not empty, instantiate a new UI object.
+            if (helpfulUIList.Count > 0)
+            {
+                Debug.Log("yes, so making");
+                uiObject = Instantiate(helpfulContainerPrefab, blockObject.transform.position, Quaternion.identity, canvas.transform);
+                blockToHelpfulUIDict[blockObject] = uiObject;
+
+                // Set the text of the new UI object.
+                TextMeshProUGUI textMesh = uiObject.GetComponent<TextMeshProUGUI>();
+                if (textMesh != null)
+                {
+                    Debug.Log("text");
+                    textMesh.text = string.Join("\n", helpfulUIList);
+                }
+            }
+        }
+    }
+
 }
