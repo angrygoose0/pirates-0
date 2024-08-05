@@ -202,7 +202,7 @@ public class PlayerBehaviour : MonoBehaviour
         closestItem = null;
 
         // Find all items in the scene
-        GameObject[] items = GameObject.FindGameObjectsWithTag("Item");
+        GameObject[] items = GameObject.FindGameObjectsWithTag("Item"); //make sure items inside blocks arent tagged as Item.
 
         // Initialize the minimum distance with a large number
         float minDistance = Mathf.Infinity;

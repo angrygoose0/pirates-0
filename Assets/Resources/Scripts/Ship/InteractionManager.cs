@@ -10,6 +10,7 @@ public class InteractionManager : MonoBehaviour
     public GameObject equippedCannon;
     public CannonBehaviour cannonBehaviour;
     public Explosions explosions;
+    public UIManager uiManager;
 
     public GameObject playerOne; //temporary player variable
 
@@ -117,6 +118,8 @@ public class InteractionManager : MonoBehaviour
                         }
 
                         playerBlockRelations[blockPrefab] = player;
+
+
                         //player equips empty / kicks out another player
                     }
                 }
@@ -166,8 +169,10 @@ public class InteractionManager : MonoBehaviour
                         blockScript.itemPrefabObject[0] = equippedItem;
                     }
                     playerScript.equippedItem = null;
-                    Debug.Log(equippedItemObject.ammoCount);
+
                     blockScript.ammoCount = equippedItemObject.ammoCount;
+
+                    uiManager.ShowAmmoCount(blockPrefab, blockScript.ammoCount, equippedItemObject.ammoCount);
 
 
                 }
@@ -242,6 +247,8 @@ public class InteractionManager : MonoBehaviour
                             Vector3Int targetTile = tilesList[Random.Range(0, tilesList.Count)];
                             cannonBehaviour.FireInTheHole(blockPosition, targetTile, blockItemObject);
                             blockScript.ammoCount -= 1;
+
+                            uiManager.ShowAmmoCount(blockPrefab, blockScript.ammoCount, blockItemObject.ammoCount);
                             if (blockScript.ammoCount == 0)
                             {
                                 blockScript.itemPrefabObject.Clear();
