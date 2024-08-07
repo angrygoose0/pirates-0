@@ -39,6 +39,17 @@ public class ItemObject : ScriptableObject
     public int ammoCount = 0; //if 0, then it's not a spawned ammo,and doesnt lerp towards center after spawning.
     public List<AbilityData> abilityList;
 
+    public Active active;
+
+    public void UseActive(Vector3 position)
+    {
+        if (active != null)
+        {
+            active.Activate(this, position);
+        }
+    }
+
+
 }
 
 

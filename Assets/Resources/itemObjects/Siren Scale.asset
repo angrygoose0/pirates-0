@@ -29,3 +29,7 @@ MonoBehaviour:
   recipes: []
   activeAbility: 0
   effects: []
+  ammoCount: 0
+  abilityList:
+  - ability: 3
+    tier: 5

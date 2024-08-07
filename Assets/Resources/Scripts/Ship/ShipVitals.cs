@@ -14,6 +14,7 @@ public class ShipVitals : MonoBehaviour
     public DamageFlash damageFlash;
     public GameObject shipObject;
     public AbilityManager abilityManager;
+    public bool invincible = false;
 
     private TilemapRenderer tilemapRenderer;
 

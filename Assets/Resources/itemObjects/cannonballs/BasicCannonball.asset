@@ -36,3 +36,6 @@ MonoBehaviour:
     tier: 1
     duration: 100
   ammoCount: 3
+  abilityList:
+  - ability: 0
+    tier: 0

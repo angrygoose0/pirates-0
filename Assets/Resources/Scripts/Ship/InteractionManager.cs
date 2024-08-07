@@ -132,17 +132,9 @@ public class InteractionManager : MonoBehaviour
                 {
                     if (blockItemObject != null)
                     {
-                        if (blockItemObject.activeAbility == true)
+                        if (blockItemObject.active != null)
                         {
-                            /*
-                            if (blockItemObject.name == "wave")
-                            {
-                                explosions.Explode(finalPosition, itemObject, 0f, 360f);
-                                Vector3 finalPosition = tilemap.GetCellCenterWorld(endTile);
-                                finalPosition.z = 0;
-
-                            }
-                            */
+                            blockItemScript.ActivateActive(blockPrefab.transform.position);
                         }
                     }
                 }

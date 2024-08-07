@@ -555,6 +555,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ed0e3fc2729aefa42a12bb54c203c74e, type: 2}
   - {fileID: 11400000, guid: de7d847a4a831d6409c2c9291b8fe2ef, type: 2}
   tilemap: {fileID: 1604011099}
+  abilityManager: {fileID: 383585333}
   mastBlocks:
   - {fileID: 0}
 --- !u!114 &383585317
@@ -591,6 +592,7 @@ MonoBehaviour:
   cannonBehaviour: {fileID: 383585323}
   explosions: {fileID: 383585322}
   uiManager: {fileID: 383585334}
+  shipGenerator: {fileID: 383585316}
   playerOne: {fileID: 1722425495}
 --- !u!114 &383585319
 MonoBehaviour:
@@ -637,8 +639,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shipGenerator: {fileID: 383585316}
   tilemap: {fileID: 170296652}
-  maxSpeed: 5
+  maxSpeed: 10
   mass: 100
+  currentVelocity: {x: 0, y: 0}
 --- !u!114 &383585322
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -908,6 +911,7 @@ MonoBehaviour:
   damageFlash: {fileID: 383585332}
   shipObject: {fileID: 1604011098}
   abilityManager: {fileID: 383585333}
+  invincible: 0
 --- !u!114 &383585332
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -934,11 +938,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b178d3c4c9e347543982438131326988, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  abilityList:
-  - ability: 0
-    tier: 3
-  - ability: 1
-    tier: 5
+  abilityList: []
   lifeStealValue: 0.5
   hasteValue: 1
   multipleValue: 1
@@ -1459,7 +1459,7 @@ PrefabInstance:
     - target: {fileID: 189507199783012625, guid: a02dfe49a58e0af428c86086ccfa3b23, type: 3}
       propertyPath: itemObject
       value: 
-      objectReference: {fileID: 11400000, guid: 81de5d4855b024e4f98add07aea7d9e3, type: 2}
+      objectReference: {fileID: 11400000, guid: f8e85bfddbcee654d945c1060d1f6758, type: 2}
     - target: {fileID: 189507199783012625, guid: a02dfe49a58e0af428c86086ccfa3b23, type: 3}
       propertyPath: itemPickupable
       value: 1

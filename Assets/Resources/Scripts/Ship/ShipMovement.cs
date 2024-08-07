@@ -4,14 +4,28 @@ using System.Linq;
 
 public class ShipMovement : MonoBehaviour
 {
+    public static ShipMovement Instance { get; private set; }
     public ShipGenerator shipGenerator;
     public Transform tilemap; // Reference to the tilemap or parent object containing the tilemap
     public float maxSpeed = 5f; // The maximum speed at which the ship moves
     public float mass = 1f; // The mass of the ship, which affects acceleration and deceleration
 
-    private Vector2 currentVelocity; // The current velocity of the ship
+    public Vector2 currentVelocity; // The current velocity of the ship
     private Vector2 totalForce; // The total force exerted by the mast blocks
 
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
     void Update()
     {
         // Calculate the total force from mast blocks

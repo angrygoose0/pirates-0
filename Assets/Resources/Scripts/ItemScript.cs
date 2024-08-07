@@ -5,6 +5,8 @@ using UnityEngine;
 public class ItemScript : MonoBehaviour
 {
     public ItemObject itemObject;
+    public bool activeCooldown = true;
+
     public bool isActive;
     public GameObject targetObject; // The GameObject towards which the item will lerp
     public float lerpDuration; // Duration of the lerp movement
@@ -16,7 +18,6 @@ public class ItemScript : MonoBehaviour
     private Coroutine lerpCoroutine; // Coroutine for lerping
     public bool itemTaken = false;
     public bool itemPickupable;
-    //public GameObject shipObject;
 
     void Start()
     {
@@ -24,10 +25,8 @@ public class ItemScript : MonoBehaviour
 
         // Automatically find and assign the GameObject named "ghost" as the target
         targetObject = GameObject.Find("ghost");
-        //shipObject = GameObject.Find("ship");
 
         goldManager = targetObject.GetComponent<GoldManager>();
-
 
         // Check if the GameObject has a parent on startup and that parent is not the world Tilemap
         if (transform.parent != null && transform.parent.name != "world")
@@ -43,7 +42,6 @@ public class ItemScript : MonoBehaviour
         // If the itemObject is gold, start the lerping coroutine
         if (itemObject != null && itemObject.ammoCount == 0)
         {
-
             StartCoroutine(StartLerpingAfterDelay(2f, itemObject.name == "Gold")); // Start lerping after a 2-second delay
         }
     }
@@ -146,7 +144,6 @@ public class ItemScript : MonoBehaviour
         }
 
         // Destroy the GameObject after fading
-
         Destroy(gameObject);
     }
 
@@ -186,6 +183,29 @@ public class ItemScript : MonoBehaviour
         }
 
         NewParent(null);
+    }
 
+    // Coroutine to handle active skill cooldown
+    public void ActivateActive(Vector3 position)
+    {
+        if (itemObject.active == null)
+        {
+            return;
+        }
+
+        if (activeCooldown == false)
+        {
+            return;
+        }
+
+        itemObject.UseActive(position);
+        StartCoroutine(ActiveCooldownCoroutine(itemObject.active.cooldown));
+    }
+
+    private IEnumerator ActiveCooldownCoroutine(float cooldown)
+    {
+        activeCooldown = false;
+        yield return new WaitForSeconds(5f);
+        activeCooldown = true;
     }
 }

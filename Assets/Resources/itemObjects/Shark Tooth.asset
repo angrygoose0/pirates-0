@@ -29,3 +29,8 @@ MonoBehaviour:
   recipes: []
   activeAbility: 0
   effects: []
+  ammoCount: 0
+  abilityList:
+  - ability: 1
+    tier: 2
+  active: {fileID: 11400000, guid: a7fbca4f17bb22b41b6564768f17d5db, type: 2}

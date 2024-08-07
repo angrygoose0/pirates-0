@@ -777,9 +777,17 @@ public class CreatureManager : MonoBehaviour
     public void AttackShip(GameObject creature)
     {
         CreatureData creatureData = creatures[creature];
+        
         //creatureData.hostility = 0f;
 
         shipVitals.ApplyImpact(creatureData.creatureObject.damage);
+
+        //invulnerable ship / spiky ship
+        /*var firstTentacle = creatureData.tentacles.Values.FirstOrDefault();
+        var firstSegmentKey = firstTentacle.segments.Keys.FirstOrDefault();
+        List<EffectData> emptyEffectsList = new List<EffectData>();
+        ApplyImpact(firstSegmentKey, 1f, emptyEffectsList);*/
+
     }
 
 
