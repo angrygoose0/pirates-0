@@ -8,8 +8,8 @@ public enum Ability
 {
     LifeSteal,
     Haste,
-    Nova, //light explosion
-    Multiple, //multiple bullets fired
+    Nova, // light explosion
+    Multiple, // multiple bullets fired
     Might, // damage done
     Fragility, // damage received
     // Add more states here as needed
@@ -31,14 +31,12 @@ public class AbilityManager : MonoBehaviour
     public float mightValue;
     public float fragilityValue;
 
-
     public AbilityData GetAbilityData(Ability ability)
     {
         return abilityList.Find(a => a.ability == ability);
     }
 
-
-    // Call this method to add an ability to the list while ensuring no duplicates
+    // Call this method to add an ability to the list while ensuring no duplicates and adding tiers if already exists
     public void AddOrUpdateAbility(Ability newAbility, int newTier)
     {
         bool abilityExists = false;
@@ -48,7 +46,7 @@ public class AbilityManager : MonoBehaviour
             if (abilityList[i].ability == newAbility)
             {
                 abilityExists = true;
-                abilityList[i].tier = newTier;
+                abilityList[i].tier += newTier; // Add the tiers together
                 break;
             }
         }
@@ -59,6 +57,4 @@ public class AbilityManager : MonoBehaviour
             abilityList.Add(new AbilityData { ability = newAbility, tier = newTier });
         }
     }
-
-
 }

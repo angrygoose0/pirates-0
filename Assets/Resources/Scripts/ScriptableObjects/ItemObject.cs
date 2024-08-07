@@ -37,8 +37,7 @@ public class ItemObject : ScriptableObject
     public bool activeAbility;
     public List<EffectData> effects;
     public int ammoCount = 0; //if 0, then it's not a spawned ammo,and doesnt lerp towards center after spawning.
-
-
+    public List<AbilityData> abilityList;
 
 }
 

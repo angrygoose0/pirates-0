@@ -16,6 +16,7 @@ public class ShipGenerator : MonoBehaviour
     public GameObject blockPrefab; // Reference to the block prefab
     public List<BlockObject> blockObjects; // List of all BlockObject ScriptableObjects
     public Tilemap tilemap;
+    public AbilityManager abilityManager;
 
     public float[,] ship = new float[,]
     {
@@ -160,6 +161,36 @@ public class ShipGenerator : MonoBehaviour
         tileToBlockPrefabMap.TryGetValue(tilePosition, out GameObject blockPrefab);
         return blockPrefab;
     }
+
+    public void UpdateBlockEffects()
+    {
+        abilityManager.abilityList.Clear();
+        foreach (var kvp in tileToBlockPrefabMap)
+        {
+            GameObject blockPrefab = kvp.Value;
+
+            blockPrefabScript blockScript = blockPrefab.GetComponent<blockPrefabScript>();
+            if (blockScript.itemPrefabObject == null || blockScript.itemPrefabObject.Count != 1)
+            {
+                continue;
+            }
+
+            GameObject blockItem = blockScript.itemPrefabObject[0];
+            ItemScript blockItemScript = blockItem.GetComponent<ItemScript>();
+            ItemObject blockItemObject = blockItemScript.itemObject;
+
+            if (blockItemObject.abilityList.Count < 1)
+            {
+                continue;
+            }
+            foreach (AbilityData ability in blockItemObject.abilityList)
+            {
+                abilityManager.AddOrUpdateAbility(ability.ability, ability.tier);
+            }
+        }
+
+    }
+
 
     public List<(Vector3Int position, Direction direction)> GetInteractableNeighbors(Vector3Int currentTilePosition)
     {

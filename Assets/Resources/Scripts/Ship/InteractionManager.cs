@@ -11,6 +11,7 @@ public class InteractionManager : MonoBehaviour
     public CannonBehaviour cannonBehaviour;
     public Explosions explosions;
     public UIManager uiManager;
+    public ShipGenerator shipGenerator;
 
     public GameObject playerOne; //temporary player variable
 
@@ -189,6 +190,8 @@ public class InteractionManager : MonoBehaviour
                     equippedItemScript.itemPickupable = false;
                     blockScript.itemPrefabObject.Add(equippedItem);
                     playerScript.equippedItem = null;
+
+                    shipGenerator.UpdateBlockEffects();
 
                 }
 
