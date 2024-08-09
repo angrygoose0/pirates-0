@@ -2,6 +2,9 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using TMPro;
+using MoreMountains.Feedbacks;
+using MoreMountains.FeedbacksForThirdParty;
+using Cinemachine;
 
 public class ShipVitals : MonoBehaviour
 {
@@ -22,8 +25,18 @@ public class ShipVitals : MonoBehaviour
     private float timeSinceLastDamage = 0f; // Time since the last damage was taken
     private float regenDelay = 5f; // Time in seconds before health starts regenerating
 
+    public MMF_Player shipDamagedFeedbackPlayer;
+    private MMF_CinemachineImpulse cinemachineImpulseFeedback;
+
+
     void Start()
     {
+        cinemachineImpulseFeedback = shipDamagedFeedbackPlayer.GetFeedbackOfType<MMF_CinemachineImpulse>();
+        cinemachineImpulseFeedback.Velocity.x = 0.25f;
+        cinemachineImpulseFeedback.Velocity.y = 0.25f;
+        cinemachineImpulseFeedback.Velocity.z = 0.25f;
+
+
         shipHealth = maxShipHealth;
         tilemapRenderer = shipObject.GetComponent<TilemapRenderer>();
 
@@ -55,6 +68,8 @@ public class ShipVitals : MonoBehaviour
 
     public void ApplyImpact(float damageMagnitude)
     {
+        cinemachineImpulseFeedback.Velocity *= damageMagnitude;
+        shipDamagedFeedbackPlayer?.PlayFeedbacks();
         AbilityData fragility = abilityManager.GetAbilityData(Ability.Fragility);
         if (fragility != null)
         {
