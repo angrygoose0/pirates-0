@@ -134,7 +134,8 @@ public class InteractionManager : MonoBehaviour
                     {
                         if (blockItemObject.active != null)
                         {
-                            blockItemScript.ActivateActive(blockPrefab.transform.position);
+                            Debug.Log("active");
+                            blockItemScript.ActivateActive(blockPrefab.transform.position, blockScript.blockDirection);
                         }
                     }
                 }
@@ -253,6 +254,10 @@ public class InteractionManager : MonoBehaviour
 
                     }
                 }
+                break;
+
+            case 3:
+                blockScript.blockDirection = RotateVector(blockScript.blockDirection, 45);
                 break;
 
             default:

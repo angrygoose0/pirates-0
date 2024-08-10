@@ -30,6 +30,10 @@ public class ShipGenerator : MonoBehaviour
 
 
 
+
+
+
+
     private Dictionary<Vector3Int, GameObject> tileToBlockPrefabMap;
     public List<GameObject> mastBlocks; // List to store blocks of type Mast
 

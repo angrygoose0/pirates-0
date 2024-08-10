@@ -76,7 +76,6 @@ public class UIManager : MonoBehaviour
             {
                 if (uiObject != null)
                 {
-                    Debug.Log("destroy");
                     Destroy(uiObject);
                     blockToHelpfulUIDict.Remove(blockObject);
                 }
@@ -84,7 +83,6 @@ public class UIManager : MonoBehaviour
             else if (updating)
             {
                 // If the UI object already exists, update its text.
-                Debug.Log("updating text");
                 TextMeshProUGUI textMesh = uiObject.GetComponent<TextMeshProUGUI>();
                 if (textMesh != null)
                 {
@@ -97,7 +95,6 @@ public class UIManager : MonoBehaviour
             // If the blockObject is not in the dictionary and the helpfulUIList is not empty, instantiate a new UI object.
             if (helpfulUIList.Count > 0)
             {
-                Debug.Log("yes, so making");
                 uiObject = Instantiate(helpfulContainerPrefab, blockObject.transform.position, Quaternion.identity, canvas.transform);
                 blockToHelpfulUIDict[blockObject] = uiObject;
 
@@ -105,7 +102,6 @@ public class UIManager : MonoBehaviour
                 TextMeshProUGUI textMesh = uiObject.GetComponent<TextMeshProUGUI>();
                 if (textMesh != null)
                 {
-                    Debug.Log("text");
                     textMesh.text = string.Join("\n", helpfulUIList);
                 }
             }

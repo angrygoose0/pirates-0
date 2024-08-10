@@ -41,11 +41,11 @@ public class ItemObject : ScriptableObject
 
     public Active active;
 
-    public void UseActive(Vector3 position)
+    public void UseActive(Vector3 position, Vector2 blockDirection)
     {
         if (active != null)
         {
-            active.Activate(this, position);
+            active.Activate(this, position, blockDirection);
         }
     }
 

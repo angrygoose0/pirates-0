@@ -125,7 +125,7 @@ public class ItemScript : MonoBehaviour
         }
 
         // Wait for one minute of inactivity
-        yield return new WaitForSeconds(10);
+        yield return new WaitForSeconds(3);
 
         float fadeDuration = 5f; // Duration of the fading period
         float fadeTime = 0f;
@@ -186,7 +186,7 @@ public class ItemScript : MonoBehaviour
     }
 
     // Coroutine to handle active skill cooldown
-    public void ActivateActive(Vector3 position)
+    public void ActivateActive(Vector3 position, Vector2 blockDirection)
     {
         if (itemObject.active == null)
         {
@@ -198,7 +198,7 @@ public class ItemScript : MonoBehaviour
             return;
         }
 
-        itemObject.UseActive(position);
+        itemObject.UseActive(position, blockDirection);
         StartCoroutine(ActiveCooldownCoroutine(itemObject.active.cooldown));
     }
 

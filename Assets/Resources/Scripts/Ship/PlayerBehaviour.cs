@@ -73,9 +73,14 @@ public class PlayerBehaviour : MonoBehaviour
         {
             InteractWithBlock(0);
         }
+        
         else if (Input.GetKeyDown(KeyCode.Q))
         {
             InteractWithBlock(1);
+        }
+        else if (Input.GetKeyDown(KeyCode.R))
+        {
+            InteractWithBlock(3);
         }
         if (Input.GetMouseButtonDown(0) && !isFiring)
         {
