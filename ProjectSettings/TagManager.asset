@@ -44,11 +44,11 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: world
-    uniqueID: 2957908791
-    locked: 0
   - name: creature
     uniqueID: 3698801699
+    locked: 0
+  - name: world
+    uniqueID: 2957908791
     locked: 0
   - name: ship
     uniqueID: 3043669347
