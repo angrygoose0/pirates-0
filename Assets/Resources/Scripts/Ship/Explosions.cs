@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Explosions : MonoBehaviour
@@ -20,7 +21,7 @@ public class Explosions : MonoBehaviour
     public float flickerIntensityRange = 0.5f;
     public float pulsingSpeed = 4f; // Speed of pulsing effects
 
-    public void Explode(Vector3 explosionPosition, ItemObject itemObject, float startAngle, float endAngle)
+    public void Explode(Vector3 explosionPosition, ProjectileData projectile, float startAngle, float endAngle, List<EffectData> effects)
     {
         // Validate angles to ensure startAngle is less than endAngle
         if (startAngle >= endAngle)
@@ -57,7 +58,7 @@ public class Explosions : MonoBehaviour
             // Adjust for isometric perspective by scaling the y component
             rayDirection = new Vector3(rayDirection.x, rayDirection.y * 0.5f, rayDirection.z);
 
-            StartCoroutine(CastRayUntilDissipated(explosionPosition, rayDirection, itemObject));
+            StartCoroutine(CastRayUntilDissipated(explosionPosition, rayDirection, projectile, effects));
         }
     }
 
@@ -91,31 +92,31 @@ public class Explosions : MonoBehaviour
         Destroy(explosionLight.gameObject);
     }
 
-    private IEnumerator CastRayUntilDissipated(Vector3 startPosition, Vector3 direction, ItemObject itemObject)
+    private IEnumerator CastRayUntilDissipated(Vector3 startPosition, Vector3 direction, ProjectileData projectile, List<EffectData> effects)
     {
-        float dissipationRate = 1 / itemObject.explosionRange;
-        float currentRayForce = itemObject.explosionInverse ? 0f : 1f; // Start the ray force based on the itemObject.explosionInverse parameter
+        float dissipationRate = 1 / projectile.explosionRange;
+        float currentRayForce = projectile.explosionInverse ? 0f : 1f; // Start the ray force based on the projectile.explosionInverse parameter
         Vector3 currentPosition = startPosition;
 
-        while (itemObject.explosionInverse ? currentRayForce < 1 : currentRayForce > 0)
+        while (projectile.explosionInverse ? currentRayForce < 1 : currentRayForce > 0)
         {
-            RaycastHit2D hit = Physics2D.Raycast(currentPosition, direction, itemObject.explosionSpeed * Time.deltaTime);
+            RaycastHit2D hit = Physics2D.Raycast(currentPosition, direction, projectile.explosionSpeed * Time.deltaTime);
 
             if (hit.collider != null)
             {
                 GameObject hitObject = hit.collider.gameObject;
                 float distance = Vector2.Distance(currentPosition, hit.point);
-                currentRayForce = itemObject.explosionInverse
+                currentRayForce = projectile.explosionInverse
                     ? Mathf.Min(currentRayForce + distance * dissipationRate, 1)
                     : Mathf.Max(currentRayForce - distance * dissipationRate, 0);
 
-                if (itemObject.explosionInverse ? currentRayForce < 1 : currentRayForce > 0)
+                if (projectile.explosionInverse ? currentRayForce < 1 : currentRayForce > 0)
                 {
                     Rigidbody2D rigidBody = hit.collider.GetComponent<Rigidbody2D>();
 
                     Vector2 forceDirection = ((Vector2)hit.point - (Vector2)startPosition).normalized;
-                    float appliedForce = currentRayForce * itemObject.explosionMultiplier;
-                    float appliedDamage = currentRayForce * itemObject.damageMultiplier;
+                    float appliedForce = currentRayForce * projectile.explosionMultiplier;
+                    float appliedDamage = currentRayForce * projectile.damageMultiplier;
 
                     if (rigidBody != null)
                     {
@@ -126,7 +127,7 @@ public class Explosions : MonoBehaviour
                     {
                         if (hitObject.tag == "Creature")
                         {
-                            creatureManager.ApplyImpact(hitObject, appliedDamage, itemObject.effects);
+                            creatureManager.ApplyImpact(hitObject, appliedDamage, effects);  //change TODO
                         }
                     }
                     else
@@ -135,13 +136,13 @@ public class Explosions : MonoBehaviour
                     }
                 }
             }
-            currentPosition += direction * itemObject.explosionSpeed * Time.deltaTime;
-            currentRayForce = itemObject.explosionInverse
-                ? Mathf.Min(currentRayForce + dissipationRate * itemObject.explosionSpeed * Time.deltaTime, 1)
-                : currentRayForce - dissipationRate * itemObject.explosionSpeed * Time.deltaTime;
+            currentPosition += direction * projectile.explosionSpeed * Time.deltaTime;
+            currentRayForce = projectile.explosionInverse
+                ? Mathf.Min(currentRayForce + dissipationRate * projectile.explosionSpeed * Time.deltaTime, 1)
+                : currentRayForce - dissipationRate * projectile.explosionSpeed * Time.deltaTime;
 
             // Draw the ray in the scene view for visualization
-            Debug.DrawRay(startPosition, direction * (itemObject.explosionInverse ? currentRayForce : (1 - currentRayForce) / dissipationRate), Color.red, 0.1f);
+            Debug.DrawRay(startPosition, direction * (projectile.explosionInverse ? currentRayForce : (1 - currentRayForce) / dissipationRate), Color.red, 0.1f);
 
             yield return null;
         }

@@ -16,12 +16,9 @@ public class LightEmission
 
 }
 
-[CreateAssetMenu(fileName = "NewItem", menuName = "Item/Item")]
-public class ItemObject : ScriptableObject
+[System.Serializable]
+public class ProjectileData
 {
-    public string itemName;
-    public Sprite itemSprite;
-    public float mass = 1f;
     public float reloadSpeed = 1f;
     public float damageMultiplier;
     public float explosionMultiplier;
@@ -30,15 +27,24 @@ public class ItemObject : ScriptableObject
     public bool explosionInverse = false;
     public int fireAmount;
     public float explosionSpeed;
+    public int ammoCount = 0; //if 0, then it's not a spawned ammo,and doesnt lerp towards center after spawning.
+}
+
+[CreateAssetMenu(fileName = "NewItem", menuName = "Item/Item")]
+public class ItemObject : ScriptableObject
+{
+    public string itemName;
+    public Sprite itemSprite;
+    public float mass = 1f;
+
+    public List<ProjectileData> projectileData = null;
     public int goldAmount = 0;
     public ItemObject spawningItem;
     public float regenerateTime;
     public List<Recipe> recipes;
-    public bool activeAbility;
     public List<EffectData> effects;
-    public int ammoCount = 0; //if 0, then it's not a spawned ammo,and doesnt lerp towards center after spawning.
-    public List<AbilityData> abilityList;
 
+    public List<AbilityData> abilityList;
     public Active active;
 
     public void UseActive(Vector3 position, Vector2 blockDirection)

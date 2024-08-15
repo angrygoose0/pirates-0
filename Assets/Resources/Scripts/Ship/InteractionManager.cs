@@ -146,10 +146,11 @@ public class InteractionManager : MonoBehaviour
                 if (blockObject.blockType == BlockType.Cannon)
                 {
 
-                    if (equippedItemObject.ammoCount == 0 || equippedItemScript == null) // so not ammo
+                    if (equippedItemObject.projectileData == null || equippedItemScript == null || equippedItemObject.projectileData.Count != 1) // so not ammo
                     {
                         break;
                     }
+                    ProjectileData projectile = equippedItemObject.projectileData[0];
 
                     equippedItemScript.SetItemVisibility(false);
                     equippedItemScript.NewParent(blockPrefab);
@@ -164,16 +165,18 @@ public class InteractionManager : MonoBehaviour
                     }
                     playerScript.equippedItem = null;
 
-                    blockScript.ammoCount = equippedItemObject.ammoCount;
 
-                    uiManager.ShowAmmoCount(blockPrefab, blockScript.ammoCount, equippedItemObject.ammoCount);
+                    blockScript.ammoCount = projectile.ammoCount;
+
+                    uiManager.ShowAmmoCount(blockPrefab, blockScript.ammoCount, projectile.ammoCount);
 
 
                 }
 
                 if (blockObject.blockType == BlockType.Payload)
                 {
-                    if (equippedItemObject.ammoCount > 0 || equippedItemScript == null) // so is ammo
+
+                    if (equippedItemScript == null || equippedItemObject.projectileData.Count > 0) // so is ammo
                     {
                         break;
                     }
@@ -200,7 +203,13 @@ public class InteractionManager : MonoBehaviour
 
                     if (playerBlockRelations.ContainsKey(player))
                     {
-                        if (blockItemObject == null && blockScript.ammoCount == 0)
+                        ProjectileData projectile = null;
+                        if (blockItemObject.projectileData != null && blockItemObject.projectileData.Count > 0)
+                        {
+                            projectile = blockItemObject.projectileData[0];
+                            // Use projectile here
+                        }
+                        if (blockItemObject == null && blockScript.ammoCount == 0 && projectile != null)
                         {
                             Debug.Log("shoot blanks");
                             break;
@@ -217,8 +226,8 @@ public class InteractionManager : MonoBehaviour
 
 
                         AbilityData multiple = abilityManager.GetAbilityData(Ability.Multiple);
-                        int fireAmount = blockItemObject.fireAmount;
-                        float accuracy = distance * 1f / blockItemObject.accuracy;
+                        int fireAmount = projectile.fireAmount;
+                        float accuracy = distance * 1f / projectile.accuracy;
                         List<Vector3Int> additionalTilesList = null;
 
                         if (multiple != null)
@@ -241,10 +250,10 @@ public class InteractionManager : MonoBehaviour
                                 tilesList = additionalTilesList;
                             }
                             Vector3Int targetTile = tilesList[Random.Range(0, tilesList.Count)];
-                            cannonBehaviour.FireInTheHole(blockPosition, targetTile, blockItemObject);
+                            cannonBehaviour.FireInTheHole(blockPosition, targetTile, projectile, blockItemObject.effects, blockItemObject.mass);
                             blockScript.ammoCount -= 1;
 
-                            uiManager.ShowAmmoCount(blockPrefab, blockScript.ammoCount, blockItemObject.ammoCount);
+                            uiManager.ShowAmmoCount(blockPrefab, blockScript.ammoCount, projectile.ammoCount);
                             if (blockScript.ammoCount == 0)
                             {
                                 blockScript.itemPrefabObject.Clear();

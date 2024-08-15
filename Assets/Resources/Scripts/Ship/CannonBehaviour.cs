@@ -62,8 +62,9 @@ public class CannonBehaviour : MonoBehaviour
         }
     }
 
-    public void FireInTheHole(Vector3 startCoordinate, Vector3Int endTileCoordinate, ItemObject itemObject)
+    public void FireInTheHole(Vector3 startCoordinate, Vector3Int endTileCoordinate, ProjectileData projectile, List<EffectData> effects, float mass)
     {
+
         // Calculate the direction of the shot
         Vector3 end = tilemap.GetCellCenterWorld(endTileCoordinate);
         Vector3 shotDirection = (end - startCoordinate).normalized;
@@ -72,7 +73,7 @@ public class CannonBehaviour : MonoBehaviour
         ApplyRecoil(shotDirection);
 
         // Start the coroutine to move the cannonball and show explosion
-        StartCoroutine(MoveCannonball(startCoordinate, endTileCoordinate, itemObject));
+        StartCoroutine(MoveCannonball(startCoordinate, endTileCoordinate, projectile, effects, mass));
     }
 
     private void ApplyRecoil(Vector3 shotDirection)
@@ -84,7 +85,7 @@ public class CannonBehaviour : MonoBehaviour
         shipMovement.ApplyRecoilForce(new Vector2(recoilForce.x, recoilForce.y));
     }
 
-    private IEnumerator MoveCannonball(Vector3 start, Vector3Int endTile, ItemObject itemObject)
+    private IEnumerator MoveCannonball(Vector3 start, Vector3Int endTile, ProjectileData projectile, List<EffectData> effects, float mass)
     {
 
         // Instantiate the cannonball at the start position
@@ -95,7 +96,7 @@ public class CannonBehaviour : MonoBehaviour
 
         float initialDistance = Vector3.Distance(start, tilemap.GetCellCenterWorld(endTile));
 
-        float timeToTarget = Mathf.Sqrt(2 * initialDistance / (cannonForce / itemObject.mass));
+        float timeToTarget = Mathf.Sqrt(2 * initialDistance / (cannonForce / mass));
 
         // Calculate initial velocity components
         Vector3 initialEnd = tilemap.GetCellCenterWorld(endTile);
@@ -144,7 +145,7 @@ public class CannonBehaviour : MonoBehaviour
         finalPosition.z = 0;
 
         // Simulate explosion using raycasts
-        explosionScript.Explode(finalPosition, itemObject, 0f, 360f);
+        explosionScript.Explode(finalPosition, projectile, 0f, 360f, effects);
     }
 
 

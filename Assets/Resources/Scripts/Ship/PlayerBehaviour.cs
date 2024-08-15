@@ -19,7 +19,7 @@ public class PlayerBehaviour : MonoBehaviour
     private Vector2 currentVelocity;
     private Vector3Int facingTilePosition; // Variable to store the tile position the player is facing
     private Vector3Int? previousInteractableTilePosition; // Store the previous interactable tile position
-    public GameObject selectedBlockPrefab;
+    public GameObject selectedBlockPrefab = null;
 
     public UIManager uiManager;
 
@@ -73,7 +73,7 @@ public class PlayerBehaviour : MonoBehaviour
         {
             InteractWithBlock(0);
         }
-        
+
         else if (Input.GetKeyDown(KeyCode.Q))
         {
             InteractWithBlock(1);
@@ -84,7 +84,6 @@ public class PlayerBehaviour : MonoBehaviour
         }
         if (Input.GetMouseButtonDown(0) && !isFiring)
         {
-
             blockPrefabScript blockScript = selectedBlockPrefab.GetComponent<blockPrefabScript>();
             BlockObject blockObject = blockScript.blockObject;
             GameObject blockItem = null;
@@ -105,20 +104,26 @@ public class PlayerBehaviour : MonoBehaviour
 
             if (blockItemObject != null)
             {
-
-                float attackRate = blockItemObject.reloadSpeed;
-                AbilityData haste = abilityManager.GetAbilityData(Ability.Haste);
-
-                if (haste != null)
+                if (blockItemObject.projectileData != null && blockItemObject.projectileData.Count == 1)
                 {
-                    attackRate = attackRate * 1 / (haste.tier * abilityManager.hasteValue);
+                    ProjectileData projectile = blockItemObject.projectileData[0];
+
+                    float attackRate = projectile.reloadSpeed;
+                    AbilityData haste = abilityManager.GetAbilityData(Ability.Haste);
+
+                    if (haste != null)
+                    {
+                        attackRate = attackRate * 1 / (haste.tier * abilityManager.hasteValue);
+                    }
+
+                    if (Time.time >= lastFireTime + attackRate)
+                    {
+                        isFiring = true;
+                        fireCoroutine = StartCoroutine(FireRoutine(attackRate));
+                    }
                 }
 
-                if (Time.time >= lastFireTime + attackRate)
-                {
-                    isFiring = true;
-                    fireCoroutine = StartCoroutine(FireRoutine(attackRate));
-                }
+
 
             }
 

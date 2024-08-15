@@ -5,6 +5,7 @@ using UnityEngine;
 public class ItemScript : MonoBehaviour
 {
     public ItemObject itemObject;
+    private ProjectileData projectile = null;
     public bool activeCooldown = true;
 
     public bool isActive;
@@ -21,6 +22,11 @@ public class ItemScript : MonoBehaviour
 
     void Start()
     {
+        if (itemObject.projectileData != null && itemObject.projectileData.Count == 1)
+        {
+            projectile = itemObject.projectileData[0];
+        }
+
         itemPickupable = true;
 
         // Automatically find and assign the GameObject named "ghost" as the target
@@ -40,7 +46,7 @@ public class ItemScript : MonoBehaviour
         }
 
         // If the itemObject is gold, start the lerping coroutine
-        if (itemObject != null && itemObject.ammoCount == 0)
+        if (itemObject != null && projectile == null)
         {
             StartCoroutine(StartLerpingAfterDelay(2f, itemObject.name == "Gold")); // Start lerping after a 2-second delay
         }
