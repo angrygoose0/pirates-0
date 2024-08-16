@@ -64,6 +64,11 @@ public class PlayerBehaviour : MonoBehaviour
         UpdateDirection();
         FindClosestItem();
 
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            ToggleItem();
+        }
+
         if (previousInteractableTilePosition.HasValue)
         {
             Vector3Int tilePosition = previousInteractableTilePosition.Value;
@@ -135,10 +140,7 @@ public class PlayerBehaviour : MonoBehaviour
             StopCoroutine(fireCoroutine);
         }
 
-        else if (Input.GetKeyDown(KeyCode.LeftShift))
-        {
-            ToggleItem();
-        }
+
         /*
         else if (Input.GetKeyDown(KeyCode.F))
         {
