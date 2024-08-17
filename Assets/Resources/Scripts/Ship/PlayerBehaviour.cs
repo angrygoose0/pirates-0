@@ -21,6 +21,10 @@ public class PlayerBehaviour : MonoBehaviour
     private Vector3Int? previousInteractableTilePosition; // Store the previous interactable tile position
     public GameObject selectedBlockPrefab = null;
 
+    public SpriteRenderer spriteRenderer;
+    public Sprite spriteN, spriteNE, spriteE, spriteSE, spriteS, spriteSW, spriteW, spriteNW;
+
+
     public UIManager uiManager;
 
     public InteractionManager interactionManager; // Reference to the InteractionManager script
@@ -426,26 +430,52 @@ public class PlayerBehaviour : MonoBehaviour
 
     void UpdateDirection()
     {
-        if (movementInput == Vector2.zero) return;
+        if (movementInput == Vector2.zero)
+        {
+            return;
+        }
 
         if (movementInput.x > 0 && movementInput.y > 0)
-            currentDirection = ShipGenerator.Direction.NE;
+        {
+            SetDirection(ShipGenerator.Direction.NE, spriteNE);
+        }
         else if (movementInput.x > 0 && movementInput.y < 0)
-            currentDirection = ShipGenerator.Direction.SE;
+        {
+            SetDirection(ShipGenerator.Direction.SE, spriteSE);
+        }
         else if (movementInput.x < 0 && movementInput.y > 0)
-            currentDirection = ShipGenerator.Direction.NW;
+        {
+            SetDirection(ShipGenerator.Direction.NW, spriteNW);
+        }
         else if (movementInput.x < 0 && movementInput.y < 0)
-            currentDirection = ShipGenerator.Direction.SW;
+        {
+            SetDirection(ShipGenerator.Direction.SW, spriteSW);
+        }
         else if (movementInput.x > 0)
-            currentDirection = ShipGenerator.Direction.E;
+        {
+            SetDirection(ShipGenerator.Direction.E, spriteE);
+        }
         else if (movementInput.x < 0)
-            currentDirection = ShipGenerator.Direction.W;
+        {
+            SetDirection(ShipGenerator.Direction.W, spriteW);
+        }
         else if (movementInput.y > 0)
-            currentDirection = ShipGenerator.Direction.N;
+        {
+            SetDirection(ShipGenerator.Direction.N, spriteN);
+        }
         else if (movementInput.y < 0)
-            currentDirection = ShipGenerator.Direction.S;
-
+        {
+            SetDirection(ShipGenerator.Direction.S, spriteS);
+        }
     }
+
+
+    void SetDirection(ShipGenerator.Direction direction, Sprite sprite)
+    {
+        currentDirection = direction;
+        spriteRenderer.sprite = sprite;
+    }
+
 
     void InteractWithBlock(int interaction)
     {

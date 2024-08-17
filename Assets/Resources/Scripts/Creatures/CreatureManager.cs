@@ -81,6 +81,7 @@ public class CreatureData
     public bool isDamaged;
     public float currentDamage;
     public List<EffectData> effects = new List<EffectData>();
+    public HealthBar healthBar;
 }
 
 public class CreatureManager : MonoBehaviour
@@ -110,6 +111,7 @@ public class CreatureManager : MonoBehaviour
     public Material creatureMaterial;
     public ItemObject goldItemObject;
     public GameObject damageCounterPrefab;
+    public GameObject healthBarPrefab;
 
     void Start()
     {
@@ -522,6 +524,14 @@ public class CreatureManager : MonoBehaviour
         Destroy(floater);
     }
 
+    public void UpdateCreatureHealth(CreatureData creatureData)
+    {
+        float result = creatureData.health / creatureData.creatureObject.startingHealth;
+        float roundedResult = Mathf.Round(result * 1000f) / 1000f;
+
+        creatureData.healthBar.ModifyHealth(roundedResult);
+    }
+
     public void ApplyImpact(GameObject hitSegmentObject, float damageMagnitude, List<EffectData> effectsList)
     {
 
@@ -564,6 +574,7 @@ public class CreatureManager : MonoBehaviour
             {
                 float damage = damageMagnitude - hitCreatureData.currentDamage;
                 hitCreatureData.health -= damage;
+                UpdateCreatureHealth(hitCreatureData);
 
             }
         }
@@ -616,6 +627,7 @@ public class CreatureManager : MonoBehaviour
             }
             Destroy(tentacleEntry.Key);
         }
+        creatureData.healthBar.Death();
 
 
         globalMobCount--;
@@ -638,7 +650,7 @@ public class CreatureManager : MonoBehaviour
         float damageDone = Mathf.Max(creatureData.currentDamage - creatureData.creatureObject.armor, 0);
         creatureData.health -= damageDone;
 
-
+        UpdateCreatureHealth(creatureData);
 
         if (creatureData.health <= 0)
         {
@@ -777,7 +789,7 @@ public class CreatureManager : MonoBehaviour
     public void AttackShip(GameObject creature)
     {
         CreatureData creatureData = creatures[creature];
-        
+
         //creatureData.hostility = 0f;
 
         shipVitals.ApplyImpact(creatureData.creatureObject.damage);
@@ -907,7 +919,11 @@ public class CreatureManager : MonoBehaviour
 
                     for (int i = 0; i < packSize; i++)
                     {
+                        Debug.Log("spawning creature");
                         GameObject newCreature = Instantiate(creaturePrefab, worldPosition, Quaternion.identity, worldGenerator.seaTilemap.transform);
+                        GameObject newHealthBar = Instantiate(healthBarPrefab, worldPosition, Quaternion.identity, canvas.transform);
+                        HealthBar healthBarScript = newHealthBar.GetComponent<HealthBar>();
+
                         CreatureBehaviour creatureBehaviour = newCreature.AddComponent<CreatureBehaviour>();
                         creatureBehaviour.creatureManager = this;
 
@@ -922,6 +938,7 @@ public class CreatureManager : MonoBehaviour
                             targetPosition = newCreature.transform.position,
                             hostility = 0,
                             health = randomCreatureObject.startingHealth,
+                            healthBar = healthBarScript,
                         });
 
 
@@ -979,6 +996,7 @@ public class CreatureManager : MonoBehaviour
                                 if (firstSegment)
                                 {
                                     firstSegment = false;
+                                    healthBarScript.target = newTentacleSegment.transform;
                                     tentacleData.lineRenderer = newTentacleSegment.AddComponent<LineRenderer>();
                                     tentacleData.lineRenderer.material = creatureMaterial;
                                     tentacleData.lineRenderer.material.SetFloat("_StretchInX", 2f);
