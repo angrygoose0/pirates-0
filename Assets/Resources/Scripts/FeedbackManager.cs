@@ -30,7 +30,7 @@ public class FeedbackManager : MonoBehaviour
         explosionParticlesFeedback.TargetWorldPosition = position;
 
         Debug.Log(explosionParticlesFeedback.ParticlesPrefab.transform);
-        Vector3 explosionSize = new Vector3(5f, 2.5f, 1f);
+        Vector3 explosionSize = new Vector3(2f, 1f, 1f);
         ScaleTransformAndChildren(explosionParticle, explosionSize);
 
         float cameraShakeMagnitude = explosionMagnitude * 1.5f;
