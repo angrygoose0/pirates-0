@@ -24,7 +24,7 @@ MonoBehaviour:
     explosionInverse: 0
     fireAmount: 1
     explosionSpeed: 100
-    ammoCount: 5
+    ammoCount: 20
   goldAmount: 0
   spawningItem: {fileID: 0}
   regenerateTime: 0

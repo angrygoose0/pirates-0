@@ -101,9 +101,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemObject: {fileID: 0}
+  activeCooldown: 1
   isActive: 0
   targetObject: {fileID: 0}
   lerpDuration: 0.5
+  inactiveTimer: 60
   goldManager: {fileID: 0}
   itemTaken: 0
   itemPickupable: 1

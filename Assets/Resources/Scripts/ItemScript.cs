@@ -11,7 +11,7 @@ public class ItemScript : MonoBehaviour
     public bool isActive;
     public GameObject targetObject; // The GameObject towards which the item will lerp
     public float lerpDuration; // Duration of the lerp movement
-
+    public float inactiveTimer;
     public GoldManager goldManager;
 
     private float inactiveTime = 0f;
@@ -131,7 +131,7 @@ public class ItemScript : MonoBehaviour
         }
 
         // Wait for one minute of inactivity
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(inactiveTimer);
 
         float fadeDuration = 5f; // Duration of the fading period
         float fadeTime = 0f;

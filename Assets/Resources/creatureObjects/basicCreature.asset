@@ -46,6 +46,6 @@ MonoBehaviour:
     wiggleFrequency: 10
     wiggleAmplitude: 0.01
     endTarget: 0
-  goldDropRange: {x: 10, y: 100}
+  goldDropRange: {x: 5, y: 10}
   hostilityMultiplier: 0
-  emptyWeight: 1
+  emptyWeight: 1000

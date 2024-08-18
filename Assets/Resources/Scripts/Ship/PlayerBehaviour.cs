@@ -220,7 +220,24 @@ public class PlayerBehaviour : MonoBehaviour
         closestItem = null;
 
         // Find all items in the scene
-        GameObject[] items = GameObject.FindGameObjectsWithTag("Item"); //make sure items inside blocks arent tagged as Item.
+        GameObject[] items = GameObject.FindGameObjectsWithTag("Item");//make sure items inside blocks arent tagged as Item.  # alternate solution
+
+        // Initialize the list
+        List<GameObject> pickupableItems = new List<GameObject>();
+
+        // Loop through each item
+        foreach (GameObject item in items)
+        {
+            // Get the ItemScript component from the item
+            ItemScript itemScript = item.GetComponent<ItemScript>();
+
+            // Check if itemScript is not null and itemPickupable is true
+            if (itemScript != null && itemScript.itemPickupable)
+            {
+                // Add the item to the list
+                pickupableItems.Add(item);
+            }
+        }
 
         // Initialize the minimum distance with a large number
         float minDistance = Mathf.Infinity;
@@ -228,7 +245,7 @@ public class PlayerBehaviour : MonoBehaviour
         // Get the player's position
         Vector2 playerPosition = new Vector2(transform.position.x, transform.position.y);
 
-        foreach (GameObject item in items)
+        foreach (GameObject item in pickupableItems)
         {
             // Get the item's position
             Vector2 itemPosition = new Vector2(item.transform.position.x, item.transform.position.y);

@@ -142,7 +142,7 @@ public class blockPrefabScript : MonoBehaviour
         ItemObject spawningItem = itemObject.spawningItem;
         if (spawningItem != null)
         {
-            Vector3 offset = new Vector3(0f, 0.5f, 0f);
+            Vector3 offset = new Vector3(0f, 0f, 0f);
             spawnedItem = Instantiate(itemPrefab, gameObject.transform.position + offset, Quaternion.identity);
 
 
