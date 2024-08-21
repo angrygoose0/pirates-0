@@ -56,6 +56,13 @@ public class ShipVitals : MonoBehaviour
         {
             timeSinceLastDamage += Time.deltaTime;
         }
+
+        AbilityData health = abilityManager.GetAbilityData(Ability.Health);
+
+        if (health != null)
+        {
+            maxShipHealth += health.tier * abilityManager.healthValue;
+        }
     }
 
     public void ApplyImpact(float damageMagnitude)

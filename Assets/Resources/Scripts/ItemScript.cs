@@ -59,7 +59,7 @@ public class ItemScript : MonoBehaviour
         SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
         if (spriteRenderer != null)
         {
-            spriteRenderer.enabled = isVisible;
+            //spriteRenderer.enabled = isVisible;
         }
 
         // Toggle the Collider2D to make the item interactable or non-interactable
@@ -84,6 +84,7 @@ public class ItemScript : MonoBehaviour
         if (newParent != null)
         {
             transform.parent = newParent.transform;
+            transform.position = transform.parent.position;
             isActive = newParent.name != "world"; // Set isActive based on the new parent
             if (isActive)
             {

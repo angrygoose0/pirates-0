@@ -165,10 +165,17 @@ public class InteractionManager : MonoBehaviour
                     }
                     playerScript.equippedItem = null;
 
+                    AbilityData extra = abilityManager.GetAbilityData(Ability.Extra);
 
-                    blockScript.ammoCount = projectile.ammoCount;
+                    int updatedAmmoCount = projectile.ammoCount;
+                    if (extra != null)
+                    {
+                        updatedAmmoCount = Mathf.RoundToInt(projectile.ammoCount * extra.tier * abilityManager.extraValue);
+                    }
 
-                    uiManager.ShowAmmoCount(blockPrefab, blockScript.ammoCount, projectile.ammoCount);
+                    blockScript.ammoCount = updatedAmmoCount;
+
+                    uiManager.ShowAmmoCount(blockPrefab, blockScript.ammoCount, updatedAmmoCount);
 
 
                 }
@@ -243,6 +250,8 @@ public class InteractionManager : MonoBehaviour
 
                         List<Vector3Int> tilesList = GetSurroundingTiles(selectorTilePosition, accuracy);
 
+
+
                         for (int i = 0; i < fireAmount; i++)
                         {
                             if (i == 1 && additionalTilesList != null)
@@ -251,14 +260,23 @@ public class InteractionManager : MonoBehaviour
                             }
                             Vector3Int targetTile = tilesList[Random.Range(0, tilesList.Count)];
                             cannonBehaviour.FireInTheHole(blockPosition, targetTile, projectile, blockItemObject.effects, blockItemObject.mass);
-                            blockScript.ammoCount -= 1;
 
-                            uiManager.ShowAmmoCount(blockPrefab, blockScript.ammoCount, projectile.ammoCount);
-                            if (blockScript.ammoCount == 0)
-                            {
-                                blockScript.itemPrefabObject.Clear();
-                                Destroy(blockItem);
-                            }
+                        }
+
+                        AbilityData extra = abilityManager.GetAbilityData(Ability.Extra);
+
+                        int updatedAmmoCount = projectile.ammoCount;
+                        if (extra != null)
+                        {
+                            updatedAmmoCount = Mathf.RoundToInt(projectile.ammoCount * extra.tier * abilityManager.extraValue);
+                        }
+
+                        blockScript.ammoCount -= 1;
+                        uiManager.ShowAmmoCount(blockPrefab, blockScript.ammoCount, updatedAmmoCount);
+                        if (blockScript.ammoCount == 0)
+                        {
+                            blockScript.itemPrefabObject.Clear();
+                            Destroy(blockItem);
                         }
 
                     }

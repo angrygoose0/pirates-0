@@ -536,15 +536,12 @@ public class CreatureManager : MonoBehaviour
     {
 
         Vector3 randomOffset = new Vector3(
-            Random.Range(-2f, 2f),
             Random.Range(-1f, 1f),
+            Random.Range(-0.5f, 0.5f),
             0f
         );
 
         Vector3 spawnPosition = hitSegmentObject.transform.position + randomOffset;
-        spawnPosition.x += 6;
-        GameObject floater = Instantiate(damageCounterPrefab, spawnPosition, Quaternion.identity, canvas.transform);
-        DamageCounter(floater, damageMagnitude);
 
 
         GameObject hitCreatureObject = segmentToCreature[hitSegmentObject];
@@ -647,10 +644,34 @@ public class CreatureManager : MonoBehaviour
         CreatureData creatureData = creatures[creatureObject];
         creatureData.isDamaged = true;
 
+        Vector3 randomOffset = new Vector3(
+            Random.Range(-1f, 1f),
+            Random.Range(-0.5f, 0.5f),
+            0f
+        );
+
+        Vector3 spawnPosition = creatureObject.transform.position + randomOffset;
+
+
         float damageDone = Mathf.Max(creatureData.currentDamage - creatureData.creatureObject.armor, 0);
+        GameObject floater = Instantiate(damageCounterPrefab, spawnPosition, Quaternion.identity, canvas.transform);
+        DamageCounter(floater, damageDone);
         creatureData.health -= damageDone;
 
         UpdateCreatureHealth(creatureData);
+
+
+
+        List<GameObject> segmentKeys = new List<GameObject>();
+
+        // Iterate through each TentacleData in the tentacles dictionary
+        foreach (var tentacle in creatureData.tentacles.Values)
+        {
+            // Add each GameObject key from the segments dictionary to the list
+            segmentKeys.AddRange(tentacle.segments.Keys);
+        }
+
+        yield return new WaitForSeconds(0.1f);
 
         if (creatureData.health <= 0)
         {
@@ -680,20 +701,6 @@ public class CreatureManager : MonoBehaviour
 
             yield break;
         }
-
-        List<GameObject> segmentKeys = new List<GameObject>();
-
-        // Iterate through each TentacleData in the tentacles dictionary
-        foreach (var tentacle in creatureData.tentacles.Values)
-        {
-            // Add each GameObject key from the segments dictionary to the list
-            segmentKeys.AddRange(tentacle.segments.Keys);
-        }
-
-
-
-        Debug.Log("white");
-        yield return new WaitForSeconds(0.1f);
 
         lineRenderer.material.SetFloat("_WhiteAmount", 0f);
         creatureData.currentDamage = 0f;

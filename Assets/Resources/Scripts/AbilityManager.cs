@@ -12,6 +12,8 @@ public enum Ability
     Multiple, // multiple bullets fired
     Might, // damage done
     Fragility, // damage received
+    Health,
+    Extra,
     // Add more states here as needed
 }
 
@@ -30,6 +32,8 @@ public class AbilityManager : MonoBehaviour
     public int multipleValue = 1;
     public float mightValue;
     public float fragilityValue;
+    public float healthValue;
+    public float extraValue;
 
     public AbilityData GetAbilityData(Ability ability)
     {
