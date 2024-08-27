@@ -62,7 +62,7 @@ public class CannonBehaviour : MonoBehaviour
         }
     }
 
-    public void FireInTheHole(Vector3 startCoordinate, Vector3Int endTileCoordinate, ProjectileData projectile, List<EffectData> effects, float mass)
+    public void FireInTheHole(Vector3 startCoordinate, Vector3Int endTileCoordinate, ProjectileData projectile, float mass)
     {
 
         // Calculate the direction of the shot
@@ -73,7 +73,7 @@ public class CannonBehaviour : MonoBehaviour
         ApplyRecoil(shotDirection);
 
         // Start the coroutine to move the cannonball and show explosion
-        StartCoroutine(MoveCannonball(startCoordinate, endTileCoordinate, projectile, effects, mass));
+        StartCoroutine(MoveCannonball(startCoordinate, endTileCoordinate, projectile, mass));
     }
 
     private void ApplyRecoil(Vector3 shotDirection)
@@ -85,7 +85,7 @@ public class CannonBehaviour : MonoBehaviour
         shipMovement.ApplyRecoilForce(new Vector2(recoilForce.x, recoilForce.y));
     }
 
-    private IEnumerator MoveCannonball(Vector3 start, Vector3Int endTile, ProjectileData projectile, List<EffectData> effects, float mass)
+    private IEnumerator MoveCannonball(Vector3 start, Vector3Int endTile, ProjectileData projectile, float mass)
     {
 
         // Instantiate the cannonball at the start position
@@ -145,7 +145,7 @@ public class CannonBehaviour : MonoBehaviour
         finalPosition.z = 0;
 
         // Simulate explosion using raycasts
-        explosionScript.Explode(finalPosition, projectile, 0f, 360f, effects);
+        explosionScript.Explode(finalPosition, projectile, 0f, 360f);
 
         
     }

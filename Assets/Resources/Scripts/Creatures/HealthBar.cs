@@ -64,7 +64,6 @@ public class HealthBar : MonoBehaviour
 
     public void ModifyHealth(float impact)
     {
-        Debug.Log(impact);
         hpBar.UpdateBar(impact, 0f, 1f);
         // If there's an existing fade coroutine, stop it
         if (fadeCoroutine != null)
@@ -81,8 +80,6 @@ public class HealthBar : MonoBehaviour
 
     private IEnumerator FadeOut()
     {
-        // Print the active debug message
-        Debug.Log("ModifyHealth active");
 
         // Wait for the active time before starting to fade out
         yield return new WaitForSeconds(activeTime);

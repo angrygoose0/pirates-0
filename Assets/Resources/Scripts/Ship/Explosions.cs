@@ -22,7 +22,7 @@ public class Explosions : MonoBehaviour
     public float flickerIntensityRange = 0.5f;
     public float pulsingSpeed = 4f; // Speed of pulsing effects
 
-    public void Explode(Vector3 explosionPosition, ProjectileData projectile, float startAngle, float endAngle, List<EffectData> effects)
+    public void Explode(Vector3 explosionPosition, ProjectileData projectile, float startAngle, float endAngle)
     {
         feedbackManager.ExplosionFeedback(explosionPosition, projectile.explosionMultiplier);
         // Validate angles to ensure startAngle is less than endAngle
@@ -60,7 +60,7 @@ public class Explosions : MonoBehaviour
             // Adjust for isometric perspective by scaling the y component
             rayDirection = new Vector3(rayDirection.x, rayDirection.y * 0.5f, rayDirection.z);
 
-            StartCoroutine(CastRayUntilDissipated(explosionPosition, rayDirection, projectile, effects));
+            StartCoroutine(CastRayUntilDissipated(explosionPosition, rayDirection, projectile));
         }
     }
 
@@ -94,7 +94,7 @@ public class Explosions : MonoBehaviour
         Destroy(explosionLight.gameObject);
     }
 
-    private IEnumerator CastRayUntilDissipated(Vector3 startPosition, Vector3 direction, ProjectileData projectile, List<EffectData> effects)
+    private IEnumerator CastRayUntilDissipated(Vector3 startPosition, Vector3 direction, ProjectileData projectile)
     {
         float dissipationRate = 1 / projectile.explosionRange;
         float currentRayForce = projectile.explosionInverse ? 0f : 1f; // Start the ray force based on the projectile.explosionInverse parameter
@@ -129,7 +129,7 @@ public class Explosions : MonoBehaviour
                     {
                         if (hitObject.tag == "Creature")
                         {
-                            creatureManager.ApplyImpact(hitObject, appliedDamage, effects);  //change TODO
+                            creatureManager.ApplyImpact(hitObject, appliedDamage);  //change TODO
                         }
                     }
                     else

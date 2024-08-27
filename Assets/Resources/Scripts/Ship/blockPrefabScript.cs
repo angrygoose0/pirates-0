@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.Rendering.Universal;
 
 public class blockPrefabScript : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class blockPrefabScript : MonoBehaviour
     public ItemManager itemManager;
     public GameObject shipObject;
     public int ammoCount;
+    public Light2D blockLight;
 
 
     public List<ItemObject> itemObjectList; // list for the global item scriptable objectlist
@@ -37,6 +39,8 @@ public class blockPrefabScript : MonoBehaviour
 
         SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
         spriteRenderer.sprite = blockObject.blockSprite;
+        blockLight = GetComponentInChildren<Light2D>();
+        blockLight.intensity = 0;
 
     }
     void Update()

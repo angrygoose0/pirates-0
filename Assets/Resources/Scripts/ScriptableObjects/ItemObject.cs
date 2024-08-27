@@ -42,7 +42,7 @@ public class ItemObject : ScriptableObject
     public ItemObject spawningItem;
     public float regenerateTime;
     public List<Recipe> recipes;
-    public List<EffectData> effects;
+
 
     public List<AbilityData> abilityList;
     public Active active;

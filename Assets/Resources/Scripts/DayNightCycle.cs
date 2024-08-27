@@ -1,10 +1,11 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.Rendering.Universal;
 
 public class DayNightCycle : MonoBehaviour
 {
-    public UnityEngine.Rendering.Universal.Light2D globalLight;
-    public UnityEngine.Rendering.Universal.Light2D shipLight;
+    public Light2D globalLight;
+    public Light2D shipLight;
     public float dayDuration = 120f; // Duration of a full day in seconds
 
     public TextMeshProUGUI timerText; // Reference to the UI Text component that displays the timer

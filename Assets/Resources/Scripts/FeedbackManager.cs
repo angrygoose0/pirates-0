@@ -11,6 +11,7 @@ public class FeedbackManager : MonoBehaviour
     //ship damaged feedback values
     public MMF_Player shipDamagedFeedbackPlayer;
     public MMF_Player explosionFeedbackPlayer;
+    public MMF_Player artifactPlaceFeedbackPlayer;
     public Transform explosionParticle;
 
     public float shipDamagedCameraShakeMagnitude;
@@ -22,6 +23,15 @@ public class FeedbackManager : MonoBehaviour
         MMF_CinemachineImpulse cinemachineImpulseFeedback = shipDamagedFeedbackPlayer.GetFeedbackOfType<MMF_CinemachineImpulse>();
         cinemachineImpulseFeedback.Velocity = new Vector3(cameraShakeMagnitude, cameraShakeMagnitude, cameraShakeMagnitude);
         shipDamagedFeedbackPlayer?.PlayFeedbacks();
+    }
+
+    public void ArtifactPlaceFeedback(Vector3 position, float multiplier)
+    {
+        Debug.Log("playing artifact");
+        MMF_ParticlesInstantiation artifactPlaceParticlesFeedback = artifactPlaceFeedbackPlayer.GetFeedbackOfType<MMF_ParticlesInstantiation>();
+        artifactPlaceParticlesFeedback.TargetWorldPosition = position;
+
+        artifactPlaceFeedbackPlayer?.PlayFeedbacks();
     }
 
     public void ExplosionFeedback(Vector3 position, float explosionMagnitude)

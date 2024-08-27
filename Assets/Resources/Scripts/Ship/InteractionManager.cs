@@ -12,6 +12,7 @@ public class InteractionManager : MonoBehaviour
     public Explosions explosions;
     public UIManager uiManager;
     public ShipGenerator shipGenerator;
+    public FeedbackManager feedbackManager;
 
     public GameObject playerOne; //temporary player variable
 
@@ -152,7 +153,7 @@ public class InteractionManager : MonoBehaviour
                     }
                     ProjectileData projectile = equippedItemObject.projectileData[0];
 
-                    equippedItemScript.SetItemVisibility(false);
+                    equippedItemScript.SetCollider(false);
                     equippedItemScript.NewParent(blockPrefab);
                     equippedItemScript.itemPickupable = false;
                     if (blockScript.itemPrefabObject.Count == 0)
@@ -161,6 +162,7 @@ public class InteractionManager : MonoBehaviour
                     }
                     else
                     {
+                        Destroy(blockScript.itemPrefabObject[0]);
                         blockScript.itemPrefabObject[0] = equippedItem;
                     }
                     playerScript.equippedItem = null;
@@ -188,11 +190,16 @@ public class InteractionManager : MonoBehaviour
                         break;
                     }
 
-                    equippedItemScript.SetItemVisibility(false);
+                    equippedItemScript.SetCollider(false);
                     equippedItemScript.NewParent(blockPrefab);
                     equippedItemScript.itemPickupable = false;
                     blockScript.itemPrefabObject.Add(equippedItem);
+                    blockScript.blockLight.intensity = 1.5f;
                     playerScript.equippedItem = null;
+
+                    float multiplier = 1f;
+                    Vector3 newBlockPosition = blockScript.transform.position + new Vector3(0.0f, 0.125f, 0.0f);
+                    feedbackManager.ArtifactPlaceFeedback(newBlockPosition, multiplier);
 
                     shipGenerator.UpdateBlockEffects();
 
@@ -259,7 +266,7 @@ public class InteractionManager : MonoBehaviour
                                 tilesList = additionalTilesList;
                             }
                             Vector3Int targetTile = tilesList[Random.Range(0, tilesList.Count)];
-                            cannonBehaviour.FireInTheHole(blockPosition, targetTile, projectile, blockItemObject.effects, blockItemObject.mass);
+                            cannonBehaviour.FireInTheHole(blockPosition, targetTile, projectile, blockItemObject.mass);
 
                         }
 

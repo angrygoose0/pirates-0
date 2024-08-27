@@ -52,21 +52,14 @@ public class ItemScript : MonoBehaviour
         }
     }
 
-    // Method to toggle the item's visibility and interactivity
-    public void SetItemVisibility(bool isVisible)
-    {
-        // Toggle the SpriteRenderer to make the item visible or invisible
-        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-        if (spriteRenderer != null)
-        {
-            //spriteRenderer.enabled = isVisible;
-        }
 
-        // Toggle the Collider2D to make the item interactable or non-interactable
+
+    public void SetCollider(bool boolean)
+    {
         Collider2D collider = GetComponent<Collider2D>();
         if (collider != null)
         {
-            collider.enabled = isVisible;
+            collider.enabled = boolean;
         }
     }
 
@@ -83,8 +76,20 @@ public class ItemScript : MonoBehaviour
     {
         if (newParent != null)
         {
+            Rigidbody rb = GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.velocity = Vector3.zero;           // Reset linear velocity
+                rb.angularVelocity = Vector3.zero;    // Reset angular velocity
+            }
+
             transform.parent = newParent.transform;
-            transform.position = transform.parent.position;
+            transform.localPosition = Vector3.zero;
+
+
+            transform.parent = newParent.transform;
+            transform.localPosition = new Vector3(0, 0.25f, 0);
+
             isActive = newParent.name != "world"; // Set isActive based on the new parent
             if (isActive)
             {

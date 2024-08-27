@@ -26,14 +26,14 @@ public enum Effect
 public class EffectData
 {
     public Effect effect;
-    public int tier;
+    public float value;
     public float duration;
 
     // Constructor to initialize the EffectData
     public EffectData(Effect effect, int tier, float duration)
     {
         this.effect = effect;
-        this.tier = tier;
+        this.value = value;
         this.duration = duration;
     }
 }
@@ -157,7 +157,7 @@ public class CreatureManager : MonoBehaviour
                 creatureData.currentState = State.Idle;
                 stateChanged = true;
             }
-            //Debug.Log(creatureData.currentState);
+
             CreatureObject creatureObject = creatureData.creatureObject;
 
 
@@ -172,15 +172,15 @@ public class CreatureManager : MonoBehaviour
 
             var slowEffect = creatureData.effects
             .Where(effect => effect.effect == Effect.Slow)
-            .OrderByDescending(effect => effect.tier)
+            .OrderByDescending(effect => effect.value)
             .FirstOrDefault();
 
 
 
             if (slowEffect != null)
             {
-                int highestSlowTier = slowEffect.tier;
-                float result = 1.0f - (highestSlowTier * 0.15f);
+                float highestSlowTier = slowEffect.value;
+                float result = 1.0f - highestSlowTier;
                 movementMultiplier = Mathf.Max(result, 0); // Ensure the result is not negative
             }
 
@@ -372,18 +372,17 @@ public class CreatureManager : MonoBehaviour
 
     void UpdateEffects()
     {
-        List<EffectData> emptyEffectsList = new List<EffectData>();
         foreach (var creaturePair in creatures)
         {
             CreatureData creatureData = creaturePair.Value;
 
             // Create a dictionary to track the longest effect by type and tier
-            Dictionary<(Effect, int), EffectData> effectDict = new Dictionary<(Effect, int), EffectData>();
+            Dictionary<(Effect, float), EffectData> effectDict = new Dictionary<(Effect, float), EffectData>();
 
             // Iterate through the effects list
             foreach (var effect in creatureData.effects)
             {
-                var key = (effect.effect, effect.tier);
+                var key = (effect.effect, effect.value);
 
                 // If the effect type and tier is not in the dictionary, add it
                 // or if it has a longer duration than the existing one, update it
@@ -402,7 +401,7 @@ public class CreatureManager : MonoBehaviour
             {
                 if (effect.effect == Effect.Bleed)
                 {
-                    if (strongestBleedEffect == null || effect.tier > strongestBleedEffect.tier)
+                    if (strongestBleedEffect == null || effect.value > strongestBleedEffect.value)
                     {
                         strongestBleedEffect = effect;
                     }
@@ -419,9 +418,7 @@ public class CreatureManager : MonoBehaviour
                     var firstSegmentKey = firstTentacle.segments.Keys.FirstOrDefault();
                     if (firstSegmentKey != null)
                     {
-                        float bleedDamageMagnitude = 1.5f * strongestBleedEffect.tier;
-                        Debug.Log("bleed damage");
-                        ApplyImpact(firstSegmentKey, bleedDamageMagnitude, emptyEffectsList);
+                        ApplyImpact(firstSegmentKey, strongestBleedEffect.value);
 
 
                     }
@@ -532,7 +529,7 @@ public class CreatureManager : MonoBehaviour
         creatureData.healthBar.ModifyHealth(roundedResult);
     }
 
-    public void ApplyImpact(GameObject hitSegmentObject, float damageMagnitude, List<EffectData> effectsList)
+    public void ApplyImpact(GameObject hitSegmentObject, float damageMagnitude)
     {
 
         Vector3 randomOffset = new Vector3(
@@ -559,12 +556,6 @@ public class CreatureManager : MonoBehaviour
 
         TentacleData hitTentacleData = hitCreatureData.tentacles[hitTentacleObject];
 
-
-        foreach (EffectData effectData in effectsList)
-        {
-            EffectData newEffect = new EffectData(effectData.effect, effectData.tier, effectData.duration);
-            hitCreatureData.effects.Add(newEffect);
-        }
         if (hitCreatureData.isDamaged)
         {
             if (damageMagnitude > hitCreatureData.currentDamage)
@@ -799,13 +790,12 @@ public class CreatureManager : MonoBehaviour
 
         //creatureData.hostility = 0f;
 
-        shipVitals.ApplyImpact(creatureData.creatureObject.damage);
+        //shipVitals.ApplyImpact(creatureData.creatureObject.damage);
 
         //invulnerable ship / spiky ship
-        /*var firstTentacle = creatureData.tentacles.Values.FirstOrDefault();
+        var firstTentacle = creatureData.tentacles.Values.FirstOrDefault();
         var firstSegmentKey = firstTentacle.segments.Keys.FirstOrDefault();
-        List<EffectData> emptyEffectsList = new List<EffectData>();
-        ApplyImpact(firstSegmentKey, 1f, emptyEffectsList);*/
+        ApplyImpact(firstSegmentKey, 1f);
 
     }
 
@@ -926,7 +916,7 @@ public class CreatureManager : MonoBehaviour
 
                     for (int i = 0; i < packSize; i++)
                     {
-                        Debug.Log("spawning creature");
+                        //Debug.Log("spawning creature");
                         GameObject newCreature = Instantiate(creaturePrefab, worldPosition, Quaternion.identity, worldGenerator.seaTilemap.transform);
                         GameObject newHealthBar = Instantiate(healthBarPrefab, worldPosition, Quaternion.identity, canvas.transform);
                         HealthBar healthBarScript = newHealthBar.GetComponent<HealthBar>();
