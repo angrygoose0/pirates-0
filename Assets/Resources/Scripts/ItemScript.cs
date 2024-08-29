@@ -48,7 +48,7 @@ public class ItemScript : MonoBehaviour
         // If the itemObject is gold, start the lerping coroutine
         if (itemObject != null && projectile == null)
         {
-            StartCoroutine(StartLerpingAfterDelay(2f, itemObject.name == "Gold")); // Start lerping after a 2-second delay
+            StartCoroutine(StartLerpingAfterDelay(2f, itemObject.name == "Gold", itemObject.name == "Healing Orb")); // Start lerping after a 2-second delay
         }
     }
 
@@ -160,17 +160,17 @@ public class ItemScript : MonoBehaviour
     }
 
     // Coroutine to start lerping after a delay
-    private IEnumerator StartLerpingAfterDelay(float delay, bool gold)
+    private IEnumerator StartLerpingAfterDelay(float delay, bool gold, bool heal)
     {
         yield return new WaitForSeconds(delay);
         if (targetObject != null)
         {
-            lerpCoroutine = StartCoroutine(LerpTowardsTarget(gold));
+            lerpCoroutine = StartCoroutine(LerpTowardsTarget(gold, heal));
         }
     }
 
     // Coroutine to lerp the item towards the target object
-    private IEnumerator LerpTowardsTarget(bool gold)
+    private IEnumerator LerpTowardsTarget(bool gold, bool heal)
     {
         Vector3 startPosition = transform.position;
         Vector3 endPosition = targetObject.transform.position;
@@ -189,6 +189,14 @@ public class ItemScript : MonoBehaviour
         if (gold)
         {
             goldManager.AddGold(1);
+
+            // Destroy the GameObject after lerping
+            Destroy(gameObject);
+        }
+
+        if (heal)
+        {
+            //heal
 
             // Destroy the GameObject after lerping
             Destroy(gameObject);

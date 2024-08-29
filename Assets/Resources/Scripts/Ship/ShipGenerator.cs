@@ -21,7 +21,7 @@ public class ShipGenerator : MonoBehaviour
     public float[,] ship = new float[,]
     {
         { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f },
-        { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f },
+        { 4.0f, 1.0f, 1.0f, 1.0f, 1.0f },
         { 1.0f, 1.0f, 3.0f, 1.0f, 1.0f },
         { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f },
         { 1.0f, 1.0f, 1.0f, 2.0f, 4f }
@@ -174,7 +174,7 @@ public class ShipGenerator : MonoBehaviour
             GameObject blockPrefab = kvp.Value;
 
             blockPrefabScript blockScript = blockPrefab.GetComponent<blockPrefabScript>();
-            if (blockScript.itemPrefabObject == null || blockScript.itemPrefabObject.Count != 1)
+            if (blockScript.itemPrefabObject == null || blockScript.itemPrefabObject.Count != 1 || blockScript.blockObject.blockType != BlockType.Payload)
             {
                 continue;
             }

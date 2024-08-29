@@ -20,6 +20,7 @@ MonoBehaviour:
   spawningItem: {fileID: 0}
   regenerateTime: 0
   recipes: []
-  effects: []
-  abilityList: []
+  abilityList:
+  - ability: 2
+    value: 2
   active: {fileID: 0}

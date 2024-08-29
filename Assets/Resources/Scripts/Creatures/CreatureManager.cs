@@ -19,6 +19,7 @@ public enum Effect
 {
     Bleed,
     Slow,
+    Nova,
 
 }
 
@@ -30,7 +31,7 @@ public class EffectData
     public float duration;
 
     // Constructor to initialize the EffectData
-    public EffectData(Effect effect, int tier, float duration)
+    public EffectData(Effect effect, float value, float duration)
     {
         this.effect = effect;
         this.value = value;
@@ -112,6 +113,7 @@ public class CreatureManager : MonoBehaviour
     public ItemObject goldItemObject;
     public GameObject damageCounterPrefab;
     public GameObject healthBarPrefab;
+    public Explosions explosionScript;
 
     void Start()
     {
@@ -409,6 +411,8 @@ public class CreatureManager : MonoBehaviour
             }
 
 
+
+
             // Get the first tentacle segment
             if (creatureData.tentacles.Count > 0 && strongestBleedEffect != null)
             {
@@ -531,7 +535,6 @@ public class CreatureManager : MonoBehaviour
 
     public void ApplyImpact(GameObject hitSegmentObject, float damageMagnitude)
     {
-
         Vector3 randomOffset = new Vector3(
             Random.Range(-1f, 1f),
             Random.Range(-0.5f, 0.5f),
@@ -544,6 +547,21 @@ public class CreatureManager : MonoBehaviour
         GameObject hitCreatureObject = segmentToCreature[hitSegmentObject];
         GameObject hitTentacleObject = segmentToTentacle[hitSegmentObject];
         CreatureData hitCreatureData = creatures[hitCreatureObject];
+
+        AbilityData nova = abilityManager.GetAbilityData(Ability.Nova);
+        if (nova != null)
+        {
+            EffectData novaEffect = new EffectData(
+                Effect.Nova,
+                nova.value,
+                30f
+            );
+            hitCreatureData.effects.Add(novaEffect);
+        }
+        if (nova == null)
+        {
+            Debug.Log("nova is null");
+        }
 
 
         hitCreatureObject.transform.position = hitSegmentObject.transform.position;
@@ -685,8 +703,35 @@ public class CreatureManager : MonoBehaviour
                 GameObject droppedItem = itemManager.CreateItem(dropItemObject, creaturePosition);
             }
 
+            EffectData strongestNovaEffect = null;
+            foreach (var effect in creatureData.effects)
+            {
+                if (effect.effect == Effect.Nova)
+                {
+                    if (strongestNovaEffect == null || effect.value > strongestNovaEffect.value)
+                    {
+                        strongestNovaEffect = effect;
+                    }
+                }
+            }
+            if (strongestNovaEffect != null)
+            {
+                ProjectileData creatureProjectile = new ProjectileData(
+                damageMultiplier: strongestNovaEffect.value * 1f,
+                explosionMultiplier: strongestNovaEffect.value * 1f,
+                explosionRange: strongestNovaEffect.value * 1f
+                );
+
+                explosionScript.Explode(creaturePosition, creatureProjectile, 0f, 360f);
+                Debug.Log("exploded");
+            }
+
+
+
+
 
             CreatureDeath(creatureObject);
+            Debug.Log("dead");
 
 
 

@@ -22,7 +22,7 @@ public class Explosions : MonoBehaviour
     public float flickerIntensityRange = 0.5f;
     public float pulsingSpeed = 4f; // Speed of pulsing effects
 
-    public void Explode(Vector3 explosionPosition, ProjectileData projectile, float startAngle, float endAngle)
+    public void Explode(Vector3 explosionPosition, ProjectileData projectile, float startAngle = 0f, float endAngle = 360f)
     {
         feedbackManager.ExplosionFeedback(explosionPosition, projectile.explosionMultiplier);
         // Validate angles to ensure startAngle is less than endAngle

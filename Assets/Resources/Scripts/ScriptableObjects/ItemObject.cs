@@ -27,8 +27,32 @@ public class ProjectileData
     public bool explosionInverse = false;
     public int fireAmount;
     public float explosionSpeed;
-    public int ammoCount = 0; //if 0, then it's not a spawned ammo,and doesnt lerp towards center after spawning.
+    public int ammoCount = 0;
+
+    // Constructor to initialize fields
+    public ProjectileData(
+        float reloadSpeed = 1f,
+        float damageMultiplier = 1f,
+        float explosionMultiplier = 1f,
+        float explosionRange = 1f,
+        float accuracy = 100f,
+        bool explosionInverse = false,
+        int fireAmount = 1,
+        float explosionSpeed = 100f,
+        int ammoCount = 1)
+    {
+        this.reloadSpeed = reloadSpeed;
+        this.damageMultiplier = damageMultiplier;
+        this.explosionMultiplier = explosionMultiplier;
+        this.explosionRange = explosionRange;
+        this.accuracy = accuracy;
+        this.explosionInverse = explosionInverse;
+        this.fireAmount = fireAmount;
+        this.explosionSpeed = explosionSpeed;
+        this.ammoCount = ammoCount;
+    }
 }
+
 
 [CreateAssetMenu(fileName = "NewItem", menuName = "Item/Item")]
 public class ItemObject : ScriptableObject
