@@ -61,7 +61,7 @@ public class ShipVitals : MonoBehaviour
 
         if (health != null)
         {
-            maxShipHealth += health.tier * abilityManager.healthValue;
+            maxShipHealth += health.value;
         }
     }
 
@@ -71,7 +71,7 @@ public class ShipVitals : MonoBehaviour
         AbilityData fragility = abilityManager.GetAbilityData(Ability.Fragility);
         if (fragility != null)
         {
-            damageMagnitude = damageMagnitude * abilityManager.fragilityValue * fragility.tier;
+            damageMagnitude = damageMagnitude * fragility.value;
         }
 
         if (isDamaged)

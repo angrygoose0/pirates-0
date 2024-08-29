@@ -14,6 +14,7 @@ public enum Ability
     Fragility, // damage received
     Health,
     Extra,
+    Bleed,
     // Add more states here as needed
 }
 
@@ -21,19 +22,12 @@ public enum Ability
 public class AbilityData
 {
     public Ability ability;
-    public int tier;
+    public float value;
 }
 
 public class AbilityManager : MonoBehaviour
 {
     public List<AbilityData> abilityList = new List<AbilityData>();
-    public float lifeStealValue;
-    public float hasteValue;
-    public int multipleValue = 1;
-    public float mightValue;
-    public float fragilityValue;
-    public float healthValue;
-    public float extraValue;
 
     public AbilityData GetAbilityData(Ability ability)
     {
@@ -41,7 +35,8 @@ public class AbilityManager : MonoBehaviour
     }
 
     // Call this method to add an ability to the list while ensuring no duplicates and adding tiers if already exists
-    public void AddOrUpdateAbility(Ability newAbility, int newTier)
+    // this replaces that ability instance with a new value for artifacts are attatched or removed.
+    public void AddOrUpdateAbility(Ability newAbility, float newValue)
     {
         bool abilityExists = false;
 
@@ -50,7 +45,7 @@ public class AbilityManager : MonoBehaviour
             if (abilityList[i].ability == newAbility)
             {
                 abilityExists = true;
-                abilityList[i].tier += newTier; // Add the tiers together
+                abilityList[i].value += newValue; // Add the tiers together
                 break;
             }
         }
@@ -58,7 +53,7 @@ public class AbilityManager : MonoBehaviour
         // If the ability doesn't exist in the list, add it
         if (!abilityExists)
         {
-            abilityList.Add(new AbilityData { ability = newAbility, tier = newTier });
+            abilityList.Add(new AbilityData { ability = newAbility, value = newValue });
         }
     }
 }

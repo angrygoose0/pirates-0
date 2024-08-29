@@ -122,7 +122,7 @@ public class PlayerBehaviour : MonoBehaviour
 
                     if (haste != null)
                     {
-                        attackRate = attackRate * 1 / (haste.tier * abilityManager.hasteValue);
+                        attackRate = attackRate * 1 / (haste.value);
                     }
 
                     if (Time.time >= lastFireTime + attackRate)

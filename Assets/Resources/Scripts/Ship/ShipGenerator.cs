@@ -189,7 +189,7 @@ public class ShipGenerator : MonoBehaviour
             }
             foreach (AbilityData ability in blockItemObject.abilityList)
             {
-                abilityManager.AddOrUpdateAbility(ability.ability, ability.tier);
+                abilityManager.AddOrUpdateAbility(ability.ability, ability.value);
             }
         }
 

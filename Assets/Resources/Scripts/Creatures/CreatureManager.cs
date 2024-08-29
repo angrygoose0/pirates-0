@@ -551,7 +551,7 @@ public class CreatureManager : MonoBehaviour
         AbilityData might = abilityManager.GetAbilityData(Ability.Might);
         if (might != null)
         {
-            damageMagnitude = damageMagnitude * abilityManager.mightValue * might.tier;
+            damageMagnitude = damageMagnitude * might.value;
         }
 
         TentacleData hitTentacleData = hitCreatureData.tentacles[hitTentacleObject];
@@ -577,7 +577,7 @@ public class CreatureManager : MonoBehaviour
 
         if (lifeSteal != null)
         {
-            shipVitals.shipHealth += damageMagnitude * abilityManager.lifeStealValue * lifeSteal.tier;
+            shipVitals.shipHealth += damageMagnitude * lifeSteal.value;
 
             // Check if shipHealth exceeds maxShipHealth
             if (shipVitals.shipHealth > shipVitals.maxShipHealth)

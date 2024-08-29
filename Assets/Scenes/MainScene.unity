@@ -1413,7 +1413,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shipGenerator: {fileID: 383585316}
   tilemap: {fileID: 170296651}
-  maxSpeed: 5
+  kFactor: 0
   mass: 500
   currentVelocity: {x: 0, y: 0}
 --- !u!114 &383585322
@@ -1717,7 +1717,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   abilityList:
   - ability: 0
-    tier: 0
+    value: 0
   lifeStealValue: 0.5
   hasteValue: 1
   multipleValue: 1
@@ -19213,7 +19213,7 @@ PrefabInstance:
     - target: {fileID: 6404109495600793707, guid: a02dfe49a58e0af428c86086ccfa3b23, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 2e6baf75e4e77434c9d12e323bdd655c, type: 3}
+      objectReference: {fileID: 21300000, guid: 4e19194ea5d35744e8d737b4eb8e3c82, type: 3}
     - target: {fileID: 6404109495600793707, guid: a02dfe49a58e0af428c86086ccfa3b23, type: 3}
       propertyPath: m_Enabled
       value: 1

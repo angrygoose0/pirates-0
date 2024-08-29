@@ -54,7 +54,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 02188a9c6c7789b4ab38a30387da323d, type: 2}
+  - {fileID: -876546973899608171, guid: 9465104cb197b38409f7571ad8659332, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -107,6 +107,7 @@ MonoBehaviour:
   itemManager: {fileID: 0}
   shipObject: {fileID: 0}
   ammoCount: 0
+  blockLight: {fileID: 0}
   itemObjectList:
   - {fileID: 11400000, guid: 81de5d4855b024e4f98add07aea7d9e3, type: 2}
   active: 0

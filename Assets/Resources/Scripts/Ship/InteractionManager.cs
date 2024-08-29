@@ -25,6 +25,15 @@ public class InteractionManager : MonoBehaviour
 
     }
 
+    private IEnumerator WhiteFlashCoroutine(SpriteRenderer spriteRenderer)
+    {
+        spriteRenderer.material.SetFloat("_WhiteAmount", 1f);
+
+        yield return new WaitForSeconds(0.2f);
+
+        spriteRenderer.material.SetFloat("_WhiteAmount", 0f);
+    }
+
     public List<Vector3Int> GetSurroundingTiles(Vector3Int centerTile, float range)
     {
         List<Vector3Int> tiles = new List<Vector3Int>();
@@ -172,7 +181,7 @@ public class InteractionManager : MonoBehaviour
                     int updatedAmmoCount = projectile.ammoCount;
                     if (extra != null)
                     {
-                        updatedAmmoCount = Mathf.RoundToInt(projectile.ammoCount * extra.tier * abilityManager.extraValue);
+                        updatedAmmoCount = Mathf.RoundToInt(projectile.ammoCount * extra.value);
                     }
 
                     blockScript.ammoCount = updatedAmmoCount;
@@ -246,7 +255,7 @@ public class InteractionManager : MonoBehaviour
 
                         if (multiple != null)
                         {
-                            fireAmount = fireAmount + multiple.tier * abilityManager.multipleValue;
+                            fireAmount = fireAmount + Mathf.RoundToInt(multiple.value);
                             if (accuracy < 1.5f)
                             {
                                 additionalTilesList = GetSurroundingTiles(selectorTilePosition, 2f);
@@ -267,6 +276,8 @@ public class InteractionManager : MonoBehaviour
                             }
                             Vector3Int targetTile = tilesList[Random.Range(0, tilesList.Count)];
                             cannonBehaviour.FireInTheHole(blockPosition, targetTile, projectile, blockItemObject.mass);
+                            StartCoroutine(WhiteFlashCoroutine(blockPrefab.GetComponent<SpriteRenderer>()));
+
 
                         }
 
@@ -275,7 +286,7 @@ public class InteractionManager : MonoBehaviour
                         int updatedAmmoCount = projectile.ammoCount;
                         if (extra != null)
                         {
-                            updatedAmmoCount = Mathf.RoundToInt(projectile.ammoCount * extra.tier * abilityManager.extraValue);
+                            updatedAmmoCount = Mathf.RoundToInt(projectile.ammoCount * extra.value);
                         }
 
                         blockScript.ammoCount -= 1;

@@ -8,7 +8,8 @@ public class ShipMovement : MonoBehaviour
     public static ShipMovement Instance { get; private set; }
     public ShipGenerator shipGenerator;
     public GameObject tilemap; // Reference to the tilemap or parent object containing the tilemap
-    public float maxSpeed = 5f; // The maximum speed at which the ship moves
+    public float kFactor; // constant that multiplies with totalForce to give maxSpeed;
+    private float maxSpeed; // The maximum speed at which the ship moves
     public float mass = 1f; // The mass of the ship, which affects acceleration and deceleration
 
     public Vector2 currentVelocity; // The current velocity of the ship
@@ -56,6 +57,8 @@ public class ShipMovement : MonoBehaviour
             if (blockScript.active)
             {
                 totalForce += blockScript.blockDirection.normalized * blockScript.GetBlockValueByName("mastForce");
+
+                maxSpeed = totalForce.magnitude * kFactor;
             }
         }
     }
