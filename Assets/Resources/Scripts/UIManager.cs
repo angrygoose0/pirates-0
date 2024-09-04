@@ -5,7 +5,8 @@ using TMPro;
 
 public class UIManager : MonoBehaviour
 {
-    public GameObject canvas;
+    public GameObject screenCanvas;
+    public GameObject worldCanvas;
 
     public GameObject ammoCountContainerPrefab;
     public GameObject ammoCountPrefab;
@@ -29,7 +30,7 @@ public class UIManager : MonoBehaviour
             }
 
             // Instantiate a new container and add it to the dictionary
-            ammoCountContainer = Instantiate(ammoCountContainerPrefab, blockObject.transform.position, Quaternion.identity, canvas.transform);
+            ammoCountContainer = Instantiate(ammoCountContainerPrefab, blockObject.transform.position, Quaternion.identity, worldCanvas.transform);
             blockToUIRelations[blockObject] = ammoCountContainer;
         }
 
@@ -95,7 +96,7 @@ public class UIManager : MonoBehaviour
             // If the blockObject is not in the dictionary and the helpfulUIList is not empty, instantiate a new UI object.
             if (helpfulUIList.Count > 0)
             {
-                uiObject = Instantiate(helpfulContainerPrefab, blockObject.transform.position, Quaternion.identity, canvas.transform);
+                uiObject = Instantiate(helpfulContainerPrefab, blockObject.transform.position, Quaternion.identity, worldCanvas.transform);
                 blockToHelpfulUIDict[blockObject] = uiObject;
 
                 // Set the text of the new UI object.

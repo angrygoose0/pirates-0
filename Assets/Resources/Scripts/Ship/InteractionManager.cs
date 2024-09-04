@@ -54,6 +54,31 @@ public class InteractionManager : MonoBehaviour
         return tiles;
     }
 
+    private Vector2[] directions = {
+        new Vector2(1, 0),  // East
+        new Vector2(1, 1),  // NE
+        new Vector2(0, 1),  // North
+        new Vector2(-1, 1), // NW
+        new Vector2(-1, 0), // West
+        new Vector2(-1, -1),// SW
+        new Vector2(0, -1), // South
+        new Vector2(1, -1)  // SE
+    };
+
+    public Vector2 RotateBy45(Vector2 v)
+    {
+        for (int i = 0; i < directions.Length; i++)
+        {
+            if (v == directions[i])
+            {
+                // Return the next direction, looping around if necessary
+                return directions[(i + 1) % directions.Length];
+            }
+        }
+
+        return v; // Return unchanged if not a recognized direction
+    }
+
     public void InteractWithBlock(int interaction, GameObject player) // 0=primary 1=secondary interaction  
     //sometimes when a player interacts, the blockPrefab shouldnt have to be defined, as the player might already be equipped to a block, so it should check the dictionary to see what block the player is attatched to first.
     {
@@ -144,7 +169,6 @@ public class InteractionManager : MonoBehaviour
                     {
                         if (blockItemObject.active != null)
                         {
-                            Debug.Log("active");
                             blockItemScript.ActivateActive(blockPrefab.transform.position, blockScript.blockDirection);
                         }
                     }
@@ -212,11 +236,6 @@ public class InteractionManager : MonoBehaviour
 
                     shipGenerator.UpdateBlockEffects();
 
-                }
-
-                else if (blockObject.blockType == BlockType.Mast)
-                {
-                    blockScript.blockDirection = RotateVector(blockScript.blockDirection, 45);
                 }
                 break;
 
@@ -302,7 +321,8 @@ public class InteractionManager : MonoBehaviour
                 break;
 
             case 3:
-                blockScript.blockDirection = RotateVector(blockScript.blockDirection, 45);
+                Vector2 newDirection = RotateBy45(blockScript.blockDirection);
+                blockScript.ChangeDirection(newDirection);
                 break;
 
             default:
@@ -311,14 +331,5 @@ public class InteractionManager : MonoBehaviour
         }
     }
 
-    private Vector2 RotateVector(Vector2 originalVector, float angleDegrees)
-    {
-        float angleRadians = angleDegrees * Mathf.Deg2Rad;
-        float cos = Mathf.Cos(angleRadians);
-        float sin = Mathf.Sin(angleRadians);
-        return new Vector2(
-            cos * originalVector.x - sin * originalVector.y,
-            sin * originalVector.x + cos * originalVector.y
-        );
-    }
+
 }

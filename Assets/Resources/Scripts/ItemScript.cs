@@ -48,7 +48,7 @@ public class ItemScript : MonoBehaviour
         // If the itemObject is gold, start the lerping coroutine
         if (itemObject != null && projectile == null)
         {
-            StartCoroutine(StartLerpingAfterDelay(2f, itemObject.name == "Gold", itemObject.name == "Healing Orb")); // Start lerping after a 2-second delay
+            StartCoroutine(StartLerpingAfterDelay(2f, itemObject.name == "Gold", itemObject.name == "HealingOrb")); // Start lerping after a 2-second delay
         }
     }
 
@@ -196,7 +196,7 @@ public class ItemScript : MonoBehaviour
 
         if (heal)
         {
-            //heal
+            Debug.Log("heal");
 
             // Destroy the GameObject after lerping
             Destroy(gameObject);

@@ -7,7 +7,8 @@ using UnityEngine.Rendering.Universal;
 public class blockPrefabScript : MonoBehaviour
 {
     public BlockObject blockObject; // Variable to store block objects
-    public Vector2 blockDirection = Vector2.up; // Variable to store the direction as a Vector2                                  
+    public Vector2 blockDirection = Vector2.up; // Variable to store the direction as a Vector2      
+    private SpriteRenderer directionSpriteRenderer;
     public List<GameObject> itemPrefabObject = new List<GameObject>(); //items that are in the block
     private ItemObject itemObject;
     public GameObject player;
@@ -27,6 +28,16 @@ public class blockPrefabScript : MonoBehaviour
 
 
     private bool isSpawning = false;
+    private Dictionary<Vector2, Sprite> directionToSprite;
+
+    public Sprite northSprite;
+    public Sprite northEastSprite;
+    public Sprite eastSprite;
+    public Sprite southEastSprite;
+    public Sprite southSprite;
+    public Sprite southWestSprite;
+    public Sprite westSprite;
+    public Sprite northWestSprite;
 
 
     void Start()
@@ -41,6 +52,19 @@ public class blockPrefabScript : MonoBehaviour
         spriteRenderer.sprite = blockObject.blockSprite;
         blockLight = GetComponentInChildren<Light2D>();
         blockLight.intensity = 0;
+        directionSpriteRenderer = GetComponentInChildren<SpriteRenderer>();
+
+        directionToSprite = new Dictionary<Vector2, Sprite>
+        {
+            { new Vector2(0, 1), northSprite },         // North
+            { new Vector2(1, 1), northEastSprite },     // North-East
+            { new Vector2(1, 0), eastSprite },          // East
+            { new Vector2(1, -1), southEastSprite },    // South-East
+            { new Vector2(0, -1), southSprite },        // South
+            { new Vector2(-1, -1), southWestSprite },   // South-West
+            { new Vector2(-1, 0), westSprite },         // West
+            { new Vector2(-1, 1), northWestSprite }     // North-West
+        };
 
     }
     void Update()
@@ -122,6 +146,24 @@ public class blockPrefabScript : MonoBehaviour
 
 
     }
+
+
+    public void ChangeDirection(Vector2 direction)
+    {
+
+
+        // Set the block direction to the closest allowed direction
+        blockDirection = direction;
+        Debug.Log(direction);
+
+        // Change the sprite to match the new direction
+        if (directionToSprite.ContainsKey(direction))
+        {
+            directionSpriteRenderer.sprite = directionToSprite[direction];
+            Debug.Log("changedSprite");
+        }
+    }
+
 
 
 

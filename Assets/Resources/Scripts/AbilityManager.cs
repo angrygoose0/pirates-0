@@ -15,6 +15,7 @@ public enum Ability
     Health,
     Extra,
     Bleed,
+    HealOrb,
     // Add more states here as needed
 }
 

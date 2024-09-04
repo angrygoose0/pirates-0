@@ -111,6 +111,7 @@ public class CreatureManager : MonoBehaviour
     public ShipVitals shipVitals;
     public Material creatureMaterial;
     public ItemObject goldItemObject;
+    public ItemObject healOrbObject;
     public GameObject damageCounterPrefab;
     public GameObject healthBarPrefab;
     public Explosions explosionScript;
@@ -558,10 +559,7 @@ public class CreatureManager : MonoBehaviour
             );
             hitCreatureData.effects.Add(novaEffect);
         }
-        if (nova == null)
-        {
-            Debug.Log("nova is null");
-        }
+
 
 
         hitCreatureObject.transform.position = hitSegmentObject.transform.position;
@@ -725,6 +723,19 @@ public class CreatureManager : MonoBehaviour
                 explosionScript.Explode(creaturePosition, creatureProjectile, 0f, 360f);
                 Debug.Log("exploded");
             }
+
+            AbilityData healorb = abilityManager.GetAbilityData(Ability.HealOrb);
+            if (healorb != null)
+            {
+                int healOrbAmount = Mathf.RoundToInt(healorb.value);
+                // Instantiate the item prefabs based on the gold drop
+                for (int i = 0; i < healOrbAmount; i++)
+                {
+                    itemManager.CreateItem(healOrbObject, creaturePosition);
+
+                }
+            }
+
 
 
 
