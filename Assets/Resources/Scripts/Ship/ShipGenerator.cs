@@ -1,18 +1,32 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Collections.Generic;
+using UnityEditor;
 
+
+
+[System.Serializable]
 public class ShipData
 {
+    public RaftObject raftObject = null;
+    public float hp = 0f;
+
 
 }
 
 public class ShipGenerator : MonoBehaviour
 {
+    public Dictionary<GameObject, ShipData> raftTileDict = new Dictionary<GameObject, ShipData>();
+    public ShipData[,] raftArray = new ShipData[3, 2]
+    {
+        { new ShipData(), new ShipData() },   // Bottom-left is null, bottom-right is a new ShipData object
+        { new ShipData(), new ShipData() },
+        { new ShipData(), null }
+    };
+
     public GameObject shipTilemapObject;
 
     public TileBase tile;
-    public Vector3Int offset;
     public GameObject blockPrefab; // Reference to the block prefab
     public List<BlockObject> blockObjects; // List of all BlockObject ScriptableObjects
     public Tilemap tilemap;
@@ -20,18 +34,20 @@ public class ShipGenerator : MonoBehaviour
 
     public float[,] ship = new float[,]
     {
-        { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f },
-        { 4.0f, 1.0f, 1.0f, 1.0f, 1.0f },
-        { 1.0f, 1.0f, 3.0f, 1.0f, 1.0f },
-        { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f },
-        { 1.0f, 1.0f, 1.0f, 2.0f, 4f }
+        { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,},
+        { 4.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,},
+        { 1.0f, 1.0f, 3.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, },
+        { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, },
+        { 1.0f, 1.0f, 1.0f, 2.0f, 4f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, },
+        { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,},
+        { 4.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,},
+        { 1.0f, 1.0f, 3.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,},
+        { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,},
+        { 1.0f, 1.0f, 1.0f, 2.0f, 4.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,}
+
     };
-
-
-
-
-
-
+    public int raftTileSize = 5;
+    private float[,] singularRaftArray;
 
 
     private Dictionary<Vector3Int, GameObject> tileToBlockPrefabMap;
@@ -44,6 +60,14 @@ public class ShipGenerator : MonoBehaviour
 
     void Start()
     {
+        //new
+        int shipSizeX = raftArray.GetLength(0) * raftTileSize; // 5 is the size of each individual raft tile.
+        int shipSizeY = raftArray.GetLength(1) * raftTileSize;
+        ship = new float[shipSizeX, shipSizeY];
+        CombineRaftTilesIntoShip();
+
+
+
         tilemap = shipTilemapObject.GetComponent<Tilemap>();
         tileToBlockPrefabMap = new Dictionary<Vector3Int, GameObject>();
         mastBlocks = new List<GameObject>();
@@ -54,6 +78,49 @@ public class ShipGenerator : MonoBehaviour
 
     }
 
+    private void CombineRaftTilesIntoShip()
+    {
+        int raftTileSize = 5; // Temporary value, size of individual ShipData tile array.
+
+        // Initialize the ship array to default value 0
+        for (int x = 0; x < ship.GetLength(0); x++)
+        {
+            for (int y = 0; y < ship.GetLength(1); y++)
+            {
+                ship[x, y] = 0f; // Default value
+            }
+        }
+
+        // Iterate over the raftArray
+        for (int i = 0; i < raftArray.GetLength(0); i++)
+        {
+            for (int j = 0; j < raftArray.GetLength(1); j++)
+            {
+                ShipData shipData = raftArray[i, j];
+                if (shipData != null)
+                {
+                    // Copy the 5x5 tiles from shipData.tiles to the correct position in the massive ship array
+                    for (int x = 0; x < raftTileSize; x++)
+                    {
+                        for (int y = 0; y < raftTileSize; y++)
+                        {
+                            // Calculate the correct position in the massive ship array
+                            int shipX = i * raftTileSize + x;
+                            int shipY = j * raftTileSize + y;
+
+                            // Avoid out-of-bounds issues by checking if the coordinates fit in the ship array
+                            if (shipX < ship.GetLength(0) && shipY < ship.GetLength(1))
+                            {
+                                // Copy the tile value if valid, otherwise set to 0
+                                ship[shipX, shipY] = 1.0f;
+                            }
+                        }
+                    }
+                }
+                // If shipData is null, the default value of 0 remains in the corresponding region of the ship array
+            }
+        }
+    }
     public void GenerateTilemap(float[,] ship)
     {
         EdgeCollider2D shipCollider = shipTilemapObject.GetComponent<EdgeCollider2D>();
@@ -80,7 +147,7 @@ public class ShipGenerator : MonoBehaviour
         {
             for (int x = 0; x < cols; x++)
             {
-                Vector3Int tilePosition = new Vector3Int(x, -y, 0) + offset;
+                Vector3Int tilePosition = new Vector3Int(x, -y, 0);
 
                 if (ship[y, x] > 0)
                 {
@@ -126,7 +193,7 @@ public class ShipGenerator : MonoBehaviour
         // Calculate the center of the ship
         int rows = ship.GetLength(0);
         int cols = ship.GetLength(1);
-        Vector3Int centerTilePosition = new Vector3Int(cols / 2, -rows / 2, 0) + offset;
+        Vector3Int centerTilePosition = new Vector3Int(cols / 2, -rows / 2, 0);
 
         // Convert center tile position to world position
         Vector3 worldCenterPosition = tilemap.CellToWorld(centerTilePosition) + tilemap.tileAnchor;
@@ -142,7 +209,7 @@ public class ShipGenerator : MonoBehaviour
 
     public bool IsTileWalkable(Vector3Int tilePosition)
     {
-        Vector3Int arrayPosition = tilePosition - offset;
+        Vector3Int arrayPosition = tilePosition;
         if (arrayPosition.x >= 0 && arrayPosition.x < ship.GetLength(1) && -arrayPosition.y >= 0 && -arrayPosition.y < ship.GetLength(0))
         {
             return Mathf.Approximately(ship[-arrayPosition.y, arrayPosition.x], 1.0f);
@@ -152,7 +219,7 @@ public class ShipGenerator : MonoBehaviour
 
     public bool IsTileInteractable(Vector3Int tilePosition)
     {
-        Vector3Int arrayPosition = tilePosition - offset;
+        Vector3Int arrayPosition = tilePosition;
         if (arrayPosition.x >= 0 && arrayPosition.x < ship.GetLength(1) && -arrayPosition.y >= 0 && -arrayPosition.y < ship.GetLength(0))
         {
             return ship[-arrayPosition.y, arrayPosition.x] > 1.0f;

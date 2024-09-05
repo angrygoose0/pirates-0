@@ -1507,6 +1507,7 @@ GameObject:
   - component: {fileID: 383585334}
   - component: {fileID: 383585335}
   - component: {fileID: 383585336}
+  - component: {fileID: 383585337}
   m_Layer: 0
   m_Name: ghost
   m_TagString: Untagged
@@ -1543,7 +1544,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shipTilemapObject: {fileID: 1604011098}
   tile: {fileID: 11400000, guid: c14545175a6c0d34e88e004e827cc897, type: 2}
-  offset: {x: 0, y: 0, z: 0}
   blockPrefab: {fileID: 1886374172837679357, guid: 13e7d3305d7010943b852a997c1ad432, type: 3}
   blockObjects:
   - {fileID: 11400000, guid: 81ec3bf63d3117d4e909c207d24a545a, type: 2}
@@ -1552,6 +1552,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: de7d847a4a831d6409c2c9291b8fe2ef, type: 2}
   tilemap: {fileID: 1604011099}
   abilityManager: {fileID: 383585333}
+  raftTileSize: 5
   mastBlocks:
   - {fileID: 0}
 --- !u!114 &383585318
@@ -1966,6 +1967,18 @@ MonoBehaviour:
   artifactPlaceFeedbackPlayer: {fileID: 1744825178}
   explosionParticle: {fileID: 1544189420}
   shipDamagedCameraShakeMagnitude: 0.1
+--- !u!114 &383585337
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 383585313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a8af0a73f8461a4cb7a2ccb0903b738, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &485961737
 GameObject:
   m_ObjectHideFlags: 0
