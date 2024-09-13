@@ -904,7 +904,7 @@ GameObject:
   - component: {fileID: 170296652}
   - component: {fileID: 170296654}
   - component: {fileID: 170296653}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: world
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1542,7 +1542,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02a63246a92d5584ba48d90dedcbd3ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  feedbackManager: {fileID: 383585336}
   shipTilemapObject: {fileID: 1604011098}
+  grid: {fileID: 485961737}
+  deafultRaft: {fileID: 11400000, guid: fda3c6c896be21948894a89b0b2b9571, type: 2}
   tile: {fileID: 11400000, guid: c14545175a6c0d34e88e004e827cc897, type: 2}
   blockPrefab: {fileID: 1886374172837679357, guid: 13e7d3305d7010943b852a997c1ad432, type: 3}
   blockObjects:
@@ -1552,6 +1555,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: de7d847a4a831d6409c2c9291b8fe2ef, type: 2}
   tilemap: {fileID: 1604011099}
   abilityManager: {fileID: 383585333}
+  raftTilePrefab: {fileID: 2042515232089746643, guid: 57fabd4de686a64428125b2b8f2c5842, type: 3}
   raftTileSize: 5
   mastBlocks:
   - {fileID: 0}
@@ -1774,13 +1778,14 @@ MonoBehaviour:
   tentacleSegmentprefab: {fileID: 6285872198284085077, guid: 8505bef393acbbf4cab79a22a9e93f5a, type: 3}
   itemManager: {fileID: 383585326}
   worldTilemap: {fileID: 170296654}
-  shipVitals: {fileID: 383585331}
+  shipGenerator: {fileID: 383585316}
   creatureMaterial: {fileID: -876546973899608171, guid: 9465104cb197b38409f7571ad8659332, type: 3}
   goldItemObject: {fileID: 11400000, guid: 853124c3c476fd24aaf407a880fb3fa5, type: 2}
   healOrbObject: {fileID: 11400000, guid: 3e9b78678b0bc7c4e8d6fabc05033e1e, type: 2}
   damageCounterPrefab: {fileID: 3155849065046819490, guid: 6eedf5176de703041bd31a9db3e79248, type: 3}
   healthBarPrefab: {fileID: 6102918091058157520, guid: 13270625568c94c438e3d64fcdd7a327, type: 3}
   explosionScript: {fileID: 383585322}
+  raftTiles: []
 --- !u!114 &383585328
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1882,14 +1887,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52cd6e4cc9a700a4a8c4c244cbca2044, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shipHealth: 50
-  maxShipHealth: 100
-  feedbackManager: {fileID: 383585336}
-  healthUI: {fileID: 804013979}
-  damageFlash: {fileID: 383585332}
   shipObject: {fileID: 1604011098}
   abilityManager: {fileID: 383585333}
-  invincible: 0
 --- !u!114 &383585332
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13499,7 +13498,7 @@ GameObject:
   m_Component:
   - component: {fileID: 836009207}
   - component: {fileID: 836009208}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Global Volume
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -29364,12 +29363,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1604011101}
   - component: {fileID: 1604011099}
-  - component: {fileID: 1604011100}
-  - component: {fileID: 1604011104}
-  - component: {fileID: 1604011106}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: ship
-  m_TagString: Ship
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -29848,55 +29844,6 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
---- !u!483693784 &1604011100
-TilemapRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1604011098}
-  m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 0
-  m_ReflectionProbeUsage: 0
-  m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: -876546973899608171, guid: 9465104cb197b38409f7571ad8659332, type: 3}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -1251297949
-  m_SortingLayer: 3
-  m_SortingOrder: 0
-  m_ChunkSize: {x: 32, y: 32, z: 32}
-  m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
-  m_MaxChunkCount: 16
-  m_MaxFrameAge: 16
-  m_SortOrder: 3
-  m_Mode: 0
-  m_DetectChunkCullingBounds: 0
-  m_MaskInteraction: 0
 --- !u!4 &1604011101
 Transform:
   m_ObjectHideFlags: 0
@@ -29913,74 +29860,6 @@ Transform:
   - {fileID: 836009207}
   m_Father: {fileID: 485961739}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!50 &1604011104
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1604011098}
-  m_BodyType: 2
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1000
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 1
-  m_Constraints: 7
---- !u!68 &1604011106
-EdgeCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1604011098}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_EdgeRadius: 0
-  m_Points:
-  - {x: -2.5, y: -0.375}
-  - {x: 13, y: -0.375}
-  m_AdjacentStartPoint: {x: 0, y: 0}
-  m_AdjacentEndPoint: {x: 0, y: 0}
-  m_UseAdjacentStartPoint: 0
-  m_UseAdjacentEndPoint: 0
 --- !u!1 &1617742593
 GameObject:
   m_ObjectHideFlags: 0
@@ -30073,7 +29952,7 @@ GameObject:
   - component: {fileID: 1722425496}
   - component: {fileID: 1722425499}
   - component: {fileID: 1722425500}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6997401826130007456}
   - component: {fileID: 7840952500859915559}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 189507199783012625}
   - component: {fileID: 7653777232405761642}
   - component: {fileID: 8012790264291954748}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: itemPrefab
   m_TagString: Item
   m_Icon: {fileID: 0}

@@ -11,7 +11,7 @@ public class CreatureBehaviour : MonoBehaviour
         
         if (collision.gameObject.CompareTag("Ship"))
         {
-            creatureManager.AttackShip(gameObject);
+            creatureManager.AttackShip(gameObject, collision.gameObject);
         }
     }
 }

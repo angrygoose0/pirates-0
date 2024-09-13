@@ -1,15 +1,24 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using System.Collections.Generic;
 using UnityEditor;
+using System.Collections;
+using System.Collections.Generic;
+
 
 
 
 [System.Serializable]
 public class ShipData
 {
-    public RaftObject raftObject = null;
+    public RaftObject raftObject;
     public float hp = 0f;
+
+    public bool isDamaged = false;
+    public float currentDamage = 0f;
+    public bool invincible = false;
+    public float timeSinceLastDamage = 0f; // Time since the last damage was taken
+    public TilemapRenderer tilemapRenderer = null;
+    public HealthBar healthBar = null;
 
 
 }
@@ -24,13 +33,21 @@ public class ShipGenerator : MonoBehaviour
         { new ShipData(), null }
     };
 
+    public FeedbackManager feedbackManager;
+
     public GameObject shipTilemapObject;
+    public GameObject grid;
+    public RaftObject deafultRaft;
 
     public TileBase tile;
     public GameObject blockPrefab; // Reference to the block prefab
     public List<BlockObject> blockObjects; // List of all BlockObject ScriptableObjects
     public Tilemap tilemap;
     public AbilityManager abilityManager;
+
+    public GameObject raftTilePrefab;
+    public GameObject healthBarPrefab;
+    public GameObject canvas;
 
     public float[,] ship = new float[,]
     {
@@ -64,11 +81,13 @@ public class ShipGenerator : MonoBehaviour
         int shipSizeX = raftArray.GetLength(0) * raftTileSize; // 5 is the size of each individual raft tile.
         int shipSizeY = raftArray.GetLength(1) * raftTileSize;
         ship = new float[shipSizeX, shipSizeY];
+
+        tilemap = shipTilemapObject.GetComponent<Tilemap>();
         CombineRaftTilesIntoShip();
 
 
 
-        tilemap = shipTilemapObject.GetComponent<Tilemap>();
+
         tileToBlockPrefabMap = new Dictionary<Vector3Int, GameObject>();
         mastBlocks = new List<GameObject>();
         GenerateTilemap(ship);
@@ -76,11 +95,70 @@ public class ShipGenerator : MonoBehaviour
         FindMastBlocks(); // Find all mast blocks after generating the ship
 
 
+
     }
+
+    void Update()
+    {
+        UpdateRaftTimers();
+    }
+
+    public void UpdateRaftTimers()
+    {
+        // Loop through each key-value pair in the dictionary
+        foreach (KeyValuePair<GameObject, ShipData> entry in raftTileDict)
+        {
+            GameObject raftTile = entry.Key;        // The key (GameObject)
+            ShipData shipData = entry.Value;    // The value (ShipData)
+
+            // Increment the timer
+            if (!shipData.isDamaged)
+            {
+                shipData.timeSinceLastDamage += Time.deltaTime;
+            }
+        }
+    }
+
+    private void UpdateShipHealth(ShipData shipData)
+    {
+
+        float result = shipData.hp / shipData.raftObject.health;
+
+        float roundedResult = Mathf.Round(result * 1000f) / 1000f;
+        shipData.healthBar.ModifyHealth(roundedResult);
+    }
+
+
+    public GameObject GenerateIndividualRaft(int size, Vector3Int position)
+    {
+        // Instantiate the raft at the given position
+        GameObject raftTileInstance = Instantiate(raftTilePrefab, grid.transform);
+
+        // Move the entire raft tile to the correct position in the world
+        raftTileInstance.transform.position = tilemap.CellToWorld(position);
+
+        Tilemap raftTilemap = raftTileInstance.GetComponent<Tilemap>();
+
+        // Iterate through the grid size and set the tile at each position
+        for (int x = 0; x < size; x++)
+        {
+            for (int y = 0; y < size; y++)
+            {
+                // Convert to isometric coordinates (Z as Y)
+                Vector3Int tilePosition = new Vector3Int(x, y, 0);
+
+                // Set the tile at the calculated position on the tilemap
+                raftTilemap.SetTile(tilePosition, tile);
+            }
+        }
+
+        return raftTileInstance;
+    }
+
 
     private void CombineRaftTilesIntoShip()
     {
-        int raftTileSize = 5; // Temporary value, size of individual ShipData tile array.
+        int raftTileSize = 5; // Size of individual raft tiles (5x5)
 
         // Initialize the ship array to default value 0
         for (int x = 0; x < ship.GetLength(0); x++)
@@ -91,15 +169,58 @@ public class ShipGenerator : MonoBehaviour
             }
         }
 
-        // Iterate over the raftArray
+        // Iterate over the raftArray and place individual rafts
         for (int i = 0; i < raftArray.GetLength(0); i++)
         {
             for (int j = 0; j < raftArray.GetLength(1); j++)
             {
                 ShipData shipData = raftArray[i, j];
+
                 if (shipData != null)
                 {
-                    // Copy the 5x5 tiles from shipData.tiles to the correct position in the massive ship array
+                    // Fix the 90-degree counterclockwise rotation by swapping i and j
+                    Vector3Int raftPosition = new Vector3Int(j * raftTileSize, -i * raftTileSize, 0);
+
+                    // Generate the individual raft at the correct position
+                    GameObject newRaftTile = GenerateIndividualRaft(raftTileSize, raftPosition);
+
+
+                    GameObject newHealthBar = Instantiate(healthBarPrefab, newRaftTile.transform.position, Quaternion.identity, canvas.transform);
+                    HealthBar healthBarScript = newHealthBar.GetComponent<HealthBar>();
+
+                    newRaftTile.transform.position += new Vector3(2, -1, 0);
+
+                    shipData.tilemapRenderer = newRaftTile.GetComponent<TilemapRenderer>();
+                    shipData.raftObject = deafultRaft;
+                    shipData.hp = shipData.raftObject.health;
+                    shipData.healthBar = healthBarScript;
+                    StartCoroutine(HealthRegenCoroutine(shipData));
+
+                    raftTileDict.Add(newRaftTile, shipData);
+
+
+
+                    PolygonCollider2D shipCollider = newRaftTile.GetComponent<PolygonCollider2D>();
+
+                    Vector2[] colliderPoints = new Vector2[]
+                    {
+                        new Vector2(raftTileSize/2f-0.5f, raftTileSize/4f),
+                        new Vector2(-0.5f, 0f),
+                        new Vector2(raftTileSize/2f-0.5f, raftTileSize/-4f),
+                        new Vector2((raftTileSize/2f-0.5f + raftTileSize/2f-0.5f + 0.5f), 0f),
+                    };
+
+                    // add on offset of -2,1 to colliders to make it work, idk why?
+                    for (int k = 0; k < colliderPoints.Length; k++)
+                    {
+                        colliderPoints[k] += new Vector2(-2, 1);
+                    }
+
+
+                    shipCollider.points = colliderPoints;
+
+
+                    // Populate the ship array for the combined tilemap
                     for (int x = 0; x < raftTileSize; x++)
                     {
                         for (int y = 0; y < raftTileSize; y++)
@@ -117,13 +238,83 @@ public class ShipGenerator : MonoBehaviour
                         }
                     }
                 }
-                // If shipData is null, the default value of 0 remains in the corresponding region of the ship array
             }
         }
     }
+
+    public void ApplyImpact(GameObject raftTile, float damageMagnitude)
+    {
+        ShipData shipData = raftTileDict[raftTile];
+        feedbackManager.ShipDamagedFeedback(damageMagnitude);
+        AbilityData fragility = abilityManager.GetAbilityData(Ability.Fragility);
+        if (fragility != null)
+        {
+            damageMagnitude = damageMagnitude * fragility.value;
+        }
+
+        if (shipData.isDamaged)
+        {
+            if (damageMagnitude > shipData.currentDamage)
+            {
+                float damage = damageMagnitude - shipData.currentDamage;
+                shipData.hp -= damage;
+                UpdateShipHealth(shipData);
+            }
+        }
+        else
+        {
+            shipData.currentDamage = damageMagnitude;
+            StartCoroutine(DamageCoroutine(shipData));
+        }
+    }
+
+    private IEnumerator DamageCoroutine(ShipData shipData)
+    {
+        shipData.isDamaged = true;
+        shipData.timeSinceLastDamage = 0f; // Reset the timer
+
+        // Apply damage
+        shipData.hp -= shipData.currentDamage;
+        UpdateShipHealth(shipData);
+
+        shipData.tilemapRenderer.material.SetFloat("_WhiteAmount", 1f);
+
+        // Check if health is less than or equal to zero
+        if (shipData.hp <= 0)
+        {
+            Debug.Log("destroy this tile");
+            yield break;  // Stop coroutine execution if the ship is destroyed
+        }
+
+        // Wait for invincibility duration
+        yield return new WaitForSeconds(0.1f);
+
+        shipData.tilemapRenderer.material.SetFloat("_WhiteAmount", 0f);
+
+        // Reset damage
+        shipData.currentDamage = 0f;
+        shipData.isDamaged = false;
+    }
+
+    private IEnumerator HealthRegenCoroutine(ShipData shipData)
+    {
+        while (true)
+        {
+            // Check if the ship can regenerate health
+            if (shipData.hp < shipData.raftObject.health && shipData.timeSinceLastDamage >= shipData.raftObject.regenDelay)
+            {
+                // Regenerate health over time
+                shipData.hp += shipData.raftObject.healthRegenRate * Time.deltaTime;
+                shipData.hp = Mathf.Min(shipData.hp, shipData.raftObject.health);
+            }
+
+            yield return null; // Wait for the next frame
+        }
+    }
+
     public void GenerateTilemap(float[,] ship)
     {
-        EdgeCollider2D shipCollider = shipTilemapObject.GetComponent<EdgeCollider2D>();
+
         tilemap.ClearAllTiles();
         tileToBlockPrefabMap.Clear();
         mastBlocks.Clear(); // Clear the list in case of regeneration
@@ -131,17 +322,20 @@ public class ShipGenerator : MonoBehaviour
         int rows = ship.GetLength(0);
         int cols = ship.GetLength(1);
 
+        /*
+        PolygonCollider2D shipCollider = shipTilemapObject.GetComponent<PolygonCollider2D>();
+
         Vector2[] colliderPoints = new Vector2[]
         {
             new Vector2(cols/2f-0.5f, cols/4f),
             new Vector2(-0.5f, 0f),
             new Vector2(rows/2f-0.5f, rows/-4f),
             new Vector2((cols/2f-0.5f + rows/2f-0.5f + 0.5f), (cols-rows)/4f),
-            new Vector2(cols/2f-0.5f, cols/4f),
+            //new Vector2(cols/2f-0.5f, cols/4f),
         };
 
-
         shipCollider.points = colliderPoints;
+        */
 
         for (int y = 0; y < rows; y++)
         {

@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2085190ecae7ae4b93357a9ba994cfc, type: 3}
+  m_Name: basicRaft
+  m_EditorClassIdentifier: 
+  health: 100
+  armor: 10
+  mass: 10
+  tilemap: {fileID: 11400000, guid: c14545175a6c0d34e88e004e827cc897, type: 2}
+  healthRegenRate: 2
+  regenDelay: 5

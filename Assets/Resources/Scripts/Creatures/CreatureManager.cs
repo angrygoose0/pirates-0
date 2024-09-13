@@ -77,7 +77,7 @@ public class CreatureData
     public float hostility;
     public Vector3 velocity;
     public float movementDelay;
-    public GameObject targetShipPart = GameObject.Find("ghost");
+    public GameObject targetShipPart;
     public float health;
     public bool isDamaged;
     public float currentDamage;
@@ -108,13 +108,15 @@ public class CreatureManager : MonoBehaviour
     public GameObject tentacleSegmentprefab;
     public ItemManager itemManager;
     public Tilemap worldTilemap;
-    public ShipVitals shipVitals;
+    public ShipGenerator shipGenerator;
     public Material creatureMaterial;
     public ItemObject goldItemObject;
     public ItemObject healOrbObject;
     public GameObject damageCounterPrefab;
     public GameObject healthBarPrefab;
     public Explosions explosionScript;
+
+    public GameObject[] raftTiles;
 
     void Start()
     {
@@ -125,6 +127,10 @@ public class CreatureManager : MonoBehaviour
 
         // Start the coroutine to update effects periodically
         StartCoroutine(CreatureTickRoutine());
+
+        raftTiles = GameObject.FindGameObjectsWithTag("Ship");
+
+
     }
 
 
@@ -197,7 +203,30 @@ public class CreatureManager : MonoBehaviour
                 }
                 else if (currentState == State.Aggressive)
                 {
-                    Vector3 targetShipPartLocalPosition = worldTilemap.WorldToCell(creatureData.targetShipPart.transform.position);
+                    if (raftTiles.Length != 0)
+                    {
+                        GameObject closestTile = null;
+                        float smallestDistance = Mathf.Infinity;
+
+                        foreach (GameObject raftTile in raftTiles)
+                        {
+                            // Calculate the distance from the reference object to the current ship
+                            float distance = Vector3.Distance(creatureGameObject.transform.position, raftTile.transform.position);
+
+                            // If this ship is closer than the previous closest, update the closest ship and smallest distance
+                            if (distance < smallestDistance)
+                            {
+                                closestTile = raftTile;
+                                smallestDistance = distance;
+                            }
+                        }
+
+                        creatureData.targetShipPart = closestTile;
+
+                        Debug.Log(creatureData.targetShipPart);
+                    }
+
+                    Vector3 targetShipPartLocalPosition = worldTilemap.WorldToCell(creatureData.targetShipPart.transform.position + new Vector3(0f, 1.25f, 0f));
                     Vector3Int targetTile = Vector3Int.FloorToInt(targetShipPartLocalPosition);
 
                     creatureData.targetPosition = worldTilemap.GetCellCenterLocal(targetTile);
@@ -591,6 +620,7 @@ public class CreatureManager : MonoBehaviour
 
         AbilityData lifeSteal = abilityManager.GetAbilityData(Ability.LifeSteal);
 
+        /*
         if (lifeSteal != null)
         {
             shipVitals.shipHealth += damageMagnitude * lifeSteal.value;
@@ -602,6 +632,7 @@ public class CreatureManager : MonoBehaviour
                 shipVitals.shipHealth = shipVitals.maxShipHealth;
             }
         }
+        */
         // need to move this to damagecoroutine, but it lags out the dmageflash
     }
 
@@ -840,13 +871,13 @@ public class CreatureManager : MonoBehaviour
         }
     }
 
-    public void AttackShip(GameObject creature)
+    public void AttackShip(GameObject creature, GameObject raftObject)
     {
         CreatureData creatureData = creatures[creature];
 
         //creatureData.hostility = 0f;
 
-        //shipVitals.ApplyImpact(creatureData.creatureObject.damage);
+        shipGenerator.ApplyImpact(raftObject, creatureData.creatureObject.damage);
 
         //invulnerable ship / spiky ship
         var firstTentacle = creatureData.tentacles.Values.FirstOrDefault();

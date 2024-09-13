@@ -9,6 +9,9 @@ public class RaftObject : ScriptableObject
     public float mass;
     public TileBase tilemap;
 
+    public float healthRegenRate = 2f; // Health points regenerated per second
+    public float regenDelay = 5f; // Time in seconds before health starts regenerating
+
 
 
 

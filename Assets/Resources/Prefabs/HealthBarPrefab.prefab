@@ -541,7 +541,7 @@ GameObject:
   - component: {fileID: 2121868969044155900}
   - component: {fileID: 4132313040440126598}
   m_Layer: 5
-  m_Name: HorizontalBar
+  m_Name: HealthBarPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
