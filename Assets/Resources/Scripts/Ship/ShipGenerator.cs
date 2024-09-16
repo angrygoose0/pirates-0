@@ -33,58 +33,48 @@ public class ShipGenerator : MonoBehaviour
         { new ShipData(), null }
     };
 
-    private int xOffset = 0;
-    private int yOffset = 0;
+    public int xOffset = 0;
+    public int yOffset = 0;
 
     public void AddOrUpdateShipData(Vector3Int coordinate, ShipData newShipData)
     {
         int x = coordinate.x;
         int y = coordinate.y;
+        // x and y is reversed for some reason.
 
-        // x and y are reversed in your logic, so reverse them if needed
-        int arrayX = raftArray.GetLength(0);  // Rows count
-        int arrayY = raftArray.GetLength(1);  // Columns count
 
-        // Check if the coordinate is outside the current array bounds (including negative values)
-        int newArrayX = arrayX;
-        int newArrayY = arrayY;
+        int arrayX = raftArray.GetLength(0);
+        int arrayY = raftArray.GetLength(1);
 
-        // Adjust size to handle negative x and y coordinates
-        if (x < 0 || y < 0 || x - xOffset >= arrayX || y - yOffset >= arrayY)
+        if (x >= arrayX || y >= arrayY)
         {
-            // Determine new size considering both positive and negative values
-            int minX = Mathf.Min(x, -xOffset);  // If x is negative, we need to extend the array
-            int minY = Mathf.Min(y, -yOffset);
+            // Determine the new size, which is max of current and required size
+            int newArrayX = Mathf.Max(x + 1, arrayX); // New row size
+            int newArrayY = Mathf.Max(y + 1, arrayY);
 
-            newArrayX = Mathf.Max(arrayX, x - xOffset + 1);  // If x is beyond the current bounds
-            newArrayY = Mathf.Max(arrayY, y - yOffset + 1);  // If y is beyond the current bounds
+            Debug.Log("newArrayX" + newArrayX);
+            Debug.Log("newArrayaY" + newArrayY);
 
-            if (minX < 0) newArrayX += -minX;  // Add space for negative x
-            if (minY < 0) newArrayY += -minY;  // Add space for negative y
 
-            // Create a new array with the updated size
+
             ShipData[,] newArray = new ShipData[newArrayX, newArrayY];
 
-            // Copy data from the old array to the new one at the new shifted coordinates
+            // Copy existing data from the old array to the new one
             for (int i = 0; i < arrayX; i++)
             {
                 for (int j = 0; j < arrayY; j++)
                 {
-                    newArray[i - xOffset + (minX < 0 ? -minX : 0), j - yOffset + (minY < 0 ? -minY : 0)] = raftArray[i, j];
+                    newArray[i, j] = raftArray[i, j];
                 }
             }
-
-            // Update the offset if the array has been extended for negative coordinates
-            xOffset += minX < 0 ? -minX : 0;
-            yOffset += minY < 0 ? -minY : 0;
 
             // Replace the old array with the new one
             raftArray = newArray;
         }
 
-        // Finally, set the ship data at the adjusted position
-        raftArray[x + xOffset, y + yOffset] = newShipData;
+        raftArray[x, y] = newShipData;
     }
+
 
 
 
@@ -321,8 +311,6 @@ public class ShipGenerator : MonoBehaviour
                 {
                     Debug.Log("array" + arrayPosition);
                     Debug.Log("newArray" + newArrayPosition);
-                    Debug.Log("xOffset" + xOffset);
-                    Debug.Log("yOffset" + yOffset);
                 }
 
                 return newArrayPosition;  // A tile was found in this direction within 5 tiles
