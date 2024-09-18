@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efe342bfdcfb68e4d9576d87e47ef183, type: 3}
   m_Name: Mast
   m_EditorClassIdentifier: 
-  id: 3
+  id: 4
   blockSprite: {fileID: 21300000, guid: 8d1f498978dc9894094ce906be5a4e46, type: 3}
   selectedSprite: {fileID: 21300000, guid: 0663ea9325614ca4b9c02ee2d87e6baf, type: 3}
   blockType: 2

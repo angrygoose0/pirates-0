@@ -3,7 +3,7 @@ using UnityEngine.Tilemaps;
 using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
-
+using Cinemachine;
 
 
 
@@ -52,8 +52,8 @@ public class ShipGenerator : MonoBehaviour
             int newArrayX = Mathf.Max(x + 1, arrayX); // New row size
             int newArrayY = Mathf.Max(y + 1, arrayY);
 
-            Debug.Log("newArrayX" + newArrayX);
-            Debug.Log("newArrayaY" + newArrayY);
+            //Debug.Log("newArrayX" + newArrayX);
+            //Debug.Log("newArrayaY" + newArrayY);
 
 
 
@@ -106,6 +106,7 @@ public class ShipGenerator : MonoBehaviour
     public GameObject blockPrefab; // Reference to the block prefab
     public List<BlockObject> blockObjects; // List of all BlockObject ScriptableObjects
     public Tilemap tilemap;
+
     public AbilityManager abilityManager;
 
     public GameObject raftTilePrefab;
@@ -119,7 +120,16 @@ public class ShipGenerator : MonoBehaviour
     public Tilemap temporaryTilemap;
     private Vector3Int centerTile;
     public Vector3Int? newRaftPosition;
-    public Vector3Int raftPositionxx;
+    private bool hasTile;
+    private Vector3 mouseWorldPos;
+    private Vector3Int tilePos;
+    // Public read-only property
+    public Vector3Int MouseTilePos
+    {
+        get { return tilePos; }
+    }
+
+
 
     public float[,] ship = new float[,]
     {
@@ -167,10 +177,15 @@ public class ShipGenerator : MonoBehaviour
 
     void Update()
     {
-        if (newRaftPosition != null)
-        {
-            raftPositionxx = newRaftPosition.Value;
-        }
+
+        // Get the mouse position in world space
+        Vector3 mouseScreenPos = Input.mousePosition;
+        mouseScreenPos.z = Mathf.Abs(Camera.main.transform.position.z); // Adjust Z based on your camera's position
+
+        mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
+
+        // Convert world position to shiptilemap cell position in isometric grid
+        tilePos = tilemap.WorldToCell(mouseWorldPos);
 
         UpdateRaftTimers();
 
@@ -178,35 +193,45 @@ public class ShipGenerator : MonoBehaviour
         {
             HandleHoverEffect();
 
-            if (lastPlacedCenterTile == centerTile && Input.GetMouseButtonDown(0) && newRaftPosition != null)
+            if (Input.GetMouseButtonDown(0))
             {
-                ShipData newShipData = new ShipData();
 
-                AddOrUpdateShipData(newRaftPosition.Value, newShipData);
+                if (lastPlacedCenterTile == centerTile && newRaftPosition != null)
+                {
+                    lastPlacedCenterTile = null;
+                    ShipData newShipData = new ShipData();
 
-                CombineRaftTilesIntoShip();
-                GenerateTilemap(ship);
-                CenterGhostOnShip();
+                    AddOrUpdateShipData(newRaftPosition.Value, newShipData);
+
+                    CombineRaftTilesIntoShip();
+                    GenerateTilemap(ship);
+                    CenterGhostOnShip();
+                    ZoomToFitTilemap();
+                }
+
+                else if (hasTile)
+                {
+                    float value = ship[-tilePos.y, tilePos.x];
+
+                    value = (value % 4) + 1;
+                    ship[-tilePos.y, tilePos.x] = value;
+
+
+                    GenerateTilemap(ship);
+
+                }
             }
         }
     }
 
     private void HandleHoverEffect()
     {
-        // Get the mouse position in world space
-        Vector3 mouseScreenPos = Input.mousePosition;
-        mouseScreenPos.z = Mathf.Abs(Camera.main.transform.position.z); // Adjust Z based on your camera's position
-
-        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
-
-        // Convert world position to shiptilemap cell position in isometric grid
-        Vector3Int tilePos = tilemap.WorldToCell(mouseWorldPos);
 
 
         centerTile = GetNearestGridCenter(tilePos);
 
 
-        bool hasTile = tilemap.HasTile(centerTile);
+        hasTile = tilemap.HasTile(centerTile);
         newRaftPosition = IsTileAdjacentToShip(centerTile);
 
 
@@ -228,6 +253,28 @@ public class ShipGenerator : MonoBehaviour
             lastPlacedCenterTile = null;
         }
 
+    }
+
+    public CinemachineVirtualCamera editModeCamera;
+    public float tileSize = 1f;
+
+    private void ZoomToFitTilemap()
+    {
+        int rows = ship.GetLength(1);
+        int cols = ship.GetLength(0);
+        // Calculate the width and height of the tilemap in world units
+        float tilemapWidth = cols * tileSize;
+        float tilemapHeight = rows * tileSize;
+
+        // Camera's aspect ratio (width / height of the screen)
+        float screenAspect = Screen.width / (float)Screen.height;
+
+        // Calculate the orthographic size based on the larger dimension (width or height)
+        float orthoSizeByHeight = tilemapHeight / 2f;
+        float orthoSizeByWidth = (tilemapWidth / screenAspect) / 2f;
+
+        // Set the orthographic size to the larger value to ensure the whole tilemap fits
+        editModeCamera.m_Lens.OrthographicSize = Mathf.Max(orthoSizeByHeight, orthoSizeByWidth);
     }
 
 
@@ -309,8 +356,8 @@ public class ShipGenerator : MonoBehaviour
 
                 if (Input.GetMouseButtonDown(0))
                 {
-                    Debug.Log("array" + arrayPosition);
-                    Debug.Log("newArray" + newArrayPosition);
+                    //Debug.Log("array" + arrayPosition);
+                    // Debug.Log("newArray" + newArrayPosition);
                 }
 
                 return newArrayPosition;  // A tile was found in this direction within 5 tiles
@@ -474,8 +521,19 @@ public class ShipGenerator : MonoBehaviour
         }
     }
 
+    private List<GameObject> instantiatedBlocks = new List<GameObject>();
     public void GenerateTilemap(float[,] ship)
     {
+
+        // Destroy all existing block prefabs at the start
+        foreach (GameObject block in instantiatedBlocks)
+        {
+            if (block != null)
+            {
+                Destroy(block);
+            }
+        }
+        instantiatedBlocks.Clear();
 
         tilemap.ClearAllTiles();
         tileToBlockPrefabMap.Clear();
@@ -538,6 +596,8 @@ public class ShipGenerator : MonoBehaviour
 
                         // Store the mapping between the tile position and the block instance
                         tileToBlockPrefabMap[tilePosition] = blockInstance;
+                        // Add the block instance to the list for future destruction
+                        instantiatedBlocks.Add(blockInstance);
                     }
                 }
             }

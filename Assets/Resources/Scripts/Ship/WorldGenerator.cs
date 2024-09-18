@@ -39,6 +39,8 @@ public class WorldGenerator : MonoBehaviour
     private Vector3Int previousCenterChunkPosition;
     public Dictionary<Vector3Int, ChunkData> generatedChunks;
 
+    public Vector3Int mouseTilePosition;
+
     void Start()
     {
         generatedChunks = new Dictionary<Vector3Int, ChunkData>();
@@ -240,21 +242,21 @@ public class WorldGenerator : MonoBehaviour
         mouseWorldPosition.z = 0;
 
         // Convert the world position to a tile position
-        Vector3Int tilePosition = seaTilemap.WorldToCell(mouseWorldPosition);
+        mouseTilePosition = seaTilemap.WorldToCell(mouseWorldPosition);
 
         // Check if the tile exists in the generated chunks
         foreach (var chunkData in generatedChunks.Values)
         {
-            if (chunkData.tileDepths.ContainsKey(tilePosition) &&
-                chunkData.tileTemperatures.ContainsKey(tilePosition))
+            if (chunkData.tileDepths.ContainsKey(mouseTilePosition) &&
+                chunkData.tileTemperatures.ContainsKey(mouseTilePosition))
             {
                 // Log the values to the console
-                int depth = chunkData.tileDepths[tilePosition];
-                int temperature = chunkData.tileTemperatures[tilePosition];
+                int depth = chunkData.tileDepths[mouseTilePosition];
+                int temperature = chunkData.tileTemperatures[mouseTilePosition];
                 int chunkPopulation = chunkData.chunkPopulation;
                 float chunkWeirdness = chunkData.chunkWeirdness; // Add this line
                 //Debug.Log(chunkData.chunkPosition);
-                //Debug.Log($"Tile Position: {tilePosition} - Depth: {depth}, Temperature: {temperature}, Hostility: {hostility}, Mob Capacity: {chunkPopulation}, Weirdness: {chunkWeirdness}, Position: {chunkData.chunkPosition}");
+                //Debug.Log($"Tile Position: {mouseTilePosition} - Depth: {depth}, Temperature: {temperature}, Hostility: {hostility}, Mob Capacity: {chunkPopulation}, Weirdness: {chunkWeirdness}, Position: {chunkData.chunkPosition}");
                 break;
             }
         }

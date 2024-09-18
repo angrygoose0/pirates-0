@@ -26,6 +26,7 @@ public class PlayerBehaviour : MonoBehaviour
 
 
     public UIManager uiManager;
+    public WorldGenerator worldGenerator;
 
     public InteractionManager interactionManager; // Reference to the InteractionManager script
     public AbilityManager abilityManager;
@@ -42,6 +43,8 @@ public class PlayerBehaviour : MonoBehaviour
     private Coroutine fireCoroutine;
     private float lastFireTime = 0f;
 
+    private float mouseDownTime = 0f;
+    public FishingLine fishingLine;
     void Start()
     {
         if (equippedItem != null)
@@ -57,104 +60,119 @@ public class PlayerBehaviour : MonoBehaviour
     }
     void Update()
     {
-        // Get input from the player
-        movementInput.x = Input.GetAxis("Horizontal");
-        movementInput.y = Input.GetAxis("Vertical") / 2f;
-
-        // Normalize the input to prevent faster diagonal movement
-        movementInput = movementInput.normalized;
-
-        // Update the direction based on movement input
-        UpdateDirection();
-        FindClosestItem();
-
-        if (Input.GetKeyDown(KeyCode.LeftShift))
+        if (!shipGenerator.editMode)
         {
-            ToggleItem();
-        }
+            // Get input from the player
+            movementInput.x = Input.GetAxis("Horizontal");
+            movementInput.y = Input.GetAxis("Vertical") / 2f;
 
-        if (previousInteractableTilePosition.HasValue)
-        {
-            Vector3Int tilePosition = previousInteractableTilePosition.Value;
-            selectedBlockPrefab = shipGenerator.GetBlockPrefabAtTile(tilePosition);
-        }
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            InteractWithBlock(0);
-        }
+            // Normalize the input to prevent faster diagonal movement
+            movementInput = movementInput.normalized;
 
-        else if (Input.GetKeyDown(KeyCode.Q))
-        {
-            InteractWithBlock(1);
-        }
-        else if (Input.GetKeyDown(KeyCode.R))
-        {
-            InteractWithBlock(3);
-        }
-        if (Input.GetMouseButtonDown(0) && !isFiring)
-        {
-            blockPrefabScript blockScript = selectedBlockPrefab.GetComponent<blockPrefabScript>();
-            BlockObject blockObject = blockScript.blockObject;
-            GameObject blockItem = null;
+            // Update the direction based on movement input
+            UpdateDirection();
+            FindClosestItem();
 
-            if (blockScript.itemPrefabObject != null && blockScript.itemPrefabObject.Count == 1)
+            if (Input.GetKeyDown(KeyCode.LeftShift))
             {
-                blockItem = blockScript.itemPrefabObject[0];
+                ToggleItem();
             }
 
-
-            ItemScript blockItemScript = null;
-            ItemObject blockItemObject = null;
-            if (blockItem != null)
+            if (previousInteractableTilePosition.HasValue)
             {
-                blockItemScript = blockItem.GetComponent<ItemScript>();
-                blockItemObject = blockItemScript.itemObject;
+                Vector3Int tilePosition = previousInteractableTilePosition.Value;
+                selectedBlockPrefab = shipGenerator.GetBlockPrefabAtTile(tilePosition);
+            }
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                InteractWithBlock(0);
             }
 
-            if (blockItemObject != null)
+            else if (Input.GetKeyDown(KeyCode.Q))
             {
-                if (blockItemObject.projectileData != null && blockItemObject.projectileData.Count == 1)
+                InteractWithBlock(1);
+            }
+            else if (Input.GetKeyDown(KeyCode.R))
+            {
+                InteractWithBlock(3);
+            }
+            if (Input.GetMouseButtonDown(0) && !isFiring)
+            {
+                mouseDownTime = Time.time;
+
+                if (selectedBlockPrefab != null)
                 {
-                    ProjectileData projectile = blockItemObject.projectileData[0];
+                    blockPrefabScript blockScript = selectedBlockPrefab.GetComponent<blockPrefabScript>();
+                    BlockObject blockObject = blockScript.blockObject;
+                    GameObject blockItem = null;
 
-                    float attackRate = projectile.reloadSpeed;
-                    AbilityData haste = abilityManager.GetAbilityData(Ability.Haste);
-
-                    if (haste != null)
+                    if (blockScript.itemPrefabObject != null && blockScript.itemPrefabObject.Count == 1)
                     {
-                        attackRate = attackRate * 1 / (haste.value);
+                        blockItem = blockScript.itemPrefabObject[0];
                     }
 
-                    if (Time.time >= lastFireTime + attackRate)
+
+                    ItemScript blockItemScript = null;
+                    ItemObject blockItemObject = null;
+                    if (blockItem != null)
                     {
-                        isFiring = true;
-                        fireCoroutine = StartCoroutine(FireRoutine(attackRate));
+                        blockItemScript = blockItem.GetComponent<ItemScript>();
+                        blockItemObject = blockItemScript.itemObject;
+                    }
+
+                    if (blockItemObject != null)
+                    {
+                        if (blockItemObject.projectileData != null && blockItemObject.projectileData.Count == 1)
+                        {
+                            ProjectileData projectile = blockItemObject.projectileData[0];
+
+                            float attackRate = projectile.reloadSpeed;
+                            AbilityData haste = abilityManager.GetAbilityData(Ability.Haste);
+
+                            if (haste != null)
+                            {
+                                attackRate = attackRate * 1 / (haste.value);
+                            }
+
+                            if (Time.time >= lastFireTime + attackRate)
+                            {
+                                isFiring = true;
+                                fireCoroutine = StartCoroutine(FireRoutine(attackRate));
+                            }
+                        }
                     }
                 }
-
-
-
             }
 
-        }
 
-        if (Input.GetMouseButtonUp(0) && isFiring)
-        {
-            isFiring = false;
-            StopCoroutine(fireCoroutine);
-        }
+            // When mouse is released
+            if (Input.GetMouseButtonUp(0))
+            {
+
+                if (isFiring)
+                {
+                    isFiring = false;
+                    StopCoroutine(fireCoroutine); // Stop the firing if it was happening
+                }
+                else
+                {
+                    float heldDuration = Time.time - mouseDownTime;
+                    fishingLine.FireLine(gameObject.transform, worldGenerator.mouseTilePosition, heldDuration);
+                }
+            }
 
 
-        /*
-        else if (Input.GetKeyDown(KeyCode.F))
-        {
-            CollectItem();
-        }
-        */
-        if (equippedItem != null)
-        {
-            // Set the equipped item's position to the player's position
-            equippedItem.transform.localPosition = Vector3.zero;
+            /*
+            else if (Input.GetKeyDown(KeyCode.F))
+            {
+                CollectItem();
+            }
+            */
+            if (equippedItem != null)
+            {
+                // Set the equipped item's position to the player's position
+                equippedItem.transform.localPosition = Vector3.zero;
+            }
         }
     }
 
