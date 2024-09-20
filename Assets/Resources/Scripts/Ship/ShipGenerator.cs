@@ -149,14 +149,8 @@ public class ShipGenerator : MonoBehaviour
 
     void Start()
     {
-
-
-
         tilemap = shipTilemapObject.GetComponent<Tilemap>();
         CombineRaftTilesIntoShip();
-
-
-
 
         tileToBlockPrefabMap = new Dictionary<Vector3Int, GameObject>();
         mastBlocks = new List<GameObject>();
@@ -408,6 +402,42 @@ public class ShipGenerator : MonoBehaviour
         return raftTileInstance;
     }
 
+
+    private void DestroyRaftTile(GameObject raftTileObject)
+    {
+        if (raftTileDict.ContainsKey(raftTileObject))
+        {
+            ShipData shipData = raftTileDict[raftTileObject];
+            Destroy(shipData.healthBar.gameObject);
+
+
+            raftTileDict.Remove(raftTileObject);
+            Destroy(raftTileObject);
+
+            bool found = false;
+            // Loop through the raftArray to find and remove the ShipData
+            for (int x = 0; x < raftArray.GetLength(0); x++)
+            {
+                for (int y = 0; y < raftArray.GetLength(1); y++)
+                {
+                    if (raftArray[x, y] == shipData)
+                    {
+                        // Set the element in the array to null once found
+                        raftArray[x, y] = null;
+                        found = true;  // Set the flag to true
+                        break;  // Break out of the inner loop
+                    }
+                }
+                if (found) break;  // Break out of the outer loop if found
+            }
+
+            CombineRaftTilesIntoShip();
+            GenerateTilemap(ship);
+            CenterGhostOnShip();
+            FindMastBlocks();
+
+        }
+    }
     private void CombineRaftTilesIntoShip()
     {
 
@@ -702,18 +732,26 @@ public class ShipGenerator : MonoBehaviour
             {
                 float damage = damageMagnitude - shipData.currentDamage;
                 shipData.hp -= damage;
+                if (shipData.hp <= 0)
+                {
+                    DestroyRaftTile(raftTile);
+                }
                 UpdateShipHealth(shipData);
             }
         }
         else
         {
             shipData.currentDamage = damageMagnitude;
-            StartCoroutine(DamageCoroutine(shipData));
+            StartCoroutine(DamageCoroutine(raftTile));
         }
     }
 
-    private IEnumerator DamageCoroutine(ShipData shipData)
+
+
+    private IEnumerator DamageCoroutine(GameObject raftTile)
     {
+        ShipData shipData = raftTileDict[raftTile];
+
         shipData.isDamaged = true;
         shipData.timeSinceLastDamage = 0f; // Reset the timer
 
@@ -727,6 +765,7 @@ public class ShipGenerator : MonoBehaviour
         if (shipData.hp <= 0)
         {
             Debug.Log("destroy this tile");
+            DestroyRaftTile(raftTile);
             yield break;  // Stop coroutine execution if the ship is destroyed
         }
 

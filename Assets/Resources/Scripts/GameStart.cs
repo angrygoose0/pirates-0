@@ -9,6 +9,7 @@ public class GameStart : MonoBehaviour
     void Awake()
     {
         gameStarted = false;
+        startButton.SetActive(true);
 
     }
 
@@ -16,6 +17,14 @@ public class GameStart : MonoBehaviour
     {
         gameStarted = true;
         startButton.SetActive(false);
+
+        SingletonManager.Instance.cameraBrain.PlayCamera();
+    }
+
+    public void EndGame()
+    {
+        gameStarted = false;
+        startButton.SetActive(true);
     }
 
 

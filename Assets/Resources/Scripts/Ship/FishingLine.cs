@@ -13,7 +13,7 @@ public class FishingLine : MonoBehaviour
 
     public void FireLine(Transform playerTransform, Vector3Int endTileCoordinate, float heldTime)
     {
-        float firingForce = heldTime * 20f;
+        float firingForce = heldTime * 20f + 10f;
         StartCoroutine(MoveLine(playerTransform, endTileCoordinate, firingForce));
     }
 
@@ -135,15 +135,13 @@ public class FishingLine : MonoBehaviour
             if (Vector3.Distance(linePoints[linePoints.Count - 1], playerTransform.position) < 0.3f)
             {
                 Destroy(line);
+                ProjectileData lineProjectile = new ProjectileData();
+                SingletonManager.Instance.explosions.LinePull(initialEnd, playerTransform);
                 break;
             }
 
             yield return null;
         }
-
-        // Finally, destroy the line after reeling is complete
-
-
 
     }
 }

@@ -112,7 +112,7 @@ public class CreatureManager : MonoBehaviour
     public GameObject healthBarPrefab;
 
 
-    public GameObject[] raftTiles;
+    public GameObject[] playerArray;
 
     void Start()
     {
@@ -124,10 +124,11 @@ public class CreatureManager : MonoBehaviour
         // Start the coroutine to update effects periodically
         StartCoroutine(CreatureTickRoutine());
 
-        raftTiles = GameObject.FindGameObjectsWithTag("Ship");
+        playerArray = GameObject.FindGameObjectsWithTag("Player");
 
 
     }
+
 
 
     void Update()
@@ -199,33 +200,39 @@ public class CreatureManager : MonoBehaviour
                 }
                 else if (currentState == State.Aggressive)
                 {
-                    if (raftTiles.Length != 0)
+                    if (playerArray.Length != 0)
                     {
-                        GameObject closestTile = null;
+                        GameObject closestPlayer = null;
                         float smallestDistance = Mathf.Infinity;
 
-                        foreach (GameObject raftTile in raftTiles)
+                        foreach (GameObject player in playerArray)
                         {
+                            if (player == null)
+                            {
+                                continue;
+                            }
+
                             // Calculate the distance from the reference object to the current ship
-                            float distance = Vector3.Distance(creatureGameObject.transform.position, raftTile.transform.position);
+                            float distance = Vector3.Distance(creatureGameObject.transform.position, player.transform.position);
 
                             // If this ship is closer than the previous closest, update the closest ship and smallest distance
                             if (distance < smallestDistance)
                             {
-                                closestTile = raftTile;
+                                closestPlayer = player;
                                 smallestDistance = distance;
                             }
                         }
 
-                        creatureData.targetShipPart = closestTile;
+                        creatureData.targetShipPart = closestPlayer;
 
-                        Debug.Log(creatureData.targetShipPart);
                     }
+
 
                     Vector3 targetShipPartLocalPosition = worldTilemap.WorldToCell(creatureData.targetShipPart.transform.position + new Vector3(0f, 1.25f, 0f));
                     Vector3Int targetTile = Vector3Int.FloorToInt(targetShipPartLocalPosition);
 
                     creatureData.targetPosition = worldTilemap.GetCellCenterLocal(targetTile);
+
                 }
 
             }
@@ -377,6 +384,11 @@ public class CreatureManager : MonoBehaviour
         }
         HandleDespawning();
     }
+
+
+
+
+
 
     IEnumerator CreatureTickRoutine()
     {
@@ -876,9 +888,14 @@ public class CreatureManager : MonoBehaviour
         SingletonManager.Instance.shipGenerator.ApplyImpact(raftObject, creatureData.creatureObject.damage);
 
         //invulnerable ship / spiky ship
-        var firstTentacle = creatureData.tentacles.Values.FirstOrDefault();
-        var firstSegmentKey = firstTentacle.segments.Keys.FirstOrDefault();
-        ApplyImpact(firstSegmentKey, 1f);
+        bool invincible = true;
+        if (invincible)
+        {
+            var firstTentacle = creatureData.tentacles.Values.FirstOrDefault();
+            var firstSegmentKey = firstTentacle.segments.Keys.FirstOrDefault();
+            ApplyImpact(firstSegmentKey, 10f);
+        }
+
 
     }
 

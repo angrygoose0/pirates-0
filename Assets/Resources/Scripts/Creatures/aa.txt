@@ -1,0 +1,177 @@
+private void CombineRaftTilesIntoShip()
+    {
+
+        foreach (KeyValuePair<GameObject, ShipData> entry in raftTileDict)
+        {
+            GameObject raftTile = entry.Key;
+
+            // Destroy the GameObject
+            Destroy(raftTile);
+
+            // Optionally, clean up ShipData if necessary
+            // Destroy(shipData); // Uncomment if ShipData needs to be explicitly destroyed
+        }
+
+        // Clear the dictionary after destroying the GameObjects
+        raftTileDict.Clear();
+
+        raftTileSize = 5; // Size of individual raft tiles (5x5)
+
+        int shipSizeX = raftArray.GetLength(0) * raftTileSize; // 5 is the size of each individual raft tile.
+        int shipSizeY = raftArray.GetLength(1) * raftTileSize;
+        ship = new float[shipSizeX, shipSizeY];
+
+
+        // Initialize the ship array to default value 0
+        for (int x = 0; x < ship.GetLength(0); x++)
+        {
+            for (int y = 0; y < ship.GetLength(1); y++)
+            {
+                ship[x, y] = 0f; // Default value
+            }
+        }
+
+        // Iterate over the raftArray and place individual rafts
+        for (int i = 0; i < raftArray.GetLength(0); i++)
+        {
+            for (int j = 0; j < raftArray.GetLength(1); j++)
+            {
+                ShipData shipData = raftArray[i, j];
+
+                if (shipData != null)
+                {
+                    // Fix the 90-degree counterclockwise rotation by swapping i and j
+                    Vector3Int raftPosition = new Vector3Int(j * raftTileSize, -i * raftTileSize, 0);
+
+                    // Generate the individual raft at the correct position
+                    GameObject newRaftTile = GenerateIndividualRaft(raftTileSize, raftPosition);
+
+                    GameObject newHealthBar = Instantiate(healthBarPrefab, newRaftTile.transform.position, Quaternion.identity, canvas.transform);
+                    HealthBar healthBarScript = newHealthBar.GetComponent<HealthBar>();
+
+                    newRaftTile.transform.position += new Vector3(2, -1, 0);
+
+                    shipData.tilemapRenderer = newRaftTile.GetComponent<TilemapRenderer>();
+                    shipData.raftObject = deafultRaft;
+                    shipData.hp = shipData.raftObject.health;
+                    shipData.healthBar = healthBarScript;
+                    StartCoroutine(HealthRegenCoroutine(shipData));
+
+                    raftTileDict.Add(newRaftTile, shipData);
+
+                    shipData.tilemapRenderer.sortingOrder = -(int)(newRaftTile.transform.position.y * 1000);
+
+
+
+
+                    PolygonCollider2D shipCollider = newRaftTile.GetComponent<PolygonCollider2D>();
+
+                    Vector2[] colliderPoints = new Vector2[]
+                    {
+                        new Vector2(raftTileSize/2f-0.5f, raftTileSize/4f),
+                        new Vector2(-0.5f, 0f),
+                        new Vector2(raftTileSize/2f-0.5f, raftTileSize/-4f),
+                        new Vector2((raftTileSize/2f-0.5f + raftTileSize/2f-0.5f + 0.5f), 0f),
+                    };
+
+                    // add on offset of -2,1 to colliders to make it work, idk why?
+                    for (int k = 0; k < colliderPoints.Length; k++)
+                    {
+                        colliderPoints[k] += new Vector2(-2, 1);
+                    }
+
+
+                    shipCollider.points = colliderPoints;
+
+
+                    // Number of cannons and payloads you want to place
+                    int cannonCount = 1;
+                    int payloadCount = 2;
+
+                    // List to store already used positions (to avoid overlap)
+                    List<Vector2Int> usedPositions = new List<Vector2Int>();
+
+                    // Step 1: Place the payloads
+                    while (payloadCount > 0)
+                    {
+                        // Randomly select a position for the payload
+                        int randomX = UnityEngine.Random.Range(0, raftTileSize);
+                        int randomY = UnityEngine.Random.Range(0, raftTileSize);
+
+                        // Avoid overlap
+                        if (!usedPositions.Contains(new Vector2Int(randomX, randomY)))
+                        {
+                            usedPositions.Add(new Vector2Int(randomX, randomY));
+
+                            // Calculate the correct position in the ship array
+                            int shipX = i * raftTileSize + randomX;
+                            int shipY = j * raftTileSize + randomY;
+
+                            // Ensure within bounds and assign payload
+                            if (shipX < ship.GetLength(0) && shipY < ship.GetLength(1))
+                            {
+                                ship[shipX, shipY] = 3f; // set payload
+                                payloadCount--; // Decrease the number of payloads left to place
+                            }
+                        }
+                    }
+
+                    // Step 2: Place the cannons
+                    while (cannonCount > 0)
+                    {
+                        // Randomly select a position for the cannon
+                        int randomX = UnityEngine.Random.Range(0, raftTileSize);
+                        int randomY = UnityEngine.Random.Range(0, raftTileSize);
+
+                        // Avoid overlap with payloads and previously placed cannons
+                        if (!usedPositions.Contains(new Vector2Int(randomX, randomY)))
+                        {
+                            usedPositions.Add(new Vector2Int(randomX, randomY));
+
+                            // Calculate the correct position in the ship array
+                            int shipX = i * raftTileSize + randomX;
+                            int shipY = j * raftTileSize + randomY;
+
+                            // Ensure within bounds and assign cannon
+                            if (shipX < ship.GetLength(0) && shipY < ship.GetLength(1))
+                            {
+                                ship[shipX, shipY] = 2f; // set cannon
+                                cannonCount--; // Decrease the number of cannons left to place
+                            }
+                        }
+                    }
+
+                    // Step 3: Fill the remaining tiles with empty tiles (1f)
+                    for (int x = 0; x < raftTileSize; x++)
+                    {
+                        for (int y = 0; y < raftTileSize; y++)
+                        {
+                            int shipX = i * raftTileSize + x;
+                            int shipY = j * raftTileSize + y;
+
+                            // Avoid out-of-bounds issues by checking if the coordinates fit in the ship array
+                            if (shipX < ship.GetLength(0) && shipY < ship.GetLength(1))
+                            {
+                                // If the current position is not already used for cannon/payload
+                                if (!usedPositions.Contains(new Vector2Int(x, y)))
+                                {
+                                    ship[shipX, shipY] = 1f; // empty tile
+                                }
+                            }
+                        }
+                    }
+
+
+
+                }
+            }
+        }
+    }
+
+depending on a bool, passed to the function,
+
+see whether or not we want to randomize where the payloads and cannons go, or keep it the same.
+
+this function is run when initializing, editing, as well as after the destruction of a raftTile.
+
+after the destruction of a raftTile, certain parts of the float array will not be there, so it's empty. (this is good)

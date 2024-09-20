@@ -12,12 +12,11 @@ public class ShipMovement : MonoBehaviour
 
     public Vector2 currentVelocity; // The current velocity of the ship
     private Vector2 totalForce; // The total force exerted by the mast blocks
-    private TilemapRenderer tilemapRenderer;
     private Material tilemapMaterial;
 
     void Start()
     {
-        tilemapRenderer = tilemap.GetComponent<TilemapRenderer>();
+        TilemapRenderer tilemapRenderer = tilemap.GetComponent<TilemapRenderer>();
         tilemapMaterial = tilemapRenderer.material;
     }
     void Update()

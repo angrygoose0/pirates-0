@@ -5,13 +5,14 @@ using Cinemachine;
 
 public class CameraBrain : MonoBehaviour
 {
-    public CinemachineVirtualCamera startCamera;
+    public CinemachineVirtualCamera editCamera;
+    public CinemachineVirtualCamera playCamera;
     private CinemachineVirtualCamera currentCamera;
 
     void Start()
     {
         ResetAllCameraProperties();
-        SwitchCamera(startCamera);
+        SwitchCamera(editCamera);
     }
     public void ResetAllCameraProperties()
     {
@@ -23,7 +24,7 @@ public class CameraBrain : MonoBehaviour
             cam.Priority = 0;
         }
     }
-    public void SwitchCamera(CinemachineVirtualCamera newCamera)
+    private void SwitchCamera(CinemachineVirtualCamera newCamera)
     {
         if (currentCamera != null)
         {
@@ -36,5 +37,10 @@ public class CameraBrain : MonoBehaviour
 
         // Update the current camera reference
         currentCamera = newCamera;
+    }
+
+    public void PlayCamera()
+    {
+        SwitchCamera(playCamera);
     }
 }

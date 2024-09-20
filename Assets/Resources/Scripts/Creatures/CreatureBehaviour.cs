@@ -11,5 +11,9 @@ public class CreatureBehaviour : MonoBehaviour
         {
             SingletonManager.Instance.creatureManager.AttackShip(gameObject, collision.gameObject);
         }
+        else if (collision.gameObject.CompareTag("Player")) // temporary end game for when there is just one player, and the game ends when a creature touches the player.
+        {
+            //SingletonManager.Instance.
+        }
     }
 }

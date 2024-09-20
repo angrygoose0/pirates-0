@@ -18,6 +18,7 @@ public class ItemScript : MonoBehaviour
     private Coroutine lerpCoroutine; // Coroutine for lerping
     public bool itemTaken = false;
     public bool itemPickupable;
+    public bool beingReeled = false;
 
     void Start()
     {
@@ -26,7 +27,7 @@ public class ItemScript : MonoBehaviour
             projectile = itemObject.projectileData[0];
         }
 
-        itemPickupable = true;
+        itemPickupable = true; //
 
         // Automatically find and assign the GameObject named "ghost" as the target
         targetObject = GameObject.Find("ghost");
@@ -40,14 +41,8 @@ public class ItemScript : MonoBehaviour
         }
         else
         {
-            isActive = false;
+            isActive = false; //
             StartInactiveTimer();
-        }
-
-        // If the itemObject is gold, start the lerping coroutine
-        if (itemObject != null && projectile == null)
-        {
-            StartCoroutine(StartLerpingAfterDelay(2f, itemObject.name == "Gold", itemObject.name == "HealingOrb")); // Start lerping after a 2-second delay
         }
     }
 
@@ -158,51 +153,7 @@ public class ItemScript : MonoBehaviour
         Destroy(gameObject);
     }
 
-    // Coroutine to start lerping after a delay
-    private IEnumerator StartLerpingAfterDelay(float delay, bool gold, bool heal)
-    {
-        yield return new WaitForSeconds(delay);
-        if (targetObject != null)
-        {
-            lerpCoroutine = StartCoroutine(LerpTowardsTarget(gold, heal));
-        }
-    }
 
-    // Coroutine to lerp the item towards the target object
-    private IEnumerator LerpTowardsTarget(bool gold, bool heal)
-    {
-        Vector3 startPosition = transform.position;
-        Vector3 endPosition = targetObject.transform.position;
-        float elapsedTime = 0f;
-
-        while (elapsedTime < lerpDuration)
-        {
-            transform.position = Vector3.Lerp(startPosition, endPosition, elapsedTime / lerpDuration);
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-
-        // Ensure the item reaches the target position
-        transform.position = endPosition;
-
-        if (gold)
-        {
-            SingletonManager.Instance.goldManager.AddGold(1);
-
-            // Destroy the GameObject after lerping
-            Destroy(gameObject);
-        }
-
-        if (heal)
-        {
-            Debug.Log("heal");
-
-            // Destroy the GameObject after lerping
-            Destroy(gameObject);
-        }
-
-        NewParent(null);
-    }
 
     // Coroutine to handle active skill cooldown
     public void ActivateActive(Vector3 position, Vector2 blockDirection)
