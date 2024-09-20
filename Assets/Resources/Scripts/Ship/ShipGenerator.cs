@@ -4,6 +4,7 @@ using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
+using System.Linq;
 
 
 
@@ -27,11 +28,10 @@ public class ShipData
 public class ShipGenerator : MonoBehaviour
 {
     public Dictionary<GameObject, ShipData> raftTileDict = new Dictionary<GameObject, ShipData>();
-    public ShipData[,] raftArray = new ShipData[3, 2]
+    public ShipData[,] raftArray = new ShipData[2, 2]
     {
         { new ShipData(), new ShipData() },   // Bottom-left is null, bottom-right is a new ShipData object
         { new ShipData(), new ShipData() },
-        { new ShipData(), null }
     };
 
     public int xOffset = 0;
@@ -134,17 +134,6 @@ public class ShipGenerator : MonoBehaviour
 
     public float[,] ship = new float[,]
     {
-        { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,},
-        { 4.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,},
-        { 1.0f, 1.0f, 3.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, },
-        { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, },
-        { 1.0f, 1.0f, 1.0f, 2.0f, 4f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, },
-        { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,},
-        { 4.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,},
-        { 1.0f, 1.0f, 3.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,},
-        { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,},
-        { 1.0f, 1.0f, 1.0f, 2.0f, 4.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,}
-
     };
     public int raftTileSize = 5;
     private float[,] singularRaftArray;
@@ -467,7 +456,6 @@ public class ShipGenerator : MonoBehaviour
                     // Generate the individual raft at the correct position
                     GameObject newRaftTile = GenerateIndividualRaft(raftTileSize, raftPosition);
 
-
                     GameObject newHealthBar = Instantiate(healthBarPrefab, newRaftTile.transform.position, Quaternion.identity, canvas.transform);
                     HealthBar healthBarScript = newHealthBar.GetComponent<HealthBar>();
 
@@ -480,6 +468,9 @@ public class ShipGenerator : MonoBehaviour
                     StartCoroutine(HealthRegenCoroutine(shipData));
 
                     raftTileDict.Add(newRaftTile, shipData);
+
+                    shipData.tilemapRenderer.sortingOrder = -(int)(newRaftTile.transform.position.y * 1000);
+
 
 
 
@@ -503,23 +494,85 @@ public class ShipGenerator : MonoBehaviour
                     shipCollider.points = colliderPoints;
 
 
-                    // Populate the ship array for the combined tilemap
+                    // Number of cannons and payloads you want to place
+                    int cannonCount = 1;
+                    int payloadCount = 2;
+
+                    // List to store already used positions (to avoid overlap)
+                    List<Vector2Int> usedPositions = new List<Vector2Int>();
+
+                    // Step 1: Place the payloads
+                    while (payloadCount > 0)
+                    {
+                        // Randomly select a position for the payload
+                        int randomX = UnityEngine.Random.Range(0, raftTileSize);
+                        int randomY = UnityEngine.Random.Range(0, raftTileSize);
+
+                        // Avoid overlap
+                        if (!usedPositions.Contains(new Vector2Int(randomX, randomY)))
+                        {
+                            usedPositions.Add(new Vector2Int(randomX, randomY));
+
+                            // Calculate the correct position in the ship array
+                            int shipX = i * raftTileSize + randomX;
+                            int shipY = j * raftTileSize + randomY;
+
+                            // Ensure within bounds and assign payload
+                            if (shipX < ship.GetLength(0) && shipY < ship.GetLength(1))
+                            {
+                                ship[shipX, shipY] = 3f; // set payload
+                                payloadCount--; // Decrease the number of payloads left to place
+                            }
+                        }
+                    }
+
+                    // Step 2: Place the cannons
+                    while (cannonCount > 0)
+                    {
+                        // Randomly select a position for the cannon
+                        int randomX = UnityEngine.Random.Range(0, raftTileSize);
+                        int randomY = UnityEngine.Random.Range(0, raftTileSize);
+
+                        // Avoid overlap with payloads and previously placed cannons
+                        if (!usedPositions.Contains(new Vector2Int(randomX, randomY)))
+                        {
+                            usedPositions.Add(new Vector2Int(randomX, randomY));
+
+                            // Calculate the correct position in the ship array
+                            int shipX = i * raftTileSize + randomX;
+                            int shipY = j * raftTileSize + randomY;
+
+                            // Ensure within bounds and assign cannon
+                            if (shipX < ship.GetLength(0) && shipY < ship.GetLength(1))
+                            {
+                                ship[shipX, shipY] = 2f; // set cannon
+                                cannonCount--; // Decrease the number of cannons left to place
+                            }
+                        }
+                    }
+
+                    // Step 3: Fill the remaining tiles with empty tiles (1f)
                     for (int x = 0; x < raftTileSize; x++)
                     {
                         for (int y = 0; y < raftTileSize; y++)
                         {
-                            // Calculate the correct position in the massive ship array
                             int shipX = i * raftTileSize + x;
                             int shipY = j * raftTileSize + y;
 
                             // Avoid out-of-bounds issues by checking if the coordinates fit in the ship array
                             if (shipX < ship.GetLength(0) && shipY < ship.GetLength(1))
                             {
-                                // Copy the tile value if valid, otherwise set to 0
-                                ship[shipX, shipY] = 1.0f;
+                                // If the current position is not already used for cannon/payload
+                                if (!usedPositions.Contains(new Vector2Int(x, y)))
+                                {
+                                    ship[shipX, shipY] = 1f; // empty tile
+                                }
                             }
                         }
                     }
+
+
+
                 }
             }
         }
