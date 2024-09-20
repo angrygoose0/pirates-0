@@ -1633,7 +1633,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0e9e81dcdcc6094c83aab46bfba0e41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  raycastCount: 360
+  raycastCount: 36
   explosionPrefab: {fileID: 6987822516994895249, guid: 7574845da135cb449b64ffd05c7cece8, type: 3}
   duration: 0.1
   initialLightIntensity: 4
