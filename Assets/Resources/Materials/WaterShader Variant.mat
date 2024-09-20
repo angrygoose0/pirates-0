@@ -37,6 +37,12 @@ Material:
     serializedVersion: 3
     m_TexEnvs: []
     m_Ints: []
-    m_Floats: []
-    m_Colors: []
+    m_Floats:
+    - _RippleDensity: 0.25
+    - _RippleSlimness: 10
+    - _RippleSpeed: 1
+    - _WaterSize: 0.25
+    m_Colors:
+    - _BaseColor1: {r: 0.10666606, g: 0.13468207, b: 0.4433962, a: 0}
+    - _BaseColor2: {r: 0.08156818, g: 0.23924087, b: 0.4433962, a: 0}
   m_BuildTextureStacks: []

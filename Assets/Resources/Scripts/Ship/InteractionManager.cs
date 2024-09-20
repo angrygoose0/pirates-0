@@ -5,14 +5,8 @@ using UnityEngine;
 public class InteractionManager : MonoBehaviour
 {
     public Dictionary<GameObject, GameObject> playerBlockRelations = new Dictionary<GameObject, GameObject>(); // adds two instances where block/players are swapped key/value to make it more efficient when searching.
-
-    public AbilityManager abilityManager;
     public GameObject equippedCannon;
-    public CannonBehaviour cannonBehaviour;
-    public Explosions explosions;
-    public UIManager uiManager;
-    public ShipGenerator shipGenerator;
-    public FeedbackManager feedbackManager;
+
 
     public GameObject playerOne; //temporary player variable
 
@@ -20,7 +14,7 @@ public class InteractionManager : MonoBehaviour
     {
         if (playerBlockRelations.ContainsKey(playerOne))
         {
-            cannonBehaviour.cannonSelector();
+            SingletonManager.Instance.cannonBehaviour.cannonSelector();
         }
 
     }
@@ -200,7 +194,7 @@ public class InteractionManager : MonoBehaviour
                     }
                     playerScript.equippedItem = null;
 
-                    AbilityData extra = abilityManager.GetAbilityData(Ability.Extra);
+                    AbilityData extra = SingletonManager.Instance.abilityManager.GetAbilityData(Ability.Extra);
 
                     int updatedAmmoCount = projectile.ammoCount;
                     if (extra != null)
@@ -210,7 +204,7 @@ public class InteractionManager : MonoBehaviour
 
                     blockScript.ammoCount = updatedAmmoCount;
 
-                    uiManager.ShowAmmoCount(blockPrefab, blockScript.ammoCount, updatedAmmoCount);
+                    SingletonManager.Instance.uiManager.ShowAmmoCount(blockPrefab, blockScript.ammoCount, updatedAmmoCount);
 
 
                 }
@@ -232,9 +226,9 @@ public class InteractionManager : MonoBehaviour
 
                     float multiplier = 1f;
                     Vector3 newBlockPosition = blockScript.transform.position + new Vector3(0.0f, 0.125f, 0.0f);
-                    feedbackManager.ArtifactPlaceFeedback(newBlockPosition, multiplier);
+                    SingletonManager.Instance.feedbackManager.ArtifactPlaceFeedback(newBlockPosition, multiplier);
 
-                    shipGenerator.UpdateBlockEffects();
+                    SingletonManager.Instance.shipGenerator.UpdateBlockEffects();
 
                 }
                 break;
@@ -258,8 +252,8 @@ public class InteractionManager : MonoBehaviour
                         }
 
                         Vector3 blockPosition = blockPrefab.transform.position;
-                        Vector3 selectorPosition = cannonBehaviour.GetSelectorPosition();
-                        Vector3Int selectorTilePosition = cannonBehaviour.WorldToCell(selectorPosition);
+                        Vector3 selectorPosition = SingletonManager.Instance.cannonBehaviour.GetSelectorPosition();
+                        Vector3Int selectorTilePosition = SingletonManager.Instance.cannonBehaviour.WorldToCell(selectorPosition);
 
 
                         float deltaX = blockPosition.x - selectorPosition.x;
@@ -267,7 +261,7 @@ public class InteractionManager : MonoBehaviour
                         float distance = Mathf.Sqrt(deltaX * deltaX + deltaY * deltaY);
 
 
-                        AbilityData multiple = abilityManager.GetAbilityData(Ability.Multiple);
+                        AbilityData multiple = SingletonManager.Instance.abilityManager.GetAbilityData(Ability.Multiple);
                         int fireAmount = projectile.fireAmount;
                         float accuracy = distance * 1f / projectile.accuracy;
                         List<Vector3Int> additionalTilesList = null;
@@ -294,13 +288,13 @@ public class InteractionManager : MonoBehaviour
                                 tilesList = additionalTilesList;
                             }
                             Vector3Int targetTile = tilesList[Random.Range(0, tilesList.Count)];
-                            cannonBehaviour.FireInTheHole(blockPosition, targetTile, projectile, blockItemObject.mass);
+                            SingletonManager.Instance.cannonBehaviour.FireInTheHole(blockPosition, targetTile, projectile, blockItemObject.mass);
                             StartCoroutine(WhiteFlashCoroutine(blockPrefab.GetComponent<SpriteRenderer>()));
 
 
                         }
 
-                        AbilityData extra = abilityManager.GetAbilityData(Ability.Extra);
+                        AbilityData extra = SingletonManager.Instance.abilityManager.GetAbilityData(Ability.Extra);
 
                         int updatedAmmoCount = projectile.ammoCount;
                         if (extra != null)
@@ -309,7 +303,7 @@ public class InteractionManager : MonoBehaviour
                         }
 
                         blockScript.ammoCount -= 1;
-                        uiManager.ShowAmmoCount(blockPrefab, blockScript.ammoCount, updatedAmmoCount);
+                        SingletonManager.Instance.uiManager.ShowAmmoCount(blockPrefab, blockScript.ammoCount, updatedAmmoCount);
                         if (blockScript.ammoCount == 0)
                         {
                             blockScript.itemPrefabObject.Clear();

@@ -14,11 +14,9 @@ public class ExplosionActive : Active
 
     public override void Activate(ItemObject item, Vector3 position, Vector2 blockDirection)
     {
-        ShipMovement shipMovement = ShipMovement.Instance;
-
         // Calculate the force vector
         Vector2 force = blockDirection.normalized * forceMagnitude;
-        shipMovement.ApplyRecoilForce(force);
+        SingletonManager.Instance.shipMovement.ApplyRecoilForce(force);
     }
 }
 

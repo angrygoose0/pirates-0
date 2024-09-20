@@ -10,7 +10,6 @@ public class PlayerBehaviour : MonoBehaviour
     public float deceleration = 10f;
     public float bounceBackFactor = 0.2f; // Factor to determine how much the player bounces back
     public Rigidbody2D rb;
-    public ShipGenerator shipGenerator; // Reference to the ShipGenerator script
     public Vector2 tileOffset; // Offset to adjust for isometric alignment
     public TileBase interactableTileSprite; // New sprite for interactable tiles
     public TileBase defaultTileSprite; // Default sprite for tiles
@@ -25,18 +24,14 @@ public class PlayerBehaviour : MonoBehaviour
     public Sprite spriteN, spriteNE, spriteE, spriteSE, spriteS, spriteSW, spriteW, spriteNW;
 
 
-    public UIManager uiManager;
-    public WorldGenerator worldGenerator;
 
-    public InteractionManager interactionManager; // Reference to the InteractionManager script
-    public AbilityManager abilityManager;
     public GameObject equippedItem;
     public GameObject closestItem;
     public GameObject equippedBlock;
     public float playerPickupRadius = 5f; // Radius within which to detect items
 
     public ShipGenerator.Direction currentDirection;
-    public GoldManager goldManager;
+
     public GameObject pickupRadius;
 
     private bool isFiring = false;
@@ -44,9 +39,11 @@ public class PlayerBehaviour : MonoBehaviour
     private float lastFireTime = 0f;
 
     private float mouseDownTime = 0f;
-    public FishingLine fishingLine;
+
     void Start()
     {
+
+
         if (equippedItem != null)
         {
             ItemScript itemScript = equippedItem.GetComponent<ItemScript>();
@@ -60,7 +57,7 @@ public class PlayerBehaviour : MonoBehaviour
     }
     void Update()
     {
-        if (!shipGenerator.editMode)
+        if (SingletonManager.Instance.gameStart.gameStarted)
         {
             // Get input from the player
             movementInput.x = Input.GetAxis("Horizontal");
@@ -81,7 +78,7 @@ public class PlayerBehaviour : MonoBehaviour
             if (previousInteractableTilePosition.HasValue)
             {
                 Vector3Int tilePosition = previousInteractableTilePosition.Value;
-                selectedBlockPrefab = shipGenerator.GetBlockPrefabAtTile(tilePosition);
+                selectedBlockPrefab = SingletonManager.Instance.shipGenerator.GetBlockPrefabAtTile(tilePosition);
             }
             if (Input.GetKeyDown(KeyCode.E))
             {
@@ -127,7 +124,7 @@ public class PlayerBehaviour : MonoBehaviour
                             ProjectileData projectile = blockItemObject.projectileData[0];
 
                             float attackRate = projectile.reloadSpeed;
-                            AbilityData haste = abilityManager.GetAbilityData(Ability.Haste);
+                            AbilityData haste = SingletonManager.Instance.abilityManager.GetAbilityData(Ability.Haste);
 
                             if (haste != null)
                             {
@@ -157,7 +154,7 @@ public class PlayerBehaviour : MonoBehaviour
                 else
                 {
                     float heldDuration = Time.time - mouseDownTime;
-                    fishingLine.FireLine(gameObject.transform, worldGenerator.mouseTilePosition, heldDuration);
+                    SingletonManager.Instance.fishingLine.FireLine(gameObject.transform, SingletonManager.Instance.worldGenerator.mouseTilePosition, heldDuration);
                 }
             }
 
@@ -197,7 +194,7 @@ public class PlayerBehaviour : MonoBehaviour
 
     void MovePlayer()
     {
-        if (interactionManager.playerBlockRelations.ContainsKey(gameObject))
+        if (SingletonManager.Instance.interactionManager.playerBlockRelations.ContainsKey(gameObject))
         {
             return;
         }
@@ -215,10 +212,10 @@ public class PlayerBehaviour : MonoBehaviour
         Vector2 newPosition = rb.position + currentVelocity * Time.fixedDeltaTime;
 
         // Convert the new position to a tilemap position
-        Vector3Int tilePosition = shipGenerator.tilemap.WorldToCell(new Vector3(newPosition.x, newPosition.y, 0)) + new Vector3Int((int)tileOffset.x, (int)tileOffset.y, 0);
+        Vector3Int tilePosition = SingletonManager.Instance.shipGenerator.tilemap.WorldToCell(new Vector3(newPosition.x, newPosition.y, 0)) + new Vector3Int((int)tileOffset.x, (int)tileOffset.y, 0);
 
         // Check if the new tile position is walkable
-        if (shipGenerator.IsTileWalkable(tilePosition))
+        if (SingletonManager.Instance.shipGenerator.IsTileWalkable(tilePosition))
         {
             // Move the player using the Rigidbody2D component
             rb.MovePosition(newPosition);
@@ -285,10 +282,10 @@ public class PlayerBehaviour : MonoBehaviour
 
     void CalculateFacingTile()
     {
-        Vector3Int playerTilePosition = shipGenerator.tilemap.WorldToCell(rb.position) + new Vector3Int((int)tileOffset.x, (int)tileOffset.y, 0);
+        Vector3Int playerTilePosition = SingletonManager.Instance.shipGenerator.tilemap.WorldToCell(rb.position) + new Vector3Int((int)tileOffset.x, (int)tileOffset.y, 0);
 
         // Get the list of interactable tiles around the player
-        List<(Vector3Int position, ShipGenerator.Direction direction)> interactableTiles = shipGenerator.GetInteractableNeighbors(playerTilePosition);
+        List<(Vector3Int position, ShipGenerator.Direction direction)> interactableTiles = SingletonManager.Instance.shipGenerator.GetInteractableNeighbors(playerTilePosition);
 
         // Reset the previous interactable tile if it is not in the list of interactable tiles
         if (previousInteractableTilePosition.HasValue && !interactableTiles.Exists(t => t.position == previousInteractableTilePosition.Value))
@@ -376,10 +373,10 @@ public class PlayerBehaviour : MonoBehaviour
         }
 
         // Set the new tile to the interactable sprite
-        shipGenerator.tilemap.SetTile(tilePosition, interactableTileSprite);
+        SingletonManager.Instance.shipGenerator.tilemap.SetTile(tilePosition, interactableTileSprite);
 
         // Check if the new tile has a blockPrefab and set its sprite to selectedSprite
-        GameObject blockPrefab = shipGenerator.GetBlockPrefabAtTile(tilePosition);
+        GameObject blockPrefab = SingletonManager.Instance.shipGenerator.GetBlockPrefabAtTile(tilePosition);
         if (blockPrefab != null)
         {
             SpriteRenderer sr = blockPrefab.GetComponent<SpriteRenderer>();
@@ -437,7 +434,7 @@ public class PlayerBehaviour : MonoBehaviour
                     break; // Add break statement to prevent fall-through
             }
 
-            uiManager.ToggleHelpfulUI(blockPrefab, helpfulUIList, false);
+            SingletonManager.Instance.uiManager.ToggleHelpfulUI(blockPrefab, helpfulUIList, false);
 
             // Update the previous interactable tile position
             previousInteractableTilePosition = tilePosition;
@@ -448,10 +445,10 @@ public class PlayerBehaviour : MonoBehaviour
     void ResetTile(Vector3Int tilePosition)
     {
         // Reset the tile to the default sprite
-        shipGenerator.tilemap.SetTile(tilePosition, defaultTileSprite);
+        SingletonManager.Instance.shipGenerator.tilemap.SetTile(tilePosition, defaultTileSprite);
 
         // Check if the tile has a blockPrefab and reset its sprite
-        GameObject blockPrefab = shipGenerator.GetBlockPrefabAtTile(tilePosition);
+        GameObject blockPrefab = SingletonManager.Instance.shipGenerator.GetBlockPrefabAtTile(tilePosition);
         if (blockPrefab != null)
         {
             SpriteRenderer sr = blockPrefab.GetComponent<SpriteRenderer>();
@@ -459,7 +456,7 @@ public class PlayerBehaviour : MonoBehaviour
             sr.sprite = blockObject.blockSprite;
 
             List<string> helpfulUIList = new List<string>();
-            uiManager.ToggleHelpfulUI(blockPrefab, helpfulUIList, false);
+            SingletonManager.Instance.uiManager.ToggleHelpfulUI(blockPrefab, helpfulUIList, false);
         }
     }
 
@@ -517,8 +514,8 @@ public class PlayerBehaviour : MonoBehaviour
         if (previousInteractableTilePosition.HasValue)
         {
             Vector3Int tilePosition = previousInteractableTilePosition.Value;
-            selectedBlockPrefab = shipGenerator.GetBlockPrefabAtTile(tilePosition);
-            interactionManager.InteractWithBlock(interaction, gameObject);
+            selectedBlockPrefab = SingletonManager.Instance.shipGenerator.GetBlockPrefabAtTile(tilePosition);
+            SingletonManager.Instance.interactionManager.InteractWithBlock(interaction, gameObject);
         }
     }
 
@@ -561,7 +558,7 @@ public class PlayerBehaviour : MonoBehaviour
             {
                 return;
             }
-            goldManager.AddGold(goldAmount);
+            SingletonManager.Instance.goldManager.AddGold(goldAmount);
             Destroy(equippedItem);
             equippedItem = null;
 
@@ -574,7 +571,7 @@ public class PlayerBehaviour : MonoBehaviour
             {
                 return;
             }
-            goldManager.AddGold(goldAmount);
+            SingletonManager.Instance.goldManager.AddGold(goldAmount);
             Destroy(closestItem);
             closestItem = null;
         }

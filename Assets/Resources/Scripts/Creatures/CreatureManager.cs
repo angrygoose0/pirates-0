@@ -87,7 +87,6 @@ public class CreatureData
 
 public class CreatureManager : MonoBehaviour
 {
-    public WorldGenerator worldGenerator;
     public GameObject trackedObject;
     public GameObject canvas;
     public Dictionary<GameObject, CreatureData> creatures; // Dictionary of all creatures
@@ -95,7 +94,6 @@ public class CreatureManager : MonoBehaviour
     public int minRadius = 5;
     public int maxRadius = 10;
     public Material damagedMaterial;
-    public AbilityManager abilityManager;
     private ChunkData currentChunk;
     private HashSet<Vector3Int> viableChunks = new HashSet<Vector3Int>();
     private Dictionary<GameObject, ChunkData> creatureChunks = new Dictionary<GameObject, ChunkData>();
@@ -106,15 +104,13 @@ public class CreatureManager : MonoBehaviour
     public int maxGlobalChunkPopulation = 50;
     public GameObject creaturePrefab;
     public GameObject tentacleSegmentprefab;
-    public ItemManager itemManager;
     public Tilemap worldTilemap;
-    public ShipGenerator shipGenerator;
     public Material creatureMaterial;
     public ItemObject goldItemObject;
     public ItemObject healOrbObject;
     public GameObject damageCounterPrefab;
     public GameObject healthBarPrefab;
-    public Explosions explosionScript;
+
 
     public GameObject[] raftTiles;
 
@@ -248,7 +244,7 @@ public class CreatureManager : MonoBehaviour
                 GameObject tentacleGameObject = tentacleEntry.Key;
                 TentacleData tentacleData = tentacleEntry.Value;
 
-                Vector3Int newTentacleTilePosition = worldGenerator.seaTilemap.WorldToCell(tentacleGameObject.transform.position);
+                Vector3Int newTentacleTilePosition = SingletonManager.Instance.worldGenerator.seaTilemap.WorldToCell(tentacleGameObject.transform.position);
                 if (tentacleData.currentTilePosition != newTentacleTilePosition)
                 {
                     tentacleData.currentTilePosition = newTentacleTilePosition;
@@ -578,7 +574,7 @@ public class CreatureManager : MonoBehaviour
         GameObject hitTentacleObject = segmentToTentacle[hitSegmentObject];
         CreatureData hitCreatureData = creatures[hitCreatureObject];
 
-        AbilityData nova = abilityManager.GetAbilityData(Ability.Nova);
+        AbilityData nova = SingletonManager.Instance.abilityManager.GetAbilityData(Ability.Nova);
         if (nova != null)
         {
             EffectData novaEffect = new EffectData(
@@ -593,7 +589,7 @@ public class CreatureManager : MonoBehaviour
 
         hitCreatureObject.transform.position = hitSegmentObject.transform.position;
 
-        AbilityData might = abilityManager.GetAbilityData(Ability.Might);
+        AbilityData might = SingletonManager.Instance.abilityManager.GetAbilityData(Ability.Might);
         if (might != null)
         {
             damageMagnitude = damageMagnitude * might.value;
@@ -618,7 +614,7 @@ public class CreatureManager : MonoBehaviour
             StartCoroutine(DamageCoroutine(hitCreatureObject, hitTentacleData.lineRenderer));
         }
 
-        AbilityData lifeSteal = abilityManager.GetAbilityData(Ability.LifeSteal);
+        AbilityData lifeSteal = SingletonManager.Instance.abilityManager.GetAbilityData(Ability.LifeSteal);
 
         /*
         if (lifeSteal != null)
@@ -722,14 +718,14 @@ public class CreatureManager : MonoBehaviour
             // Instantiate the item prefabs based on the gold drop
             for (int i = 0; i < goldDrop; i++)
             {
-                GameObject createdItem = itemManager.CreateItem(goldItemObject, creaturePosition);
+                GameObject createdItem = SingletonManager.Instance.itemManager.CreateItem(goldItemObject, creaturePosition);
 
             }
             ItemObject dropItemObject = creatureData.creatureObject.DetermineDrop();
 
             if (dropItemObject != null)
             {
-                GameObject droppedItem = itemManager.CreateItem(dropItemObject, creaturePosition);
+                GameObject droppedItem = SingletonManager.Instance.itemManager.CreateItem(dropItemObject, creaturePosition);
             }
 
             EffectData strongestNovaEffect = null;
@@ -751,18 +747,18 @@ public class CreatureManager : MonoBehaviour
                 explosionRange: strongestNovaEffect.value * 1f
                 );
 
-                explosionScript.Explode(creaturePosition, creatureProjectile, 0f, 360f);
+                SingletonManager.Instance.explosions.Explode(creaturePosition, creatureProjectile, 0f, 360f);
                 Debug.Log("exploded");
             }
 
-            AbilityData healorb = abilityManager.GetAbilityData(Ability.HealOrb);
+            AbilityData healorb = SingletonManager.Instance.abilityManager.GetAbilityData(Ability.HealOrb);
             if (healorb != null)
             {
                 int healOrbAmount = Mathf.RoundToInt(healorb.value);
                 // Instantiate the item prefabs based on the gold drop
                 for (int i = 0; i < healOrbAmount; i++)
                 {
-                    itemManager.CreateItem(healOrbObject, creaturePosition);
+                    SingletonManager.Instance.itemManager.CreateItem(healOrbObject, creaturePosition);
 
                 }
             }
@@ -789,7 +785,7 @@ public class CreatureManager : MonoBehaviour
     void TrackObjectChunk()
     {
         Vector3 objectPosition = trackedObject.transform.position;
-        ChunkData newChunk = worldGenerator.GetChunkData(objectPosition);
+        ChunkData newChunk = SingletonManager.Instance.worldGenerator.GetChunkData(objectPosition);
 
         if (newChunk != null && newChunk != currentChunk)
         {
@@ -814,7 +810,7 @@ public class CreatureManager : MonoBehaviour
 
                 if (distance >= minRadius && distance <= maxRadius)
                 {
-                    if (worldGenerator.generatedChunks.TryGetValue(chunkPosition, out ChunkData chunkData))
+                    if (SingletonManager.Instance.worldGenerator.generatedChunks.TryGetValue(chunkPosition, out ChunkData chunkData))
                     {
                         viableChunks.Add(chunkPosition);
                     }
@@ -827,9 +823,9 @@ public class CreatureManager : MonoBehaviour
     {
         foreach (var chunkPosition in viableChunks)
         {
-            if (worldGenerator.generatedChunks.TryGetValue(chunkPosition, out ChunkData chunkData))
+            if (SingletonManager.Instance.worldGenerator.generatedChunks.TryGetValue(chunkPosition, out ChunkData chunkData))
             {
-                //worldGenerator.RevertTilesInChunk(chunkData);
+                //SingletonManager.Instance.worldGenerator.RevertTilesInChunk(chunkData);
             }
         }
         viableChunks.Clear();
@@ -844,7 +840,7 @@ public class CreatureManager : MonoBehaviour
             if (creature != null)
             {
                 Vector3 creaturePosition = creature.transform.position;
-                ChunkData newChunk = worldGenerator.GetChunkData(creaturePosition);
+                ChunkData newChunk = SingletonManager.Instance.worldGenerator.GetChunkData(creaturePosition);
 
                 if (newChunk != null)
                 {
@@ -877,7 +873,7 @@ public class CreatureManager : MonoBehaviour
 
         //creatureData.hostility = 0f;
 
-        shipGenerator.ApplyImpact(raftObject, creatureData.creatureObject.damage);
+        SingletonManager.Instance.shipGenerator.ApplyImpact(raftObject, creatureData.creatureObject.damage);
 
         //invulnerable ship / spiky ship
         var firstTentacle = creatureData.tentacles.Values.FirstOrDefault();
@@ -983,7 +979,7 @@ public class CreatureManager : MonoBehaviour
         List<Vector3Int> viableChunkList = new List<Vector3Int>(viableChunks);
         Vector3Int randomChunkPosition = viableChunkList[Random.Range(0, viableChunkList.Count)];
         ChunkData randomChunk;
-        worldGenerator.generatedChunks.TryGetValue(randomChunkPosition, out randomChunk);
+        SingletonManager.Instance.worldGenerator.generatedChunks.TryGetValue(randomChunkPosition, out randomChunk);
 
         if (randomChunk != null)
         {
@@ -997,23 +993,22 @@ public class CreatureManager : MonoBehaviour
 
                 if (randomChunk.tileDepths.ContainsKey(randomTilePosition))
                 {
-                    Vector3 worldPosition = worldGenerator.seaTilemap.CellToWorld(randomTilePosition);
+                    Vector3 worldPosition = SingletonManager.Instance.worldGenerator.seaTilemap.CellToWorld(randomTilePosition);
 
                     int packSize = Random.Range(randomCreatureObject.minPackSpawn, randomCreatureObject.maxPackSpawn);
 
                     for (int i = 0; i < packSize; i++)
                     {
                         //Debug.Log("spawning creature");
-                        GameObject newCreature = Instantiate(creaturePrefab, worldPosition, Quaternion.identity, worldGenerator.seaTilemap.transform);
+                        GameObject newCreature = Instantiate(creaturePrefab, worldPosition, Quaternion.identity, SingletonManager.Instance.worldGenerator.seaTilemap.transform);
                         GameObject newHealthBar = Instantiate(healthBarPrefab, worldPosition, Quaternion.identity, canvas.transform);
                         HealthBar healthBarScript = newHealthBar.GetComponent<HealthBar>();
 
                         CreatureBehaviour creatureBehaviour = newCreature.AddComponent<CreatureBehaviour>();
-                        creatureBehaviour.creatureManager = this;
 
 
 
-                        Vector3Int currentTilePosition = worldGenerator.seaTilemap.WorldToCell(worldPosition);
+                        Vector3Int currentTilePosition = SingletonManager.Instance.worldGenerator.seaTilemap.WorldToCell(worldPosition);
                         creatures.Add(newCreature, new CreatureData
                         {
                             creatureObject = randomCreatureObject,
@@ -1039,7 +1034,7 @@ public class CreatureManager : MonoBehaviour
                         foreach (TentacleValue tentacle in tentacleList)
                         {
 
-                            GameObject newTentacle = Instantiate(creaturePrefab, worldPosition, Quaternion.identity, worldGenerator.seaTilemap.transform);
+                            GameObject newTentacle = Instantiate(creaturePrefab, worldPosition, Quaternion.identity, SingletonManager.Instance.worldGenerator.seaTilemap.transform);
                             TentacleData tentacleData = new TentacleData
                             {
                                 targetPosition = newCreature.transform.position,
@@ -1057,7 +1052,7 @@ public class CreatureManager : MonoBehaviour
                             List<float> segmentSizeList = tentacle.segmentSizes;
                             foreach (float segmentSize in segmentSizeList)
                             {
-                                GameObject newTentacleSegment = Instantiate(tentacleSegmentprefab, worldPosition, Quaternion.identity, worldGenerator.seaTilemap.transform);
+                                GameObject newTentacleSegment = Instantiate(tentacleSegmentprefab, worldPosition, Quaternion.identity, SingletonManager.Instance.worldGenerator.seaTilemap.transform);
                                 //newTentacleSegment.transform.SetParent();
 
                                 CircleCollider2D collider = newTentacleSegment.GetComponent<CircleCollider2D>();
@@ -1116,7 +1111,7 @@ public class CreatureManager : MonoBehaviour
     void HandleDespawning()
     {
         Vector3 centerPosition = trackedObject.transform.position;
-        Vector3Int centerChunkPosition = worldGenerator.WorldToChunkPosition(centerPosition);
+        Vector3Int centerChunkPosition = SingletonManager.Instance.worldGenerator.WorldToChunkPosition(centerPosition);
 
         List<GameObject> creaturesToDespawn = new List<GameObject>();
 
@@ -1125,7 +1120,7 @@ public class CreatureManager : MonoBehaviour
             if (creature != null)
             {
                 Vector3 creaturePosition = creature.transform.position;
-                Vector3Int creatureChunkPosition = worldGenerator.WorldToChunkPosition(creaturePosition);
+                Vector3Int creatureChunkPosition = SingletonManager.Instance.worldGenerator.WorldToChunkPosition(creaturePosition);
                 float distance = Vector3Int.Distance(creatureChunkPosition, centerChunkPosition);
 
                 if (distance > maxRadius)

@@ -5,8 +5,6 @@ using UnityEngine.Tilemaps;
 
 public class ShipMovement : MonoBehaviour
 {
-    public static ShipMovement Instance { get; private set; }
-    public ShipGenerator shipGenerator;
     public GameObject tilemap; // Reference to the tilemap or parent object containing the tilemap
     public float kFactor; // constant that multiplies with totalForce to give maxSpeed;
     private float maxSpeed; // The maximum speed at which the ship moves
@@ -17,18 +15,8 @@ public class ShipMovement : MonoBehaviour
     private TilemapRenderer tilemapRenderer;
     private Material tilemapMaterial;
 
-    private void Awake()
+    void Start()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-
         tilemapRenderer = tilemap.GetComponent<TilemapRenderer>();
         tilemapMaterial = tilemapRenderer.material;
     }
@@ -51,7 +39,7 @@ public class ShipMovement : MonoBehaviour
     {
         totalForce = Vector2.zero;
 
-        foreach (GameObject mastBlock in shipGenerator.mastBlocks)
+        foreach (GameObject mastBlock in SingletonManager.Instance.shipGenerator.mastBlocks)
         {
             blockPrefabScript blockScript = mastBlock.GetComponent<blockPrefabScript>();
             if (blockScript.active)

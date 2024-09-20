@@ -10,6 +10,7 @@ using Cinemachine;
 [System.Serializable]
 public class ShipData
 {
+
     public RaftObject raftObject;
     public float hp = 0f;
 
@@ -96,7 +97,6 @@ public class ShipGenerator : MonoBehaviour
     }
 
 
-    public FeedbackManager feedbackManager;
 
     public GameObject shipTilemapObject;
     public GameObject grid;
@@ -107,13 +107,14 @@ public class ShipGenerator : MonoBehaviour
     public List<BlockObject> blockObjects; // List of all BlockObject ScriptableObjects
     public Tilemap tilemap;
 
-    public AbilityManager abilityManager;
+
 
     public GameObject raftTilePrefab;
     public GameObject healthBarPrefab;
     public GameObject canvas;
 
-    public bool editMode = false;
+
+    public bool assignmentBool;
     public TileBase transparentTile;
     private List<Vector3Int> placedHoverTiles = new List<Vector3Int>(); // List to store tile positions
     private Vector3Int? lastPlacedCenterTile = null;
@@ -159,6 +160,9 @@ public class ShipGenerator : MonoBehaviour
 
     void Start()
     {
+
+
+
         tilemap = shipTilemapObject.GetComponent<Tilemap>();
         CombineRaftTilesIntoShip();
 
@@ -189,7 +193,7 @@ public class ShipGenerator : MonoBehaviour
 
         UpdateRaftTimers();
 
-        if (editMode)
+        if (!SingletonManager.Instance.gameStart.gameStarted && !assignmentBool)
         {
             HandleHoverEffect();
 
@@ -632,8 +636,8 @@ public class ShipGenerator : MonoBehaviour
     public void ApplyImpact(GameObject raftTile, float damageMagnitude)
     {
         ShipData shipData = raftTileDict[raftTile];
-        feedbackManager.ShipDamagedFeedback(damageMagnitude);
-        AbilityData fragility = abilityManager.GetAbilityData(Ability.Fragility);
+        SingletonManager.Instance.feedbackManager.ShipDamagedFeedback(damageMagnitude);
+        AbilityData fragility = SingletonManager.Instance.abilityManager.GetAbilityData(Ability.Fragility);
         if (fragility != null)
         {
             damageMagnitude = damageMagnitude * fragility.value;
@@ -748,7 +752,7 @@ public class ShipGenerator : MonoBehaviour
 
     public void UpdateBlockEffects()
     {
-        abilityManager.abilityList.Clear();
+        SingletonManager.Instance.abilityManager.abilityList.Clear();
         foreach (var kvp in tileToBlockPrefabMap)
         {
             GameObject blockPrefab = kvp.Value;
@@ -769,7 +773,7 @@ public class ShipGenerator : MonoBehaviour
             }
             foreach (AbilityData ability in blockItemObject.abilityList)
             {
-                abilityManager.AddOrUpdateAbility(ability.ability, ability.value);
+                SingletonManager.Instance.abilityManager.AddOrUpdateAbility(ability.ability, ability.value);
             }
         }
 

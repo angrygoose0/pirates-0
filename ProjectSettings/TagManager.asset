@@ -54,6 +54,9 @@ TagManager:
   - name: ship
     uniqueID: 3043669347
     locked: 0
+  - name: fishingLine
+    uniqueID: 77638041
+    locked: 0
   - name: player
     uniqueID: 1126429351
     locked: 0

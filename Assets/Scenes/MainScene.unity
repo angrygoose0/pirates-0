@@ -592,7 +592,7 @@ MonoBehaviour:
   m_Intensity: 0
   m_LightVolumeIntensity: 0.2
   m_LightVolumeIntensityEnabled: 0
-  m_ApplyToSortingLayers: 00000000371b4eb0233c77dc63b56ab5a7f22343d1c540c4c35f8a04
+  m_ApplyToSortingLayers: 00000000371b4eb0233c77dc63b56ab5a7f22343d1c540c4c35f8a0499a9a004
   m_LightCookieSprite: {fileID: 21300000, guid: 28ae1d0505c2f8243b9fb69c9c44abce, type: 3}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0
@@ -1501,14 +1501,15 @@ GameObject:
   - component: {fileID: 383585328}
   - component: {fileID: 383585330}
   - component: {fileID: 383585329}
-  - component: {fileID: 383585331}
-  - component: {fileID: 383585332}
   - component: {fileID: 383585333}
   - component: {fileID: 383585334}
   - component: {fileID: 383585335}
   - component: {fileID: 383585336}
   - component: {fileID: 383585337}
   - component: {fileID: 383585338}
+  - component: {fileID: 383585339}
+  - component: {fileID: 383585340}
+  - component: {fileID: 383585341}
   m_Layer: 0
   m_Name: ghost
   m_TagString: Untagged
@@ -1545,7 +1546,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   xOffset: 0
   yOffset: 0
-  feedbackManager: {fileID: 383585336}
   shipTilemapObject: {fileID: 1604011098}
   grid: {fileID: 485961737}
   deafultRaft: {fileID: 11400000, guid: fda3c6c896be21948894a89b0b2b9571, type: 2}
@@ -1556,11 +1556,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ed0e3fc2729aefa42a12bb54c203c74e, type: 2}
   - {fileID: 11400000, guid: de7d847a4a831d6409c2c9291b8fe2ef, type: 2}
   tilemap: {fileID: 1604011099}
-  abilityManager: {fileID: 383585333}
   raftTilePrefab: {fileID: 2042515232089746643, guid: 57fabd4de686a64428125b2b8f2c5842, type: 3}
   healthBarPrefab: {fileID: 6102918091058157520, guid: 13270625568c94c438e3d64fcdd7a327, type: 3}
   canvas: {fileID: 1027537515}
-  editMode: 0
+  assignmentBool: 1
   transparentTile: {fileID: 11400000, guid: 7dc9b7f10a5a92f48b0c6b48adaf47ed, type: 2}
   temporaryTilemap: {fileID: 1754447387}
   raftTileSize: 5
@@ -1580,13 +1579,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67e6de42201f8f74189034565c11ac08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  abilityManager: {fileID: 383585333}
   equippedCannon: {fileID: 0}
-  cannonBehaviour: {fileID: 383585323}
-  explosions: {fileID: 383585322}
-  uiManager: {fileID: 383585334}
-  shipGenerator: {fileID: 383585316}
-  feedbackManager: {fileID: 383585336}
   playerOne: {fileID: 1722425495}
 --- !u!114 &383585319
 MonoBehaviour:
@@ -1608,8 +1601,8 @@ MonoBehaviour:
   weirdnessScale: 0.5
   tileObjects:
   - {fileID: 11400000, guid: 64eac7abb36492b46a37b3d10b14b93e, type: 2}
-  structureManager: {fileID: 383585328}
   worldSeed: 24
+  mouseTilePosition: {x: 0, y: 0, z: 0}
   highlightTile: {fileID: 11400000, guid: 15eb20dcf9a763e43b36433eec9072ec, type: 2}
 --- !u!114 &383585320
 MonoBehaviour:
@@ -1623,7 +1616,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c25b8c749cfe75e47bcabdcbecdba3fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shipGenerator: {fileID: 383585316}
   tilemap: {fileID: 170296651}
   kFactor: 0
   mass: 500
@@ -1641,9 +1633,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   raycastCount: 100
-  creatureManager: {fileID: 383585327}
   explosionPrefab: {fileID: 6987822516994895249, guid: 7574845da135cb449b64ffd05c7cece8, type: 3}
-  feedbackManager: {fileID: 383585336}
   duration: 0.1
   initialLightIntensity: 4
   finalLightIntensity: 0
@@ -1666,13 +1656,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93cd2303b2cf62944b856469021f4ba8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interactionManager: {fileID: 383585318}
   tilemap: {fileID: 170296654}
   selectorPrefab: {fileID: 7750116874504110355, guid: 8125282e50bc4d140bb095b063c6e2e3, type: 3}
   explosionEffectPrefab: {fileID: 1024876700175561445, guid: 3860df99372c4d1468862cc566aa603a, type: 3}
   cannonballPrefab: {fileID: 1431859681922546109, guid: dabcacea6a749b7469540289f6b19c9a, type: 3}
-  shipMovement: {fileID: 383585320}
-  explosionScript: {fileID: 383585322}
   cannonForce: 20
   cannonballMass: 1
   gravity: -9.81
@@ -1730,7 +1717,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 76177347
-  m_SortingLayer: 6
+  m_SortingLayer: 7
   m_SortingOrder: 0
   m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -1765,12 +1752,11 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 383585313}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e62ec46af0f4fb242b0961504808d4c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  worldGenerator: {fileID: 383585319}
   trackedObject: {fileID: 383585313}
   canvas: {fileID: 1923651454}
   creatureObjects:
@@ -1779,21 +1765,17 @@ MonoBehaviour:
   minRadius: 1
   maxRadius: 4
   damagedMaterial: {fileID: 0}
-  abilityManager: {fileID: 383585333}
   globalMobCount: 10
-  maxGlobalMobCount: 1
+  maxGlobalMobCount: 0
   maxGlobalChunkPopulation: 4
   creaturePrefab: {fileID: 6939055558043858172, guid: 00a94a03bb1f99f4d953fb2b17f1056a, type: 3}
   tentacleSegmentprefab: {fileID: 6285872198284085077, guid: 8505bef393acbbf4cab79a22a9e93f5a, type: 3}
-  itemManager: {fileID: 383585326}
   worldTilemap: {fileID: 170296654}
-  shipGenerator: {fileID: 383585316}
   creatureMaterial: {fileID: -876546973899608171, guid: 9465104cb197b38409f7571ad8659332, type: 3}
   goldItemObject: {fileID: 11400000, guid: 853124c3c476fd24aaf407a880fb3fa5, type: 2}
   healOrbObject: {fileID: 11400000, guid: 3e9b78678b0bc7c4e8d6fabc05033e1e, type: 2}
   damageCounterPrefab: {fileID: 3155849065046819490, guid: 6eedf5176de703041bd31a9db3e79248, type: 3}
   healthBarPrefab: {fileID: 6102918091058157520, guid: 13270625568c94c438e3d64fcdd7a327, type: 3}
-  explosionScript: {fileID: 383585322}
   raftTiles: []
 --- !u!114 &383585328
 MonoBehaviour:
@@ -1833,7 +1815,7 @@ MonoBehaviour:
   m_Intensity: 1
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
-  m_ApplyToSortingLayers: 00000000371b4eb0233c77dc63b56ab5a7f22343d1c540c4c35f8a04
+  m_ApplyToSortingLayers: 00000000371b4eb0233c77dc63b56ab5a7f22343d1c540c4c35f8a0499a9a004
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0
@@ -1883,35 +1865,6 @@ MonoBehaviour:
   lightLevel: 0
   difficultyFactor: 0
   dampingConstant: 0.5
-  creatureManager: {fileID: 383585327}
---- !u!114 &383585331
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 383585313}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 52cd6e4cc9a700a4a8c4c244cbca2044, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  shipObject: {fileID: 1604011098}
-  abilityManager: {fileID: 383585333}
---- !u!114 &383585332
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 383585313}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e20a5aafaaad82247a64defcc3438d55, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  flashColor: {r: 1, g: 1, b: 1, a: 1}
-  flashTime: 0.25
 --- !u!114 &383585333
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2002,6 +1955,45 @@ MonoBehaviour:
   tilemap: {fileID: 170296654}
   gravity: -9.81
   linePrefab: {fileID: 4859838073283347170, guid: 2201f73b5f072a340a957107313a09c4, type: 3}
+  firingForceMultiplier: 50
+--- !u!114 &383585339
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 383585313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a5ef92234350f74ca1709b1355cf952, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startCamera: {fileID: 1782776637}
+--- !u!114 &383585340
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 383585313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 463e194381311a04ba097607a9c9c6fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameStarted: 0
+--- !u!114 &383585341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 383585313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05417f3ad3e9d224dbc37d22d927e6f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &485961737
 GameObject:
   m_ObjectHideFlags: 0
@@ -2139,7 +2131,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 1.191649, y: -0.73718125, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2202,6 +2194,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 587cefc43684a8847a72ca851046fd1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  originalPos: {x: 0, y: 0, z: 0}
 --- !u!114 &519420035
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14385,7 +14378,7 @@ MonoBehaviour:
   - m_Script
   m_LockStageInInspector: 
   m_StreamingVersion: 20170927
-  m_Priority: 10
+  m_Priority: 0
   m_StandbyUpdate: 2
   m_LookAt: {fileID: 0}
   m_Follow: {fileID: 1722425498}
@@ -24629,7 +24622,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 76177347
-  m_SortingLayer: 6
+  m_SortingLayer: 7
   m_SortingOrder: 100
   m_RenderMode: 1
   m_MeshDistribution: 0
@@ -30153,7 +30146,6 @@ MonoBehaviour:
   deceleration: 15
   bounceBackFactor: 0
   rb: {fileID: 1722425499}
-  shipGenerator: {fileID: 383585316}
   tileOffset: {x: 0, y: 0}
   interactableTileSprite: {fileID: 11400000, guid: 7dc9b7f10a5a92f48b0c6b48adaf47ed, type: 2}
   defaultTileSprite: {fileID: 11400000, guid: c14545175a6c0d34e88e004e827cc897, type: 2}
@@ -30167,17 +30159,12 @@ MonoBehaviour:
   spriteSW: {fileID: -1055932007, guid: 4a7180e89b5b8144f94e5a397187a37d, type: 3}
   spriteW: {fileID: 1247614363, guid: 4a7180e89b5b8144f94e5a397187a37d, type: 3}
   spriteNW: {fileID: 1490294155, guid: 4a7180e89b5b8144f94e5a397187a37d, type: 3}
-  uiManager: {fileID: 383585334}
-  interactionManager: {fileID: 383585318}
-  abilityManager: {fileID: 383585333}
   equippedItem: {fileID: 0}
   closestItem: {fileID: 0}
   equippedBlock: {fileID: 0}
   playerPickupRadius: 1
   currentDirection: 0
-  goldManager: {fileID: 383585324}
   pickupRadius: {fileID: 1775824865}
-  fishingLine: {fileID: 383585338}
 --- !u!212 &1722425497
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -30217,7 +30204,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1126429351
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: 1189568085, guid: 778a2b891907ab74d95b655d69e6111d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -35748,7 +35735,7 @@ MonoBehaviour:
   - m_Script
   m_LockStageInInspector: 
   m_StreamingVersion: 20170927
-  m_Priority: 10
+  m_Priority: 0
   m_StandbyUpdate: 2
   m_LookAt: {fileID: 0}
   m_Follow: {fileID: 383585315}
@@ -36307,7 +36294,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 76177347
-  m_SortingLayer: 6
+  m_SortingLayer: 7
   m_SortingOrder: 0
   m_RenderMode: 0
   m_MeshDistribution: 0

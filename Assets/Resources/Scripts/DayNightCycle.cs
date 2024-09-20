@@ -13,12 +13,19 @@ public class DayNightCycle : MonoBehaviour
     public float lightLevel = 0f;
     public float difficultyFactor = 0f;
     public float dampingConstant = 0.1f;
-    public CreatureManager creatureManager;
 
+
+    void Start()
+    {
+    }
     void Update()
     {
+        if (SingletonManager.Instance.gameStart.gameStarted)
+        {
+            elapsedTime += Time.deltaTime;
+        }
         // Increment elapsed time
-        elapsedTime += Time.deltaTime;
+
 
         // Update the timer text
         UpdateTimer();
@@ -31,7 +38,7 @@ public class DayNightCycle : MonoBehaviour
 
         // Calculate the difficulty factor
         difficultyFactor = (1f - lightLevel) * elapsedTime * dampingConstant;
-        creatureManager.maxGlobalMobCount = Mathf.RoundToInt(difficultyFactor);
+        SingletonManager.Instance.creatureManager.maxGlobalMobCount = Mathf.RoundToInt(difficultyFactor);
     }
 
     void UpdateTimer()

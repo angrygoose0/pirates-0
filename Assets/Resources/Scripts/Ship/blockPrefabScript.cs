@@ -14,7 +14,6 @@ public class blockPrefabScript : MonoBehaviour
     public GameObject player;
     public GameObject itemPrefab;
     public GameObject spawnedItem;
-    public ItemManager itemManager;
     public GameObject shipObject;
     public int ammoCount;
     public Light2D blockLight;
@@ -42,10 +41,6 @@ public class blockPrefabScript : MonoBehaviour
 
     void Start()
     {
-
-        GameObject ghost = GameObject.Find("ghost");
-        itemManager = ghost.GetComponent<ItemManager>();
-
         shipObject = GameObject.Find("ship");
 
         SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
@@ -107,7 +102,7 @@ public class blockPrefabScript : MonoBehaviour
                     foreach (ItemObject resultItem in intersectionList)
                     {
                         GameObject craftedItemObject = Instantiate(itemPrefab, gameObject.transform.position, Quaternion.identity);
-                        craftedItemObject = itemManager.CreateItem(resultItem, gameObject.transform.position);
+                        craftedItemObject = SingletonManager.Instance.itemManager.CreateItem(resultItem, gameObject.transform.position);
 
                         ItemScript craftedItemScript = craftedItemObject.GetComponent<ItemScript>();
                         craftedItemScript.NewParent(shipObject);

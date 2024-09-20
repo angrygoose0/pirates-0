@@ -31,9 +31,6 @@ public class WorldGenerator : MonoBehaviour
     public float temperatureScale = 0.1f;
     public float weirdnessScale = 0.05f;
     public List<TileObject> tileObjects; // List of TileObjects
-
-    public StructureManager structureManager;
-
     public int worldSeed;
     private Vector3Int initialChunkPosition;
     private Vector3Int previousCenterChunkPosition;
@@ -174,7 +171,7 @@ public class WorldGenerator : MonoBehaviour
         {
             ChangeTilesInChunk(chunkData);
             Vector3 chunkCenterWorldPosition = seaTilemap.CellToWorld(new Vector3Int(chunkPosition.x * chunkSize + chunkSize / 2, chunkPosition.y * chunkSize + chunkSize / 2, 0));
-            structureManager.GenerateStructure(chunkCenterWorldPosition);
+            SingletonManager.Instance.structureManager.GenerateStructure(chunkCenterWorldPosition);
         }
 
 

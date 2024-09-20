@@ -12,7 +12,6 @@ public class ItemScript : MonoBehaviour
     public GameObject targetObject; // The GameObject towards which the item will lerp
     public float lerpDuration; // Duration of the lerp movement
     public float inactiveTimer;
-    public GoldManager goldManager;
 
     private float inactiveTime = 0f;
     private Coroutine fadeCoroutine;
@@ -32,7 +31,7 @@ public class ItemScript : MonoBehaviour
         // Automatically find and assign the GameObject named "ghost" as the target
         targetObject = GameObject.Find("ghost");
 
-        goldManager = targetObject.GetComponent<GoldManager>();
+
 
         // Check if the GameObject has a parent on startup and that parent is not the world Tilemap
         if (transform.parent != null && transform.parent.name != "world")
@@ -188,7 +187,7 @@ public class ItemScript : MonoBehaviour
 
         if (gold)
         {
-            goldManager.AddGold(1);
+            SingletonManager.Instance.goldManager.AddGold(1);
 
             // Destroy the GameObject after lerping
             Destroy(gameObject);

@@ -5,9 +5,10 @@ using UnityEngine;
 public class Explosions : MonoBehaviour
 {
     public int raycastCount = 36; // Number of raycasts
-    public CreatureManager creatureManager;
+
+
     public GameObject explosionPrefab;
-    public FeedbackManager feedbackManager;
+    
 
     public float duration;
 
@@ -24,7 +25,7 @@ public class Explosions : MonoBehaviour
 
     public void Explode(Vector3 explosionPosition, ProjectileData projectile, float startAngle = 0f, float endAngle = 360f)
     {
-        feedbackManager.ExplosionFeedback(explosionPosition, projectile.explosionMultiplier);
+        SingletonManager.Instance.feedbackManager.ExplosionFeedback(explosionPosition, projectile.explosionMultiplier);
         // Validate angles to ensure startAngle is less than endAngle
         if (startAngle >= endAngle)
         {
@@ -129,7 +130,7 @@ public class Explosions : MonoBehaviour
                     {
                         if (hitObject.tag == "Creature")
                         {
-                            creatureManager.ApplyImpact(hitObject, appliedDamage);  //change TODO
+                            SingletonManager.Instance.creatureManager.ApplyImpact(hitObject, appliedDamage);  //change TODO
                         }
                     }
                     else
