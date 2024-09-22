@@ -19,6 +19,7 @@ public class GameStart : MonoBehaviour
         startButton.SetActive(false);
 
         SingletonManager.Instance.cameraBrain.PlayCamera();
+        SingletonManager.Instance.shipMovement.currentVelocity = new Vector2(0.5f, 0.5f);
     }
 
     public void EndGame()
