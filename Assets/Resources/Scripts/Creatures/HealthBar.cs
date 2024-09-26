@@ -28,15 +28,6 @@ public class HealthBar : MonoBehaviour
         SetImagesAlpha(0f);
     }
 
-    void Update()
-    {
-        // Check if the "U" key is pressed
-        if (Input.GetKeyDown(KeyCode.U))
-        {
-            // Call ModifyHealth when "U" is pressed
-            ModifyHealth(0); // The parameter can be any value as it's not used yet
-        }
-    }
 
     void LateUpdate()
     {

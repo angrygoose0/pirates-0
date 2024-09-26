@@ -89,7 +89,7 @@ public class Explosions : MonoBehaviour
 
             // Draw debug ray at the current position
             Debug.DrawRay(currentPosition, direction * speed * Time.deltaTime, Color.red, 0.1f);
-            Debug.Log($"Current Ray Force: {currentRayForce} at position {currentPosition}");
+
 
             yield return null;
         }

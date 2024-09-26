@@ -24,7 +24,6 @@ public class CannonBehaviour : MonoBehaviour
     {
         previousTilemapPosition = tilemap.transform.position;
 
-        Dictionary<GameObject, GameObject> playerBlockRelations = SingletonManager.Instance.interactionManager.playerBlockRelations;
     }
 
     void Update()
@@ -79,7 +78,7 @@ public class CannonBehaviour : MonoBehaviour
         Vector3 recoilForce = -shotDirection * cannonForce;
 
         // Apply the recoil force to the ship's velocity
-        SingletonManager.Instance.shipMovement.ApplyRecoilForce(new Vector2(recoilForce.x, recoilForce.y));
+        //SingletonManager.Instance.shipMovement.ApplyRecoilForce(new Vector2(recoilForce.x, recoilForce.y));
     }
 
     private IEnumerator MoveCannonball(Vector3 start, Vector3Int endTile, ProjectileData projectile, float mass)
@@ -144,7 +143,7 @@ public class CannonBehaviour : MonoBehaviour
         // Simulate explosion using raycasts
         SingletonManager.Instance.explosions.Explode(finalPosition, projectile, 0f, 360f);
 
-        
+
     }
 
 

@@ -1777,6 +1777,7 @@ MonoBehaviour:
   healOrbObject: {fileID: 11400000, guid: 3e9b78678b0bc7c4e8d6fabc05033e1e, type: 2}
   damageCounterPrefab: {fileID: 3155849065046819490, guid: 6eedf5176de703041bd31a9db3e79248, type: 3}
   healthBarPrefab: {fileID: 6102918091058157520, guid: 13270625568c94c438e3d64fcdd7a327, type: 3}
+  closestPlayer: {fileID: 1722425495}
   playerArray: []
 --- !u!114 &383585328
 MonoBehaviour:

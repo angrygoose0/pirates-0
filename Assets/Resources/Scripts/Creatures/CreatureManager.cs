@@ -51,7 +51,7 @@ public class TentacleSegment
 
 public class TentacleData
 {
-    public Vector3 targetPosition { get; set; }
+    public Vector3Int targetPosition { get; set; }
     public Vector3Int currentTilePosition { get; set; }
     public Vector3 velocity;
     public Dictionary<GameObject, TentacleSegment> segments = new Dictionary<GameObject, TentacleSegment>();
@@ -71,13 +71,13 @@ public class CreatureData
     public CreatureObject creatureObject;
     public Vector3Int currentTilePosition { get; set; }
     public List<Vector3Int> surroundingTiles { get; set; }
-    public Vector3 targetPosition { get; set; }
+    public Vector3Int targetPosition { get; set; }
     public Dictionary<GameObject, TentacleData> tentacles = new Dictionary<GameObject, TentacleData>();
     public State currentState;
     public float hostility;
     public Vector3 velocity;
     public float movementDelay;
-    public GameObject targetShipPart;
+    public GameObject targetPlayer;
     public float health;
     public bool isDamaged;
     public float currentDamage;
@@ -110,6 +110,7 @@ public class CreatureManager : MonoBehaviour
     public ItemObject healOrbObject;
     public GameObject damageCounterPrefab;
     public GameObject healthBarPrefab;
+    public GameObject closestPlayer;
 
 
     public GameObject[] playerArray;
@@ -130,6 +131,92 @@ public class CreatureManager : MonoBehaviour
     }
 
 
+    public void UpdateCreatureTiles(GameObject creatureGameObject, CreatureData creatureData)
+    {
+        Vector3Int newTilePosition = worldTilemap.WorldToCell(creatureGameObject.transform.position);
+        if (creatureData.currentTilePosition != newTilePosition)
+        {
+            //Debug.Log("currentTilePosition" + creatureData.currentTilePosition);
+            creatureData.currentTilePosition = newTilePosition;
+            creatureData.surroundingTiles = GetSurroundingTiles(newTilePosition, creatureData.creatureObject.range);
+        }
+    }
+
+    public void UpdateCreatureState(GameObject creatureGameObject, CreatureData creatureData)
+    {
+        float hostility = creatureData.hostility;
+        float aggressionThreshold = creatureData.creatureObject.aggressionThreshold;
+
+        State currentState = creatureData.currentState;
+
+        if (hostility >= aggressionThreshold && currentState != State.Aggressive)
+        {
+            creatureData.currentState = State.Aggressive;
+            Debug.Log("changed to aggro");
+
+        }
+        else if (hostility < aggressionThreshold && currentState != State.Idle)
+        {
+            creatureData.currentState = State.Idle;
+            Debug.Log("changed to idle");
+        }
+    }
+
+    public void UpdateCreatureTarget(GameObject creatureGameObject, CreatureData creatureData)
+    {
+
+        State currentState = creatureData.currentState;
+        if (Input.GetKeyDown(KeyCode.M))  // Check if the 'M' key was pressed
+        {
+            Debug.Log("target: " + creatureData.targetPosition);
+            Debug.Log("current: " + creatureData.currentTilePosition);
+        }
+        if (creatureData.targetPosition != creatureData.currentTilePosition)
+        {
+            return;
+        }
+        Debug.Log("newtile");
+
+
+
+
+        if (currentState == State.Idle)
+        {
+            creatureData.targetPosition = creatureData.surroundingTiles[Random.Range(0, creatureData.surroundingTiles.Count)];
+        }
+
+        else if (currentState == State.Aggressive)
+        {
+            if (playerArray.Length != 0)
+            {
+                GameObject closestPlayer = null;
+                float smallestDistance = Mathf.Infinity;
+
+                foreach (GameObject player in playerArray)
+                {
+                    if (player == null)
+                    {
+                        continue;
+                    }
+
+                    // Calculate the distance from the reference object to the current ship
+                    float distance = Vector3.Distance(creatureGameObject.transform.position, player.transform.position);
+
+                    // If this ship is closer than the previous closest, update the closest ship and smallest distance
+                    if (distance < smallestDistance)
+                    {
+                        closestPlayer = player;
+                        smallestDistance = distance;
+                    }
+                }
+
+                creatureData.targetPlayer = closestPlayer;
+
+            }
+            creatureData.targetPosition = worldTilemap.WorldToCell(creatureData.targetPlayer.transform.position);
+
+        }
+    }
 
     void Update()
     {
@@ -141,47 +228,22 @@ public class CreatureManager : MonoBehaviour
             GameObject creatureGameObject = creatureEntry.Key;
             CreatureData creatureData = creatureEntry.Value;
 
-            Vector3Int newTilePosition = worldTilemap.WorldToCell(creatureGameObject.transform.position);
-            if (creatureData.currentTilePosition != newTilePosition)
-            {
-                creatureData.currentTilePosition = newTilePosition;
-                creatureData.surroundingTiles = GetSurroundingTiles(newTilePosition, creatureData.creatureObject.range);
-            }
+            UpdateCreatureTiles(creatureGameObject, creatureData);
+            UpdateCreatureState(creatureGameObject, creatureData);
+            UpdateCreatureTarget(creatureGameObject, creatureData);
 
-            float hostility = creatureData.hostility;
-            float aggressionThreshold = creatureData.creatureObject.aggressionThreshold;
-            State currentState = creatureData.currentState;
-            bool stateChanged = false;
-            if (hostility >= aggressionThreshold && currentState != State.Aggressive)
-            {
-                creatureData.currentState = State.Aggressive;
-                stateChanged = true;
 
-            }
-            else if (hostility < aggressionThreshold && currentState != State.Idle)
-            {
-                creatureData.currentState = State.Idle;
-                stateChanged = true;
-            }
+
 
             CreatureObject creatureObject = creatureData.creatureObject;
 
 
-            Vector3Int creatureTargetTilemapPosition = worldTilemap.WorldToCell(creatureData.targetPosition);
-
-            //Debug.Log(creatureTargetTilemapPosition + "target");
-            //Debug.Log(creatureData.currentTilePosition + "current");
-            //Debug.Log(worldTilemap.WorldToCell(creatureGameObject.transform.localPosition) + "gameobject");
-
             float movementMultiplier = 1f;
-
 
             var slowEffect = creatureData.effects
             .Where(effect => effect.effect == Effect.Slow)
             .OrderByDescending(effect => effect.value)
             .FirstOrDefault();
-
-
 
             if (slowEffect != null)
             {
@@ -191,54 +253,9 @@ public class CreatureManager : MonoBehaviour
             }
 
 
-            if (creatureTargetTilemapPosition == creatureData.currentTilePosition || stateChanged == true)
-            {
-                if (currentState == State.Idle)
-                {
-                    Vector3Int targetTile = creatureData.surroundingTiles[Random.Range(0, creatureData.surroundingTiles.Count)];
-                    creatureData.targetPosition = worldTilemap.GetCellCenterLocal(targetTile);
-                }
-                else if (currentState == State.Aggressive)
-                {
-                    if (playerArray.Length != 0)
-                    {
-                        GameObject closestPlayer = null;
-                        float smallestDistance = Mathf.Infinity;
-
-                        foreach (GameObject player in playerArray)
-                        {
-                            if (player == null)
-                            {
-                                continue;
-                            }
-
-                            // Calculate the distance from the reference object to the current ship
-                            float distance = Vector3.Distance(creatureGameObject.transform.position, player.transform.position);
-
-                            // If this ship is closer than the previous closest, update the closest ship and smallest distance
-                            if (distance < smallestDistance)
-                            {
-                                closestPlayer = player;
-                                smallestDistance = distance;
-                            }
-                        }
-
-                        creatureData.targetShipPart = closestPlayer;
-
-                    }
 
 
-                    Vector3 targetShipPartLocalPosition = worldTilemap.WorldToCell(creatureData.targetShipPart.transform.position + new Vector3(0f, 1.25f, 0f));
-                    Vector3Int targetTile = Vector3Int.FloorToInt(targetShipPartLocalPosition);
-
-                    creatureData.targetPosition = worldTilemap.GetCellCenterLocal(targetTile);
-
-                }
-
-            }
-
-            creatureTargetTilemapPosition = worldTilemap.WorldToCell(creatureData.targetPosition);
-            List<Vector3Int> creatureTargetSurroundingTiles = GetSurroundingTiles(creatureTargetTilemapPosition, creatureData.creatureObject.range);
+            List<Vector3Int> creatureTargetSurroundingTiles = GetSurroundingTiles(creatureData.targetPosition, creatureData.creatureObject.range);
 
             if (creatureData.isDamaged == false)
             {
@@ -262,13 +279,10 @@ public class CreatureManager : MonoBehaviour
                     int deltaCurrentX = Mathf.Abs(tentacleData.currentTilePosition.x - creatureData.currentTilePosition.x);
                     int deltaCurrentY = Mathf.Abs(tentacleData.currentTilePosition.x - creatureData.currentTilePosition.y);
 
-                    Vector3Int tentacleTargetTilemapPosition = worldTilemap.WorldToCell(tentacleData.targetPosition);
-
-                    if (tentacleTargetTilemapPosition == tentacleData.currentTilePosition)
+                    if (tentacleData.targetPosition == tentacleData.currentTilePosition)
                     //
                     {
-                        Vector3Int targetTile = creatureTargetSurroundingTiles[Random.Range(0, creatureTargetSurroundingTiles.Count)];
-                        tentacleData.targetPosition = worldTilemap.GetCellCenterLocal(targetTile);
+                        tentacleData.targetPosition = creatureTargetSurroundingTiles[Random.Range(0, creatureTargetSurroundingTiles.Count)];
                     }
                     UpdateMovement(tentacleData.targetPosition, tentacleData.acceleration, tentacleData.maxMoveSpeed, tentacleData.deceleration, creatureObject.rotationSpeed, 1f, ref tentacleData.velocity, tentacleGameObject.transform);
                 }
@@ -919,14 +933,15 @@ public class CreatureManager : MonoBehaviour
 
         return tiles;
     }
-    public void UpdateMovement(Vector3 targetPosition, float acceleration, float maxMoveSpeed, float deceleration, float rotationSpeed, float movementMultiplier, ref Vector3 velocity, Transform transform)
+    public void UpdateMovement(Vector3Int targetPosition, float acceleration, float maxMoveSpeed, float deceleration, float rotationSpeed, float movementMultiplier, ref Vector3 velocity, Transform transform)
     {
         // Calculate effective acceleration and max speed with movement multiplier
         float currentAcceleration = acceleration * movementMultiplier;
         float currentMaxMoveSpeed = maxMoveSpeed * movementMultiplier;
 
         // Calculate direction to the target position
-        Vector3 direction = targetPosition - transform.localPosition;
+        Vector3 worldTargetPosition = worldTilemap.GetCellCenterWorld(targetPosition);
+        Vector3 direction = worldTargetPosition - transform.position;
         // Adjust direction for isometric movement
         Vector3 adjustedDirection = new Vector3(direction.x, direction.y * 0.5f, direction.z);
         float distance = adjustedDirection.magnitude;
@@ -1031,7 +1046,7 @@ public class CreatureManager : MonoBehaviour
                             creatureObject = randomCreatureObject,
                             currentTilePosition = currentTilePosition,
                             surroundingTiles = GetSurroundingTiles(currentTilePosition, randomCreatureObject.range),
-                            targetPosition = newCreature.transform.position,
+                            targetPosition = currentTilePosition,
                             hostility = 0,
                             health = randomCreatureObject.startingHealth,
                             healthBar = healthBarScript,
@@ -1054,7 +1069,7 @@ public class CreatureManager : MonoBehaviour
                             GameObject newTentacle = Instantiate(creaturePrefab, worldPosition, Quaternion.identity, SingletonManager.Instance.worldGenerator.seaTilemap.transform);
                             TentacleData tentacleData = new TentacleData
                             {
-                                targetPosition = newCreature.transform.position,
+                                targetPosition = currentTilePosition,
                                 currentTilePosition = currentTilePosition,
                                 setDistance = tentacle.setDistance,
                                 maxMoveSpeed = tentacle.maxMoveSpeed,

@@ -38,7 +38,7 @@ public class DayNightCycle : MonoBehaviour
 
         // Calculate the difficulty factor
         difficultyFactor = (1f - lightLevel) * elapsedTime * dampingConstant;
-        SingletonManager.Instance.creatureManager.maxGlobalMobCount = Mathf.RoundToInt(difficultyFactor);
+        //SingletonManager.Instance.creatureManager.maxGlobalMobCount = Mathf.RoundToInt(difficultyFactor);
     }
 
     void UpdateTimer()

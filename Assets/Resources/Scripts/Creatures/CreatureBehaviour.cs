@@ -13,7 +13,7 @@ public class CreatureBehaviour : MonoBehaviour
         }
         else if (collision.gameObject.CompareTag("Player")) // temporary end game for when there is just one player, and the game ends when a creature touches the player.
         {
-            //SingletonManager.Instance.
+            SingletonManager.Instance.gameStart.EndGame();
         }
     }
 }
