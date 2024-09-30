@@ -173,7 +173,7 @@ public class FishingLine : MonoBehaviour
         FishingHook hookScript = hookObject.GetComponent<FishingHook>();
         hookScript.playerTransform = playerTransform;
 
-        //Destroy(hookObject, 0.1f);
+        Destroy(hookObject, 0.1f);
 
     }
 

@@ -823,8 +823,8 @@ public class ShipGenerator : MonoBehaviour
         LineRenderer lineRenderer = trailObject.GetComponent<LineRenderer>();
 
         lineRenderer.positionCount = 2;
-        lineRenderer.startWidth = 0.05f;
-        lineRenderer.endWidth = 0.05f;
+        lineRenderer.startWidth = 0.02f;
+        lineRenderer.endWidth = 0.02f;
 
 
         lineRenderer.SetPosition(0, startPosition);

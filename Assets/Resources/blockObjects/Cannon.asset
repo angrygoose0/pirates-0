@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Cannon
   m_EditorClassIdentifier: 
   id: 2
-  blockSprite: {fileID: 21300000, guid: 59b50145b64a763428bee8e9bc3abce2, type: 3}
-  selectedSprite: {fileID: 21300000, guid: 59b50145b64a763428bee8e9bc3abce2, type: 3}
+  blockSprite: {fileID: 1224576287, guid: 6704893942dbe264aaa462d919fcc0f8, type: 3}
+  selectedSprite: {fileID: 1560793905, guid: 6704893942dbe264aaa462d919fcc0f8, type: 3}
   blockType: 0
   blockValues: []
