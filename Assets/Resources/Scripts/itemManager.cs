@@ -46,10 +46,12 @@ public class ItemManager : MonoBehaviour
         GameObject createdItem = Instantiate(itemPrefab, position, Quaternion.identity);
         createdItem.transform.SetParent(worldTilemap.transform);
 
-        SpriteRenderer spriteRenderer = createdItem.GetComponent<SpriteRenderer>();
         ItemScript itemScript = createdItem.GetComponent<ItemScript>();
 
-        spriteRenderer.sprite = createItemObject.itemSprite;
+        SpriteRenderer itemSpriteRenderer = GetComponentInChildren<SpriteRenderer>();
+
+        itemSpriteRenderer.sprite = createItemObject.itemSprite;
+
         itemScript.itemObject = createItemObject;
 
 

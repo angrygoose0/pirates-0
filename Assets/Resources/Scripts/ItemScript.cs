@@ -7,6 +7,7 @@ public class ItemScript : MonoBehaviour
     public ItemObject itemObject;
     private ProjectileData projectile = null;
     public bool activeCooldown = true;
+    public SpriteRenderer spriteRenderer;
 
     public bool isActive;
     public GameObject targetObject; // The GameObject towards which the item will lerp
@@ -19,12 +20,19 @@ public class ItemScript : MonoBehaviour
     public bool itemTaken = false;
     public bool itemPickupable;
     public bool beingReeled = false;
+    public bool onPayload = false;
 
     void Start()
     {
         if (itemObject.projectileData != null && itemObject.projectileData.Count == 1)
         {
             projectile = itemObject.projectileData[0];
+        }
+
+        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        if (itemObject != null)
+        {
+            spriteRenderer.sprite = itemObject.itemSprite;
         }
 
         itemPickupable = true; //
@@ -45,6 +53,18 @@ public class ItemScript : MonoBehaviour
             StartInactiveTimer();
         }
     }
+
+    public float bobbingSpeed = 2f; // Speed of bobbing
+    public float bobbingHeight = 0.5f; // Height of bobbing
+    void Update()
+    {
+        if (onPayload)
+        {
+            float newY = Mathf.Sin(Time.time * bobbingSpeed) * bobbingHeight;
+            spriteRenderer.gameObject.transform.localPosition = new Vector3(0f, newY, 0f);
+        }
+    }
+
 
 
 

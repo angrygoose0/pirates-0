@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Siren Scale
   m_EditorClassIdentifier: 
   itemName: 
-  itemSprite: {fileID: 21300000, guid: 53668856f0a3e40438879455195fecff, type: 3}
+  itemSprite: {fileID: 21300000, guid: 154088f6852c7ee428f692c4e2b3de5e, type: 3}
   mass: 5
   projectileData: []
   goldAmount: 0

@@ -219,7 +219,17 @@ public class InteractionManager : MonoBehaviour
 
                     equippedItemScript.SetCollider(false);
                     equippedItemScript.NewParent(blockPrefab);
+                    equippedItemScript.onPayload = true;
                     equippedItemScript.itemPickupable = false;
+
+                    if (equippedItemScript.itemObject.spawningItem != null)
+                    {
+                        equippedItemScript.spriteRenderer.sprite = equippedItemScript.itemObject.spawningItem.itemSprite;
+                        Color newColor = equippedItemScript.spriteRenderer.color;
+                        newColor.a = 0.5f;
+                        equippedItemScript.spriteRenderer.color = newColor;
+                    }
+
                     blockScript.itemPrefabObject.Add(equippedItem);
                     blockScript.blockLight.intensity = 1.5f;
                     playerScript.equippedItem = null;
@@ -229,6 +239,7 @@ public class InteractionManager : MonoBehaviour
                     SingletonManager.Instance.feedbackManager.ArtifactPlaceFeedback(newBlockPosition, multiplier);
 
                     SingletonManager.Instance.shipGenerator.UpdateBlockEffects();
+                    SingletonManager.Instance.shipGenerator.MakeTrailEffects(blockScript.transform.position);
 
                 }
                 break;
@@ -240,9 +251,13 @@ public class InteractionManager : MonoBehaviour
                     if (playerBlockRelations.ContainsKey(player))
                     {
                         ProjectileData projectile = null;
-                        if (blockItemObject.projectileData != null && blockItemObject.projectileData.Count > 0)
+                        if (blockItemObject.projectileData != null)
                         {
-                            projectile = blockItemObject.projectileData[0];
+                            if (blockItemObject.projectileData.Count > 0)
+                            {
+                                projectile = blockItemObject.projectileData[0];
+                            }
+
                             // Use projectile here
                         }
                         if (blockItemObject == null && blockScript.ammoCount == 0 && projectile != null)

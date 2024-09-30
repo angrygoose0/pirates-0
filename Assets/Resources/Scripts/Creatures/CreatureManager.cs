@@ -680,6 +680,7 @@ public class CreatureManager : MonoBehaviour
 
                 }
 
+                SingletonManager.Instance.waterShader.RemoveFromWaterDataDict(segmentObject.transform);
                 Destroy(segmentObject);
             }
             Destroy(tentacleEntry.Key);
@@ -1080,12 +1081,22 @@ public class CreatureManager : MonoBehaviour
                                 wiggleAmplitude = tentacle.wiggleAmplitude,
                                 endTarget = tentacle.endTarget,
                             };
+
+
                             bool firstSegment = true;
+                            GameObject firstSegmentObject = null;
+
                             List<float> segmentSizeList = tentacle.segmentSizes;
                             foreach (float segmentSize in segmentSizeList)
                             {
                                 GameObject newTentacleSegment = Instantiate(tentacleSegmentprefab, worldPosition, Quaternion.identity, SingletonManager.Instance.worldGenerator.seaTilemap.transform);
                                 //newTentacleSegment.transform.SetParent();
+                                if (firstSegment)
+                                {
+                                    firstSegmentObject = newTentacleSegment;
+                                }
+
+                                SingletonManager.Instance.waterShader.AddToWaterDataDict(newTentacleSegment.transform, segmentSize, firstSegmentObject);
 
                                 CircleCollider2D collider = newTentacleSegment.GetComponent<CircleCollider2D>();
                                 //SpriteRenderer renderer = newTentacleSegment.GetComponent<SpriteRenderer>();

@@ -25,7 +25,7 @@ public class Tentacles2
 {
     public List<TentacleSegment2> segments;
     public GameObject endTarget;
-    public float setDistance = 1.0f;
+    public float setDistance = 0.0f;
     public float moveSpeed = 5.0f;
     public float pullStrength = 0.5f;
     public float wiggleFrequency = 2.0f;
@@ -247,7 +247,7 @@ public class Procedural2 : MonoBehaviour
         List<Vector3> squashedPoints = new List<Vector3>();
         foreach (var point in splinePoints)
         {
-            squashedPoints.Add(new Vector3(point.x, point.y * 2f, point.z));
+            squashedPoints.Add(new Vector3(point.x * 1f, point.y, point.z));
         }
 
         lineRenderer.positionCount = squashedPoints.Count;

@@ -57,6 +57,9 @@ TagManager:
   - name: fishingLine
     uniqueID: 77638041
     locked: 0
+  - name: trail
+    uniqueID: 3822189441
+    locked: 0
   - name: player
     uniqueID: 1126429351
     locked: 0

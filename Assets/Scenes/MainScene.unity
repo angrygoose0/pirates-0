@@ -592,7 +592,7 @@ MonoBehaviour:
   m_Intensity: 0
   m_LightVolumeIntensity: 0.2
   m_LightVolumeIntensityEnabled: 0
-  m_ApplyToSortingLayers: 00000000371b4eb0233c77dc63b56ab5a7f22343d1c540c4c35f8a0499a9a004
+  m_ApplyToSortingLayers: 00000000371b4eb0233c77dc63b56ab5a7f22343d1c540c4c35f8a0499a9a00481fbd1e3
   m_LightCookieSprite: {fileID: 21300000, guid: 28ae1d0505c2f8243b9fb69c9c44abce, type: 3}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0
@@ -1511,6 +1511,7 @@ GameObject:
   - component: {fileID: 383585339}
   - component: {fileID: 383585340}
   - component: {fileID: 383585341}
+  - component: {fileID: 383585342}
   m_Layer: 0
   m_Name: ghost
   m_TagString: Untagged
@@ -1566,8 +1567,11 @@ MonoBehaviour:
   raftTileSize: 5
   mastBlocks:
   - {fileID: 0}
+  cannonBlocks: []
   editModeCamera: {fileID: 1782776637}
   tileSize: 1
+  trailSpeed: 0.5
+  trailPrefab: {fileID: 3336646461022010427, guid: f2cc9a93150116a45b1a22df5e36bc1c, type: 3}
 --- !u!114 &383585318
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1718,7 +1722,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 76177347
-  m_SortingLayer: 7
+  m_SortingLayer: 8
   m_SortingOrder: 0
   m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -1767,7 +1771,7 @@ MonoBehaviour:
   maxRadius: 4
   damagedMaterial: {fileID: 0}
   globalMobCount: 10
-  maxGlobalMobCount: 0
+  maxGlobalMobCount: 1
   maxGlobalChunkPopulation: 4
   creaturePrefab: {fileID: 6939055558043858172, guid: 00a94a03bb1f99f4d953fb2b17f1056a, type: 3}
   tentacleSegmentprefab: {fileID: 6285872198284085077, guid: 8505bef393acbbf4cab79a22a9e93f5a, type: 3}
@@ -1817,7 +1821,7 @@ MonoBehaviour:
   m_Intensity: 1
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
-  m_ApplyToSortingLayers: 00000000371b4eb0233c77dc63b56ab5a7f22343d1c540c4c35f8a0499a9a004
+  m_ApplyToSortingLayers: 00000000371b4eb0233c77dc63b56ab5a7f22343d1c540c4c35f8a0499a9a00481fbd1e3
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0
@@ -1998,6 +2002,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05417f3ad3e9d224dbc37d22d927e6f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &383585342
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 383585313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e72b35f819e4b840b5d288b553089ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ripplePrefab: {fileID: 2716090483422956626, guid: f69471c715cf0eb4ba50b47614ae2b14, type: 3}
+  rippleLength: 50
+  smoothSpeed: 0.005
 --- !u!1 &485961737
 GameObject:
   m_ObjectHideFlags: 0
@@ -2085,7 +2104,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.016375938, g: 0.031327885, b: 0.1509434, a: 0}
+  m_BackGroundColor: {r: 0.027901392, g: 0.063031234, b: 0.1792453, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -24692,11 +24711,11 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 0.5, z: 1}
+  m_LocalScale: {x: 5, y: 2.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1730932766}
   - {fileID: 1355914131}
+  - {fileID: 1730932766}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1557042205
@@ -24758,7 +24777,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 76177347
-  m_SortingLayer: 7
+  m_SortingLayer: 8
   m_SortingOrder: 100
   m_RenderMode: 1
   m_MeshDistribution: 0
@@ -30258,6 +30277,7 @@ GameObject:
   - component: {fileID: 1722425496}
   - component: {fileID: 1722425499}
   - component: {fileID: 1722425500}
+  - component: {fileID: 1722425501}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -30340,7 +30360,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1126429351
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_Sprite: {fileID: 1189568085, guid: 778a2b891907ab74d95b655d69e6111d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -30444,6 +30464,27 @@ PolygonCollider2D:
       - {x: -0.25, y: 0}
       - {x: 0, y: 0.125}
   m_UseDelaunayMesh: 0
+--- !u!95 &1722425501
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1722425495}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 75d1ce411fa693b4d9c3aff65f9554ad, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1730932765
 GameObject:
   m_ObjectHideFlags: 0
@@ -36429,7 +36470,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 76177347
-  m_SortingLayer: 7
+  m_SortingLayer: 8
   m_SortingOrder: 0
   m_RenderMode: 0
   m_MeshDistribution: 0

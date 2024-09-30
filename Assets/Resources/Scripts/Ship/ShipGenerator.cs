@@ -22,8 +22,8 @@ public class ShipData
     public TilemapRenderer tilemapRenderer = null;
     public HealthBar healthBar = null;
 
-
 }
+
 
 public class ShipGenerator : MonoBehaviour
 {
@@ -141,6 +141,8 @@ public class ShipGenerator : MonoBehaviour
 
     private Dictionary<Vector3Int, GameObject> tileToBlockPrefabMap;
     public List<GameObject> mastBlocks; // List to store blocks of type Mast
+    public List<GameObject> cannonBlocks;
+
 
     public enum Direction
     {
@@ -154,9 +156,10 @@ public class ShipGenerator : MonoBehaviour
 
         tileToBlockPrefabMap = new Dictionary<Vector3Int, GameObject>();
         mastBlocks = new List<GameObject>();
+        cannonBlocks = new List<GameObject>();
         GenerateTilemap(ship);
         CenterGhostOnShip();
-        FindMastBlocks(); // Find all mast blocks after generating the ship
+        SortBlocks(); // Find all mast blocks after generating the ship
 
 
 
@@ -434,7 +437,7 @@ public class ShipGenerator : MonoBehaviour
             CombineRaftTilesIntoShip();
             GenerateTilemap(ship);
             CenterGhostOnShip();
-            FindMastBlocks();
+            SortBlocks();
 
         }
     }
@@ -625,6 +628,7 @@ public class ShipGenerator : MonoBehaviour
         tilemap.ClearAllTiles();
         tileToBlockPrefabMap.Clear();
         mastBlocks.Clear(); // Clear the list in case of regeneration
+        cannonBlocks.Clear();
 
         int rows = ship.GetLength(0);
         int cols = ship.GetLength(1);
@@ -673,6 +677,8 @@ public class ShipGenerator : MonoBehaviour
 
                         if (blockObject != null)
                         {
+
+
                             blockPrefabScript blockScript = blockInstance.GetComponent<blockPrefabScript>();
                             blockScript.blockObject = blockObject;
                         }
@@ -795,6 +801,50 @@ public class ShipGenerator : MonoBehaviour
         }
     }
 
+    public float trailSpeed = 0.5f;
+    public GameObject trailPrefab;
+
+    public void MakeTrailEffects(Vector3 blockPosition)
+    {
+        // Output or do something with the filtered GameObjects
+        foreach (GameObject cannonBlock in cannonBlocks)
+        {
+            StartCoroutine(CreateTrail(blockPosition, cannonBlock.transform.position));
+        }
+
+    }
+
+    private IEnumerator CreateTrail(Vector3 startPosition, Vector3 endPosition)
+    {
+
+
+
+        GameObject trailObject = Instantiate(trailPrefab, startPosition, Quaternion.identity);
+        LineRenderer lineRenderer = trailObject.GetComponent<LineRenderer>();
+
+        lineRenderer.positionCount = 2;
+        lineRenderer.startWidth = 0.05f;
+        lineRenderer.endWidth = 0.05f;
+
+
+        lineRenderer.SetPosition(0, startPosition);
+        lineRenderer.SetPosition(1, startPosition);
+
+
+        float progress = 0f;
+
+        while (progress < 1f)
+        {
+            progress += Time.deltaTime * trailSpeed;
+            Vector3 currentPoint = Vector3.Lerp(startPosition, endPosition, progress);
+            lineRenderer.SetPosition(1, currentPoint);
+            yield return null;
+        }
+
+        // Ensure the line ends exactly at the cannon block
+        lineRenderer.SetPosition(1, endPosition);
+    }
+
 
 
     public void CenterGhostOnShip()
@@ -904,17 +954,26 @@ public class ShipGenerator : MonoBehaviour
         return interactableNeighbors;
     }
 
-    private void FindMastBlocks()
+    private void SortBlocks()
     {
         mastBlocks.Clear();
+        cannonBlocks.Clear();
         foreach (var entry in tileToBlockPrefabMap)
         {
             GameObject blockInstance = entry.Value;
             blockPrefabScript blockScript = blockInstance.GetComponent<blockPrefabScript>();
-            if (blockScript != null && blockScript.blockObject != null && blockScript.blockObject.blockType == BlockType.Mast)
+            if (blockScript != null && blockScript.blockObject != null)
             {
-                mastBlocks.Add(blockInstance);
+                if (blockScript.blockObject.blockType == BlockType.Mast)
+                {
+                    mastBlocks.Add(blockInstance);
+                }
+                else if (blockScript.blockObject.blockType == BlockType.Cannon)
+                {
+                    cannonBlocks.Add(blockInstance);
+                }
             }
+
         }
     }
 
@@ -922,5 +981,9 @@ public class ShipGenerator : MonoBehaviour
     public List<GameObject> GetMastBlocks()
     {
         return mastBlocks;
+    }
+    public List<GameObject> GetCannonBlocks()
+    {
+        return cannonBlocks;
     }
 }

@@ -31,7 +31,7 @@ MonoBehaviour:
   maxMoveSpeed: 5
   acceleration: 3
   deceleration: 2
-  range: 5
+  range: 3
   aggressionThreshold: 1
   tentacleList:
   - segmentSizes:
