@@ -136,7 +136,7 @@ public class FishingLine : MonoBehaviour
             {
                 Destroy(line);
                 ProjectileData lineProjectile = new ProjectileData();
-                SingletonManager.Instance.explosions.LinePull(initialEnd, playerTransform);
+                HookItemsBack(playerTransform, tilemap.GetCellCenterWorld(endTile));
                 break;
             }
 
@@ -144,4 +144,37 @@ public class FishingLine : MonoBehaviour
         }
 
     }
+
+
+    public int segmentCount;
+    public float ovalWidth;
+    public float ovalHeight;
+    public GameObject hookPrefab;
+    public void GenerateOvalCollider(PolygonCollider2D polyCollider)
+    {
+        Vector2[] points = new Vector2[segmentCount];
+
+        for (int i = 0; i < segmentCount; i++)
+        {
+            float angle = (float)i / segmentCount * Mathf.PI * 2;
+            float x = Mathf.Cos(angle) * ovalWidth / 2;
+            float y = Mathf.Sin(angle) * ovalHeight / 2;
+            points[i] = new Vector2(x, y);
+        }
+
+        polyCollider.points = points;
+    }
+
+    public void HookItemsBack(Transform playerTransform, Vector3 endPosition)
+    {
+        GameObject hookObject = Instantiate(hookPrefab, endPosition, Quaternion.identity, tilemap.transform);
+        GenerateOvalCollider(hookObject.GetComponent<PolygonCollider2D>());
+
+        FishingHook hookScript = hookObject.GetComponent<FishingHook>();
+        hookScript.playerTransform = playerTransform;
+
+        //Destroy(hookObject, 0.1f);
+
+    }
+
 }

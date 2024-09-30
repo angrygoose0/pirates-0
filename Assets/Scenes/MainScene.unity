@@ -1962,6 +1962,10 @@ MonoBehaviour:
   gravity: -9.81
   linePrefab: {fileID: 4859838073283347170, guid: 2201f73b5f072a340a957107313a09c4, type: 3}
   firingForceMultiplier: 50
+  segmentCount: 15
+  ovalWidth: 2
+  ovalHeight: 1
+  hookPrefab: {fileID: 4147475378751095634, guid: 7ea425bf84d0d04449b0a4b8a6446031, type: 3}
 --- !u!114 &383585339
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19713,7 +19717,8 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7653777232405761642, guid: a02dfe49a58e0af428c86086ccfa3b23, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
