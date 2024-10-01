@@ -14,15 +14,20 @@ public class FishingHook : MonoBehaviour
     
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log("touched someting");
         if (other.CompareTag("Item"))
         {
-            Debug.Log("touched item");
-            StartCoroutine(PullToPlayer(playerTransform, other.gameObject));
+            ItemScript itemScript = other.gameObject.GetComponent<ItemScript>();
+
+            if(!itemScript.beingReeled)
+            {
+                itemScript.beingReeled = true;
+                StartCoroutine(PullToPlayer(playerTransform, other.gameObject, itemScript));
+            }
+            
         }
     }
 
-    private IEnumerator PullToPlayer(Transform playerTransform, GameObject itemObject)
+    private IEnumerator PullToPlayer(Transform playerTransform, GameObject itemObject, ItemScript itemScript)
     {
         while (Vector3.Distance(itemObject.transform.position, playerTransform.position) > 0.1f)
         {
@@ -43,7 +48,6 @@ public class FishingHook : MonoBehaviour
             yield return null;
         }
 
-        ItemScript itemScript = itemObject.GetComponent<ItemScript>();
         itemScript.beingReeled = false;
     }
 }

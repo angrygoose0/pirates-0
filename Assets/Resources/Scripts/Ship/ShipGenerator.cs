@@ -801,7 +801,6 @@ public class ShipGenerator : MonoBehaviour
         }
     }
 
-    public float trailSpeed = 0.5f;
     public GameObject trailPrefab;
 
     public void MakeTrailEffects(Vector3 blockPosition)
@@ -816,34 +815,39 @@ public class ShipGenerator : MonoBehaviour
 
     private IEnumerator CreateTrail(Vector3 startPosition, Vector3 endPosition)
     {
-
-
-
         GameObject trailObject = Instantiate(trailPrefab, startPosition, Quaternion.identity);
         LineRenderer lineRenderer = trailObject.GetComponent<LineRenderer>();
 
         lineRenderer.positionCount = 2;
-        lineRenderer.startWidth = 0.02f;
-        lineRenderer.endWidth = 0.02f;
-
+        lineRenderer.startWidth = 0.005f;
+        lineRenderer.endWidth = 0.005f;
 
         lineRenderer.SetPosition(0, startPosition);
         lineRenderer.SetPosition(1, startPosition);
 
-
-        float progress = 0f;
+        float progress = 0.9f;
+        float duration = Vector3.Distance(startPosition, endPosition);  // Longer distance takes more time
+        float accelerationFactor = 50.0f;  // Adjust this factor for more/less acceleration
 
         while (progress < 1f)
         {
-            progress += Time.deltaTime * trailSpeed;
-            Vector3 currentPoint = Vector3.Lerp(startPosition, endPosition, progress);
+            // Increase progress over time, non-linearly, to simulate acceleration
+            progress += Time.deltaTime / duration;
+            float acceleratedProgress = Mathf.Pow(progress, accelerationFactor);  // Non-linear curve for acceleration
+
+            Vector3 currentPoint = Vector3.Lerp(startPosition, endPosition, acceleratedProgress);
             lineRenderer.SetPosition(1, currentPoint);
             yield return null;
         }
 
         // Ensure the line ends exactly at the cannon block
         lineRenderer.SetPosition(1, endPosition);
+
+        float multiplier = 1f;
+        Vector3 newEndPosition = endPosition + new Vector3(0.0f, 0.125f, 0.0f);
+        SingletonManager.Instance.feedbackManager.ArtifactPlaceFeedback(endPosition, multiplier);
     }
+
 
 
 

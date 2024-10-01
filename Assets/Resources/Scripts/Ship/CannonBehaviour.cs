@@ -87,6 +87,9 @@ public class CannonBehaviour : MonoBehaviour
         // Instantiate the cannonball at the start position
         GameObject cannonball = Instantiate(cannonballPrefab, start, Quaternion.identity);
 
+        SpriteRenderer spriteRenderer = cannonballPrefab.GetComponent<SpriteRenderer>();
+        spriteRenderer.sprite = projectile.sprite;
+
         Rigidbody2D rb = cannonball.AddComponent<Rigidbody2D>();
         rb.gravityScale = 0; // We'll handle gravity manually
 

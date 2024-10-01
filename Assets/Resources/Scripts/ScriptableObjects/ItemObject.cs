@@ -28,6 +28,7 @@ public class ProjectileData
     public int fireAmount;
     public float explosionSpeed;
     public int ammoCount = 0;
+    public Sprite sprite;
 
     // Constructor to initialize fields
     public ProjectileData(
@@ -39,7 +40,9 @@ public class ProjectileData
         bool explosionInverse = false,
         int fireAmount = 1,
         float explosionSpeed = 100f,
-        int ammoCount = 1)
+        int ammoCount = 1,
+        Sprite sprite = null
+        )
     {
         this.reloadSpeed = reloadSpeed;
         this.damageMultiplier = damageMultiplier;
@@ -50,6 +53,7 @@ public class ProjectileData
         this.fireAmount = fireAmount;
         this.explosionSpeed = explosionSpeed;
         this.ammoCount = ammoCount;
+        this.sprite = sprite;
     }
 }
 
