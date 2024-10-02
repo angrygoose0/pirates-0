@@ -76,6 +76,7 @@ public class WaterShader : MonoBehaviour
 
     void Update()
     {
+        /*
         foreach (KeyValuePair<Transform, WaterData> entry in waterDataDict)
         {
             Transform transform = entry.Key;
@@ -84,6 +85,7 @@ public class WaterShader : MonoBehaviour
 
             UpdateRipple(transform, waterData);  // Pass size if needed for customization
         }
+        */
     }
 
     // Method to update the ripple effect based on point movement

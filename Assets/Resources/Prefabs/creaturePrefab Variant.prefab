@@ -122,7 +122,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9155594814630643418, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
       propertyPath: m_SortingLayer
-      value: 6
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 9155594814630643418, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
       propertyPath: m_SortingLayerID
@@ -143,7 +143,20 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3853018371985993264, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6758094151740418470}
+    - targetCorrespondingSourceObject: {fileID: 3853018371985993264, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -4737654357086021331}
   m_SourcePrefab: {fileID: 100100000, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
+--- !u!4 &2713182598296916301 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8112100835143601025, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
+  m_PrefabInstance: {fileID: 6139762575713245900}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &3043278250401324054 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 9155594814630643418, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
+  m_PrefabInstance: {fileID: 6139762575713245900}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &6939055558043858172 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3853018371985993264, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
@@ -184,3 +197,22 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.25
+--- !u!114 &-4737654357086021331
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6939055558043858172}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5371b1580438aa49b7d482c7b7c5861, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _data:
+    source: {fileID: 2713182598296916301}
+    child: {fileID: 0}
+    sourceSr: {fileID: 3043278250401324054}
+    childSr: {fileID: 0}
+  height: 1
+  sr: {fileID: 0}

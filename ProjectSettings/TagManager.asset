@@ -19,9 +19,9 @@ TagManager:
   - Items
   - World
   - Ship
-  - 
-  - 
-  - 
+  - WaterPostProcessing
+  - Obstructors
+  - Reflections
   - 
   - 
   - 
