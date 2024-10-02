@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Water2D
 {
     [ExecuteAlways]
-    [RequireComponent(typeof(SpriteRenderer))]
+    [RequireComponent(typeof(TilemapRenderer))]
     public class ModernWater2D : MonoBehaviour
     {
         [HideInInspector][SerializeField] public static ModernWater2DSettings defaultSettings;
