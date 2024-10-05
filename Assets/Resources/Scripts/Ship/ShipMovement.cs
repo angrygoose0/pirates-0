@@ -5,20 +5,14 @@ using UnityEngine.Tilemaps;
 
 public class ShipMovement : MonoBehaviour
 {
-    public GameObject tilemap; // Reference to the tilemap or parent object containing the tilemap
+    public GameObject shipTilemap; // Reference to the tilemap or parent object containing the tilemap
     public float kFactor; // constant that multiplies with totalForce to give maxSpeed;
     private float maxSpeed; // The maximum speed at which the ship moves
     public float mass = 1f; // The mass of the ship, which affects acceleration and deceleration
 
     public Vector2 currentVelocity; // The current velocity of the ship
     private Vector2 totalForce; // The total force exerted by the mast blocks
-    private Material tilemapMaterial;
 
-    void Start()
-    {
-        TilemapRenderer tilemapRenderer = tilemap.GetComponent<TilemapRenderer>();
-        tilemapMaterial = tilemapRenderer.material;
-    }
     void Update()
     {
         // Calculate the total force from mast blocks
@@ -27,8 +21,7 @@ public class ShipMovement : MonoBehaviour
         // Update the current velocity based on the total force
         UpdateVelocity();
 
-        // Move the tilemap in the opposite direction of the ship's movement
-        MoveTilemap();
+        MoveShip();
 
 
     }
@@ -72,19 +65,14 @@ public class ShipMovement : MonoBehaviour
         }
     }
 
-    void MoveTilemap()
+    void MoveShip()
     {
         // Calculate the movement vector
         Vector3 movement = new Vector3(currentVelocity.x, currentVelocity.y, 0) * Time.deltaTime;
 
         // Apply the movement to the tilemap
-        tilemap.transform.position -= movement;
+        shipTilemap.transform.position += movement;
 
-        Vector2 tilemapPosition = (Vector2)tilemap.transform.position;
-        Vector2 inverseTilemapPosition = new Vector2(-tilemapPosition.x, -tilemapPosition.y);
-
-        // Set the _TilemapPosition in the material to this inverse position
-        tilemapMaterial.SetVector("_TilemapPosition", inverseTilemapPosition);
     }
 
     public void ApplyRecoilForce(Vector2 recoilForce)

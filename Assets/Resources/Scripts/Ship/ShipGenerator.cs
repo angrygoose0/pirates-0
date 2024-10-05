@@ -382,7 +382,7 @@ public class ShipGenerator : MonoBehaviour
     public GameObject GenerateIndividualRaft(int size, Vector3Int position)
     {
         // Instantiate the raft at the given position
-        GameObject raftTileInstance = Instantiate(raftTilePrefab, grid.transform);
+        GameObject raftTileInstance = Instantiate(raftTilePrefab, shipTilemapObject.transform);
 
         // Move the entire raft tile to the correct position in the world
         raftTileInstance.transform.position = tilemap.CellToWorld(position);
@@ -670,7 +670,7 @@ public class ShipGenerator : MonoBehaviour
 
 
                         // Instantiate the block prefab
-                        GameObject blockInstance = Instantiate(blockPrefab, worldPosition, Quaternion.identity);
+                        GameObject blockInstance = Instantiate(blockPrefab, worldPosition, Quaternion.identity, shipTilemapObject.transform);
 
                         // Find the correct BlockObject based on the ID
                         BlockObject blockObject = blockObjects.Find(b => Mathf.Approximately(b.id, ship[y, x]));
@@ -803,30 +803,30 @@ public class ShipGenerator : MonoBehaviour
 
     public GameObject trailPrefab;
 
-    public void MakeTrailEffects(Vector3 blockPosition)
+    public void MakeTrailEffects(Transform blockTransform)
     {
         // Output or do something with the filtered GameObjects
         foreach (GameObject cannonBlock in cannonBlocks)
         {
-            StartCoroutine(CreateTrail(blockPosition, cannonBlock.transform.position));
+            StartCoroutine(CreateTrail(blockTransform, cannonBlock.transform));
         }
 
     }
 
-    private IEnumerator CreateTrail(Vector3 startPosition, Vector3 endPosition)
+    private IEnumerator CreateTrail(Transform startBlock, Transform endBlock)
     {
-        GameObject trailObject = Instantiate(trailPrefab, startPosition, Quaternion.identity);
+        GameObject trailObject = Instantiate(trailPrefab, startBlock.position, Quaternion.identity, shipTilemapObject.transform);
         LineRenderer lineRenderer = trailObject.GetComponent<LineRenderer>();
 
         lineRenderer.positionCount = 2;
         lineRenderer.startWidth = 0.005f;
         lineRenderer.endWidth = 0.005f;
 
-        lineRenderer.SetPosition(0, startPosition);
-        lineRenderer.SetPosition(1, startPosition);
+        lineRenderer.SetPosition(0, startBlock.position);
+        lineRenderer.SetPosition(1, startBlock.position);
 
         float progress = 0.9f;
-        float duration = Vector3.Distance(startPosition, endPosition);  // Longer distance takes more time
+        float duration = Vector3.Distance(startBlock.position, endBlock.position);  // Longer distance takes more time
         float accelerationFactor = 50.0f;  // Adjust this factor for more/less acceleration
 
         while (progress < 1f)
@@ -835,17 +835,17 @@ public class ShipGenerator : MonoBehaviour
             progress += Time.deltaTime / duration;
             float acceleratedProgress = Mathf.Pow(progress, accelerationFactor);  // Non-linear curve for acceleration
 
-            Vector3 currentPoint = Vector3.Lerp(startPosition, endPosition, acceleratedProgress);
+            Vector3 currentPoint = Vector3.Lerp(startBlock.position, endBlock.position, acceleratedProgress);
             lineRenderer.SetPosition(1, currentPoint);
             yield return null;
         }
 
         // Ensure the line ends exactly at the cannon block
-        lineRenderer.SetPosition(1, endPosition);
+        lineRenderer.SetPosition(1, endBlock.position);
 
         float multiplier = 1f;
-        Vector3 newEndPosition = endPosition + new Vector3(0.0f, 0.125f, 0.0f);
-        SingletonManager.Instance.feedbackManager.ArtifactPlaceFeedback(endPosition, multiplier);
+        Vector3 newEndPosition = endBlock.position + new Vector3(0.0f, 0.125f, 0.0f);
+        SingletonManager.Instance.feedbackManager.ArtifactPlaceFeedback(endBlock.position, multiplier);
     }
 
 

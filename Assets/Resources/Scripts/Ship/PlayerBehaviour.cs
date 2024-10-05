@@ -198,6 +198,7 @@ public class PlayerBehaviour : MonoBehaviour
         {
             return;
         }
+
         // Apply acceleration or deceleration
         if (movementInput != Vector2.zero)
         {
@@ -208,26 +209,33 @@ public class PlayerBehaviour : MonoBehaviour
             currentVelocity = Vector2.MoveTowards(currentVelocity, Vector2.zero, deceleration * Time.fixedDeltaTime);
         }
 
-        // Calculate the potential new position
-        Vector2 newPosition = rb.position + currentVelocity * Time.fixedDeltaTime;
+        // Calculate the potential new local position (relative to the parent ship)
+        Vector3 newLocalPosition = transform.localPosition + (Vector3)(currentVelocity * Time.fixedDeltaTime);
 
-        // Convert the new position to a tilemap position
-        Vector3Int tilePosition = SingletonManager.Instance.shipGenerator.tilemap.WorldToCell(new Vector3(newPosition.x, newPosition.y, 0)) + new Vector3Int((int)tileOffset.x, (int)tileOffset.y, 0);
+        // Convert the local position to world position
+        Vector3 worldPosition = transform.parent.TransformPoint(newLocalPosition);
+
+        // Convert the world position to a tilemap position
+        Vector3Int tilePosition = SingletonManager.Instance.shipGenerator.tilemap.WorldToCell(new Vector3(worldPosition.x, worldPosition.y, 0)) + new Vector3Int((int)tileOffset.x, (int)tileOffset.y, 0);
 
         // Check if the new tile position is walkable
         if (SingletonManager.Instance.shipGenerator.IsTileWalkable(tilePosition))
         {
-            // Move the player using the Rigidbody2D component
-            rb.MovePosition(newPosition);
+            // Move the player by updating the local transform
+            transform.localPosition = newLocalPosition;
         }
         else
         {
             // Apply bounce back effect
             currentVelocity = -currentVelocity * bounceBackFactor;
-            newPosition = rb.position + currentVelocity * Time.fixedDeltaTime;
-            rb.MovePosition(newPosition);
+            newLocalPosition = transform.localPosition + (Vector3)(currentVelocity * Time.fixedDeltaTime);
+
+            // Update the local position after bounce
+            transform.localPosition = newLocalPosition;
         }
     }
+
+
 
     void FindClosestItem()
     {

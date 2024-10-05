@@ -11,6 +11,7 @@ public class ChunkData
     public int chunkHostility;
     public int chunkPopulation;
     public int chunkWeirdness;
+    public GameObject chunkWaterTexture;
 
     public ChunkData(Vector3Int position)
     {
@@ -19,6 +20,7 @@ public class ChunkData
         tileTemperatures = new Dictionary<Vector3Int, int>();
         chunkPopulation = 0;
         chunkWeirdness = 0;
+        chunkWaterTexture = null;
 
     }
 }
@@ -32,11 +34,20 @@ public class WorldGenerator : MonoBehaviour
     public float weirdnessScale = 0.05f;
     public List<TileObject> tileObjects; // List of TileObjects
     public int worldSeed;
-    private Vector3Int initialChunkPosition;
+    private Vector3 worldCenterPosition;
     private Vector3Int previousCenterChunkPosition;
     public Dictionary<Vector3Int, ChunkData> generatedChunks;
 
     public Vector3Int mouseTilePosition;
+
+
+    private Vector2 waterTextureSize = new Vector2(1024, 512);
+    private Vector2 tilemapSize = new Vector2(32, 16);
+    public int tilemapSpritePixelsPerUnit = 32;
+    public int placeWaterTextureEveryChunk = 2;
+    public GameObject waterTexturePrefab;
+
+
 
     void Start()
     {
@@ -51,17 +62,13 @@ public class WorldGenerator : MonoBehaviour
         DetectTileHover();
     }
 
+
     void GenerateInitialWorld()
     {
-        // Get the center position of the ship (ghost's position)
-        Vector3 worldCenterPosition = transform.position;
-
-        // Convert world position to chunk position
-        initialChunkPosition = WorldToChunkPosition(worldCenterPosition);
-        previousCenterChunkPosition = initialChunkPosition;
+        previousCenterChunkPosition = Vector3Int.zero;
 
         // Generate initial chunks in a radius around the center position
-        GenerateChunksInRadius(initialChunkPosition);
+        GenerateChunksInRadius(Vector3Int.zero);
     }
 
     public ChunkData GetChunkData(Vector3 worldPosition)
@@ -95,6 +102,8 @@ public class WorldGenerator : MonoBehaviour
             for (int x = -radius; x <= radius; x++)
             {
                 Vector3Int chunkPosition = new Vector3Int(centerChunkPosition.x + x, centerChunkPosition.y + y, 0);
+
+
                 float distance = Mathf.Sqrt(x * x + y * y);
 
                 if (distance <= radius && !generatedChunks.ContainsKey(chunkPosition))
@@ -104,22 +113,19 @@ public class WorldGenerator : MonoBehaviour
             }
         }
     }
-
     void GenerateChunk(Vector3Int chunkPosition)
     {
         // Create a new ChunkData instance for this chunk
         ChunkData chunkData = new ChunkData(chunkPosition);
 
         // Calculate the distance from the initial chunk position to determine hostility range
-        float distanceFromInitialChunk = Vector3Int.Distance(chunkPosition, initialChunkPosition);
+        float distanceFromInitialChunk = Vector3Int.Distance(chunkPosition, Vector3Int.zero);
         chunkData.chunkHostility = Mathf.RoundToInt(distanceFromInitialChunk);
-
 
         float seedMultiplier = worldSeed;
 
         // Calculate weirdness using Perlin noise
         float weirdValue = Mathf.PerlinNoise(chunkPosition.x * weirdnessScale + seedMultiplier + 2000, chunkPosition.y * weirdnessScale + seedMultiplier + 2000);
-
         int weird = Mathf.RoundToInt(weirdValue * 100);
         chunkData.chunkWeirdness = weird;
 
@@ -174,8 +180,21 @@ public class WorldGenerator : MonoBehaviour
             SingletonManager.Instance.structureManager.GenerateStructure(chunkCenterWorldPosition);
         }
 
+        // Check if both chunkPosition.x and chunkPosition.y are even
+        if (chunkPosition.x % 2 == 0 && chunkPosition.y % 2 == 0)
+        {
+            // Calculate the world position of the center of this chunk
+            Vector3 chunkCenterWorldPosition = seaTilemap.CellToWorld(new Vector3Int(
+                chunkPosition.x * chunkSize + chunkSize / 2,
+                chunkPosition.y * chunkSize + chunkSize / 2,
+                0
+            ));
 
+            // Instantiate the small prefab at the center of the chunk
+            chunkData.chunkWaterTexture = Instantiate(waterTexturePrefab, chunkCenterWorldPosition, Quaternion.identity, seaTilemap.transform);
+        }
     }
+
 
     void MaintainChunkRadius()
     {
@@ -223,6 +242,11 @@ public class WorldGenerator : MonoBehaviour
                 // Remove the tile from the tilemap
                 seaTilemap.SetTile(tilePosition, null);
             }
+            if (chunkData.chunkWaterTexture != null)
+            {
+                Destroy(chunkData.chunkWaterTexture);
+                chunkData.chunkWaterTexture = null;
+            }
 
             // Remove the chunk data from the generated chunks dictionary
             generatedChunks.Remove(chunkPosition);
@@ -253,6 +277,7 @@ public class WorldGenerator : MonoBehaviour
                 int chunkPopulation = chunkData.chunkPopulation;
                 float chunkWeirdness = chunkData.chunkWeirdness; // Add this line
                 //Debug.Log(chunkData.chunkPosition);
+                //Debug.Log($"Tile Position: {mouseTilePosition}");
                 //Debug.Log($"Tile Position: {mouseTilePosition} - Depth: {depth}, Temperature: {temperature}, Hostility: {hostility}, Mob Capacity: {chunkPopulation}, Weirdness: {chunkWeirdness}, Position: {chunkData.chunkPosition}");
                 break;
             }
