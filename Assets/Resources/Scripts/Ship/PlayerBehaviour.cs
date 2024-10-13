@@ -23,6 +23,14 @@ public class PlayerBehaviour : MonoBehaviour
     public SpriteRenderer spriteRenderer;
     public Sprite spriteN, spriteNE, spriteE, spriteSE, spriteS, spriteSW, spriteW, spriteNW;
 
+    public float dashSpeed = 10f;      // How fast the dash is
+    public float dashDuration = 0.2f;  // How long the dash lasts
+    public float dashCooldown = 2f;    // Cooldown between dashes
+
+    private bool isDashing = false;    // Flag to check if the player is dashing
+    private float dashTime = 0f;       // Timer for dash duration
+    private float lastDashTime = 0f;   // Timer to track cooldown
+
 
 
     public GameObject equippedItem;
@@ -30,7 +38,7 @@ public class PlayerBehaviour : MonoBehaviour
     public GameObject equippedBlock;
     public float playerPickupRadius = 5f; // Radius within which to detect items
 
-    public ShipGenerator.Direction currentDirection;
+    public Direction currentDirection;
 
     public GameObject pickupRadius;
 
@@ -57,7 +65,7 @@ public class PlayerBehaviour : MonoBehaviour
     }
     void Update()
     {
-        if (SingletonManager.Instance.gameStart.gameStarted)
+        if (SingletonManager.Instance.gameStart.gameStarted || SingletonManager.Instance.gameStart.trailer)
         {
             // Get input from the player
             movementInput.x = Input.GetAxis("Horizontal");
@@ -93,6 +101,8 @@ public class PlayerBehaviour : MonoBehaviour
             {
                 InteractWithBlock(3);
             }
+
+
             if (Input.GetMouseButtonDown(0) && !isFiring)
             {
                 mouseDownTime = Time.time;
@@ -293,7 +303,7 @@ public class PlayerBehaviour : MonoBehaviour
         Vector3Int playerTilePosition = SingletonManager.Instance.shipGenerator.tilemap.WorldToCell(rb.position) + new Vector3Int((int)tileOffset.x, (int)tileOffset.y, 0);
 
         // Get the list of interactable tiles around the player
-        List<(Vector3Int position, ShipGenerator.Direction direction)> interactableTiles = SingletonManager.Instance.shipGenerator.GetInteractableNeighbors(playerTilePosition);
+        List<(Vector3Int position, Direction direction)> interactableTiles = SingletonManager.Instance.shipGenerator.GetInteractableNeighbors(playerTilePosition);
 
         // Reset the previous interactable tile if it is not in the list of interactable tiles
         if (previousInteractableTilePosition.HasValue && !interactableTiles.Exists(t => t.position == previousInteractableTilePosition.Value))
@@ -311,18 +321,18 @@ public class PlayerBehaviour : MonoBehaviour
         }
     }
 
-    (Vector3Int position, ShipGenerator.Direction direction)? FindClosestDirectionTile(List<(Vector3Int position, ShipGenerator.Direction direction)> tiles, ShipGenerator.Direction targetDirection)
+    (Vector3Int position, Direction direction)? FindClosestDirectionTile(List<(Vector3Int position, Direction direction)> tiles, Direction targetDirection)
     {
         if (tiles == null || tiles.Count == 0) return null;
 
         // Create a sorted list of directions in the order of preference (exact match first, then closest)
-        ShipGenerator.Direction[] directionOrder = new ShipGenerator.Direction[]
+        Direction[] directionOrder = new Direction[]
         {
             targetDirection,
-            GetClockwiseDirection(targetDirection),
-            GetCounterClockwiseDirection(targetDirection),
-            GetClockwiseDirection(GetClockwiseDirection(targetDirection)),
-            GetCounterClockwiseDirection(GetCounterClockwiseDirection(targetDirection))
+            targetDirection.Rotate(2),
+            targetDirection.Rotate(-2),
+            targetDirection.Rotate(4),
+            targetDirection.Rotate(-4),
         };
 
         foreach (var direction in directionOrder)
@@ -340,37 +350,6 @@ public class PlayerBehaviour : MonoBehaviour
         return tiles[0];
     }
 
-    ShipGenerator.Direction GetClockwiseDirection(ShipGenerator.Direction direction)
-    {
-        switch (direction)
-        {
-            case ShipGenerator.Direction.N: return ShipGenerator.Direction.NE;
-            case ShipGenerator.Direction.NE: return ShipGenerator.Direction.E;
-            case ShipGenerator.Direction.E: return ShipGenerator.Direction.SE;
-            case ShipGenerator.Direction.SE: return ShipGenerator.Direction.S;
-            case ShipGenerator.Direction.S: return ShipGenerator.Direction.SW;
-            case ShipGenerator.Direction.SW: return ShipGenerator.Direction.W;
-            case ShipGenerator.Direction.W: return ShipGenerator.Direction.NW;
-            case ShipGenerator.Direction.NW: return ShipGenerator.Direction.N;
-            default: return direction;
-        }
-    }
-
-    ShipGenerator.Direction GetCounterClockwiseDirection(ShipGenerator.Direction direction)
-    {
-        switch (direction)
-        {
-            case ShipGenerator.Direction.N: return ShipGenerator.Direction.NW;
-            case ShipGenerator.Direction.NW: return ShipGenerator.Direction.W;
-            case ShipGenerator.Direction.W: return ShipGenerator.Direction.SW;
-            case ShipGenerator.Direction.SW: return ShipGenerator.Direction.S;
-            case ShipGenerator.Direction.S: return ShipGenerator.Direction.SE;
-            case ShipGenerator.Direction.SE: return ShipGenerator.Direction.E;
-            case ShipGenerator.Direction.E: return ShipGenerator.Direction.NE;
-            case ShipGenerator.Direction.NE: return ShipGenerator.Direction.N;
-            default: return direction;
-        }
-    }
 
     void HighlightTile(Vector3Int tilePosition)
     {
@@ -477,40 +456,74 @@ public class PlayerBehaviour : MonoBehaviour
 
         if (movementInput.x > 0 && movementInput.y > 0)
         {
-            SetDirection(ShipGenerator.Direction.NE, spriteNE);
+            SetDirection(Direction.NE, spriteNE);
         }
         else if (movementInput.x > 0 && movementInput.y < 0)
         {
-            SetDirection(ShipGenerator.Direction.SE, spriteSE);
+            SetDirection(Direction.SE, spriteSE);
         }
         else if (movementInput.x < 0 && movementInput.y > 0)
         {
-            SetDirection(ShipGenerator.Direction.NW, spriteNW);
+            SetDirection(Direction.NW, spriteNW);
         }
         else if (movementInput.x < 0 && movementInput.y < 0)
         {
-            SetDirection(ShipGenerator.Direction.SW, spriteSW);
+            SetDirection(Direction.SW, spriteSW);
         }
         else if (movementInput.x > 0)
         {
-            SetDirection(ShipGenerator.Direction.E, spriteE);
+            SetDirection(Direction.E, spriteE);
         }
         else if (movementInput.x < 0)
         {
-            SetDirection(ShipGenerator.Direction.W, spriteW);
+            SetDirection(Direction.W, spriteW);
         }
         else if (movementInput.y > 0)
         {
-            SetDirection(ShipGenerator.Direction.N, spriteN);
+            SetDirection(Direction.N, spriteN);
         }
         else if (movementInput.y < 0)
         {
-            SetDirection(ShipGenerator.Direction.S, spriteS);
+            SetDirection(Direction.S, spriteS);
+        }
+
+        // Check if space is pressed and if the player can dash
+        if (Input.GetKeyDown(KeyCode.Space) && Time.time >= lastDashTime + dashCooldown)
+        {
+            StartDash();
+        }
+
+        // Handle dash logic
+        if (isDashing)
+        {
+            Dash();
+        }
+    }
+
+    void StartDash()
+    {
+        isDashing = true;
+        dashTime = 0f;
+        lastDashTime = Time.time; // Reset the cooldown timer
+    }
+
+    void Dash()
+    {
+        // Increase the dash timer
+        dashTime += Time.deltaTime;
+
+        // Move in the direction the player is looking at or moving
+        transform.position += (Vector3)currentDirection.ToVector3Int() * dashSpeed * Time.deltaTime;
+
+        // End the dash if it has lasted for the dashDuration
+        if (dashTime >= dashDuration)
+        {
+            isDashing = false;
         }
     }
 
 
-    void SetDirection(ShipGenerator.Direction direction, Sprite sprite)
+    void SetDirection(Direction direction, Sprite sprite)
     {
         currentDirection = direction;
         spriteRenderer.sprite = sprite;

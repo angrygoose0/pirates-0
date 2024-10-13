@@ -239,7 +239,12 @@ public class InteractionManager : MonoBehaviour
                     SingletonManager.Instance.feedbackManager.ArtifactPlaceFeedback(newBlockPosition, multiplier);
 
                     SingletonManager.Instance.shipGenerator.UpdateBlockEffects();
-                    SingletonManager.Instance.shipGenerator.MakeTrailEffects(blockScript.transform);
+
+                    if (equippedItemObject.affectsCannons)
+                    {
+                        SingletonManager.Instance.shipGenerator.MakeTrailEffects(blockScript.transform);
+                    }
+
 
                 }
                 break;

@@ -13,19 +13,13 @@ MonoBehaviour:
   m_Name: Gold
   m_EditorClassIdentifier: 
   itemName: Gold
-  itemSprite: {fileID: -810512370, guid: eccc8b95d0cd88e4eb091f0228ffd6e7, type: 3}
+  itemSprite: {fileID: 0}
   mass: 5
-  reloadSpeed: 1
-  damageMultiplier: 0
-  explosionMultiplier: 0
-  explosionRange: 0
-  accuracy: 0
-  explosionInverse: 0
-  fireAmount: 0
-  explosionSpeed: 0
+  projectileData: []
   goldAmount: 1
   spawningItem: {fileID: 0}
   regenerateTime: 0
   recipes: []
-  activeAbility: 0
-  effects: []
+  affectsCannons: 0
+  abilityList: []
+  active: {fileID: 0}

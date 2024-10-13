@@ -32,13 +32,13 @@ public class DayNightCycle : MonoBehaviour
 
         // Calculate the light level based on the elapsed time
         lightLevel = (Mathf.Sin((elapsedTime / dayDuration) * 2f * Mathf.PI) + 1f) / 2f;
-        globalLight.intensity = lightLevel;
+        //globalLight.intensity = lightLevel;
 
-        shipLight.intensity = 1 - lightLevel;
+        //shipLight.intensity = 1 - lightLevel;
 
         // Calculate the difficulty factor
         difficultyFactor = (1f - lightLevel) * elapsedTime * dampingConstant;
-        //SingletonManager.Instance.creatureManager.maxGlobalMobCount = Mathf.RoundToInt(difficultyFactor);
+        SingletonManager.Instance.creatureManager.maxGlobalMobCount = Mathf.RoundToInt(difficultyFactor);
     }
 
     void UpdateTimer()

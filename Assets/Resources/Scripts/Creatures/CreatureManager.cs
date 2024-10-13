@@ -115,6 +115,9 @@ public class CreatureManager : MonoBehaviour
 
     public GameObject[] playerArray;
 
+    public Transform tempTransform;
+    public CreatureObject tempCreatureObject;
+
     void Start()
     {
         creatures = new Dictionary<GameObject, CreatureData>();
@@ -128,6 +131,25 @@ public class CreatureManager : MonoBehaviour
         playerArray = GameObject.FindGameObjectsWithTag("Player");
 
 
+    }
+
+    public CreatureData Trailer1()
+    {
+
+        List<Vector3Int> viableChunkList = new List<Vector3Int>(viableChunks);
+        Vector3Int randomChunkPosition = viableChunkList[Random.Range(0, viableChunkList.Count)];
+        ChunkData randomChunk;
+        SingletonManager.Instance.worldGenerator.generatedChunks.TryGetValue(randomChunkPosition, out randomChunk);
+
+
+        if (randomChunk != null)
+        {
+            CreatureData newCreatureData = SpawnCreature(tempTransform.position, tempCreatureObject, randomChunk);
+            return newCreatureData;
+        }
+
+
+        return null;
     }
 
 
@@ -392,10 +414,13 @@ public class CreatureManager : MonoBehaviour
 
 
 
-        if (globalMobCount < maxGlobalMobCount)
+
+        if (globalMobCount < maxGlobalMobCount && !SingletonManager.Instance.gameStart.trailer)
         {
             mobSpawner();
         }
+
+
         HandleDespawning();
     }
 
@@ -1007,6 +1032,126 @@ public class CreatureManager : MonoBehaviour
 
 
 
+    public CreatureData SpawnCreature(Vector3 worldPosition, CreatureObject randomCreatureObject, ChunkData randomChunk)
+    {
+        GameObject newCreature = Instantiate(creaturePrefab, worldPosition, Quaternion.identity, SingletonManager.Instance.worldGenerator.seaTilemap.transform);
+        GameObject newHealthBar = Instantiate(healthBarPrefab, worldPosition, Quaternion.identity, canvas.transform);
+        HealthBar healthBarScript = newHealthBar.GetComponent<HealthBar>();
+
+        CreatureBehaviour creatureBehaviour = newCreature.AddComponent<CreatureBehaviour>();
+
+        Vector3Int currentTilePosition = SingletonManager.Instance.worldGenerator.seaTilemap.WorldToCell(worldPosition);
+        creatures.Add(newCreature, new CreatureData
+        {
+            creatureObject = randomCreatureObject,
+            currentTilePosition = currentTilePosition,
+            surroundingTiles = GetSurroundingTiles(currentTilePosition, randomCreatureObject.range),
+            targetPosition = currentTilePosition,
+            hostility = 0,
+            health = randomCreatureObject.startingHealth,
+            healthBar = healthBarScript,
+        });
+
+
+        globalMobCount++;
+
+        randomChunk.chunkPopulation += randomCreatureObject.populationValue;
+
+        CreatureData creatureData = creatures[newCreature];
+
+
+        List<TentacleValue> tentacleList = randomCreatureObject.tentacleList;
+
+
+        foreach (TentacleValue tentacle in tentacleList)
+        {
+
+            GameObject newTentacle = Instantiate(creaturePrefab, worldPosition, Quaternion.identity, SingletonManager.Instance.worldGenerator.seaTilemap.transform);
+            TentacleData tentacleData = new TentacleData
+            {
+                targetPosition = currentTilePosition,
+                currentTilePosition = currentTilePosition,
+                setDistance = tentacle.setDistance,
+                maxMoveSpeed = tentacle.maxMoveSpeed,
+                deceleration = tentacle.deceleration,
+                acceleration = tentacle.acceleration,
+                pullStrength = tentacle.pullStrength,
+                wiggleFrequency = tentacle.wiggleFrequency,
+                wiggleAmplitude = tentacle.wiggleAmplitude,
+                endTarget = tentacle.endTarget,
+            };
+
+
+            bool firstSegment = true;
+            GameObject firstSegmentObject = null;
+
+            List<float> segmentSizeList = tentacle.segmentSizes;
+            foreach (float segmentSize in segmentSizeList)
+            {
+                GameObject newTentacleSegment = Instantiate(tentacleSegmentprefab, worldPosition, Quaternion.identity, SingletonManager.Instance.worldGenerator.seaTilemap.transform);
+                //newTentacleSegment.transform.SetParent();
+
+                float diameter;
+                if (firstSegment)
+                {
+                    firstSegmentObject = newTentacleSegment;
+                    //diameter = 0.15f;
+                }
+
+                diameter = segmentSize * 2.0f;
+
+                float obstructionScale = Mathf.Pow(1000f, segmentSize) * segmentSize;
+
+
+                SingletonManager.Instance.waterShader.AddToWaterDataDict(newTentacleSegment.transform, segmentSize, firstSegmentObject);
+
+                CircleCollider2D collider = newTentacleSegment.GetComponent<CircleCollider2D>();
+                //SpriteRenderer renderer = newTentacleSegment.GetComponent<SpriteRenderer>();
+                collider.radius = segmentSize;
+                newTentacleSegment.transform.localScale = new Vector3(obstructionScale, obstructionScale, 1);
+                TentacleSegment tentacleSegmentData = new TentacleSegment
+                {
+                    creature = newCreature,
+                    tentacle = newTentacle,
+                    collider = collider,
+                    //renderer = renderer,
+                };
+                tentacleData.segments.Add(newTentacleSegment, tentacleSegmentData);
+
+                segmentToCreature[newTentacleSegment] = newCreature; // Add to reverse lookup
+                segmentToTentacle[newTentacleSegment] = newTentacle;
+
+                if (firstSegment)
+                {
+                    firstSegment = false;
+                    healthBarScript.target = newTentacleSegment.transform;
+                    tentacleData.lineRenderer = newTentacleSegment.AddComponent<LineRenderer>();
+                    tentacleData.lineRenderer.material = creatureMaterial;
+                    tentacleData.lineRenderer.material.SetFloat("_StretchInX", 2f);
+                    tentacleData.lineRenderer.material.SetColor("_OriginalColor", Color.black);
+                    tentacleData.lineRenderer.sortingLayerName = "creature";
+
+                    AnimationCurve widthCurve = new AnimationCurve();
+                    for (int o = 0; o < segmentSizeList.Count; o++)
+                    {
+                        float t = (float)o / (segmentSizeList.Count - 1); // Normalized position along the line
+                        float width = segmentSizeList[o] * 2.0f; // Diameter
+                        widthCurve.AddKey(t, width);
+                    }
+                    tentacleData.lineRenderer.widthCurve = widthCurve;
+                    tentacleData.lineRenderer.widthMultiplier = 1.0f;
+                    tentacleData.lineRenderer.numCapVertices = 10;
+
+
+                }
+
+            }
+            creatureData.tentacles.Add(newTentacle, tentacleData);
+
+        }
+
+        return creatureData;
+    }
     void mobSpawner()
     {
         List<Vector3Int> viableChunkList = new List<Vector3Int>(viableChunks);
@@ -1032,124 +1177,20 @@ public class CreatureManager : MonoBehaviour
 
                     for (int i = 0; i < packSize; i++)
                     {
-                        //Debug.Log("spawning creature");
-                        GameObject newCreature = Instantiate(creaturePrefab, worldPosition, Quaternion.identity, SingletonManager.Instance.worldGenerator.seaTilemap.transform);
-                        GameObject newHealthBar = Instantiate(healthBarPrefab, worldPosition, Quaternion.identity, canvas.transform);
-                        HealthBar healthBarScript = newHealthBar.GetComponent<HealthBar>();
 
-                        CreatureBehaviour creatureBehaviour = newCreature.AddComponent<CreatureBehaviour>();
-
-
-
-                        Vector3Int currentTilePosition = SingletonManager.Instance.worldGenerator.seaTilemap.WorldToCell(worldPosition);
-                        creatures.Add(newCreature, new CreatureData
-                        {
-                            creatureObject = randomCreatureObject,
-                            currentTilePosition = currentTilePosition,
-                            surroundingTiles = GetSurroundingTiles(currentTilePosition, randomCreatureObject.range),
-                            targetPosition = currentTilePosition,
-                            hostility = 0,
-                            health = randomCreatureObject.startingHealth,
-                            healthBar = healthBarScript,
-                        });
-
-
-                        globalMobCount++;
-
-                        randomChunk.chunkPopulation += randomCreatureObject.populationValue;
-
-                        CreatureData creatureData = creatures[newCreature];
-
-
-                        List<TentacleValue> tentacleList = randomCreatureObject.tentacleList;
-
-
-                        foreach (TentacleValue tentacle in tentacleList)
-                        {
-
-                            GameObject newTentacle = Instantiate(creaturePrefab, worldPosition, Quaternion.identity, SingletonManager.Instance.worldGenerator.seaTilemap.transform);
-                            TentacleData tentacleData = new TentacleData
-                            {
-                                targetPosition = currentTilePosition,
-                                currentTilePosition = currentTilePosition,
-                                setDistance = tentacle.setDistance,
-                                maxMoveSpeed = tentacle.maxMoveSpeed,
-                                deceleration = tentacle.deceleration,
-                                acceleration = tentacle.acceleration,
-                                pullStrength = tentacle.pullStrength,
-                                wiggleFrequency = tentacle.wiggleFrequency,
-                                wiggleAmplitude = tentacle.wiggleAmplitude,
-                                endTarget = tentacle.endTarget,
-                            };
-
-
-                            bool firstSegment = true;
-                            GameObject firstSegmentObject = null;
-
-                            List<float> segmentSizeList = tentacle.segmentSizes;
-                            foreach (float segmentSize in segmentSizeList)
-                            {
-                                GameObject newTentacleSegment = Instantiate(tentacleSegmentprefab, worldPosition, Quaternion.identity, SingletonManager.Instance.worldGenerator.seaTilemap.transform);
-                                //newTentacleSegment.transform.SetParent();
-                                if (firstSegment)
-                                {
-                                    firstSegmentObject = newTentacleSegment;
-                                }
-
-                                SingletonManager.Instance.waterShader.AddToWaterDataDict(newTentacleSegment.transform, segmentSize, firstSegmentObject);
-
-                                CircleCollider2D collider = newTentacleSegment.GetComponent<CircleCollider2D>();
-                                //SpriteRenderer renderer = newTentacleSegment.GetComponent<SpriteRenderer>();
-                                collider.radius = segmentSize;
-                                float diameter = segmentSize * 2.0f;
-                                newTentacleSegment.transform.localScale = new Vector3(diameter, diameter, 1);
-                                TentacleSegment tentacleSegmentData = new TentacleSegment
-                                {
-                                    creature = newCreature,
-                                    tentacle = newTentacle,
-                                    collider = collider,
-                                    //renderer = renderer,
-                                };
-                                tentacleData.segments.Add(newTentacleSegment, tentacleSegmentData);
-
-                                segmentToCreature[newTentacleSegment] = newCreature; // Add to reverse lookup
-                                segmentToTentacle[newTentacleSegment] = newTentacle;
-
-                                if (firstSegment)
-                                {
-                                    firstSegment = false;
-                                    healthBarScript.target = newTentacleSegment.transform;
-                                    tentacleData.lineRenderer = newTentacleSegment.AddComponent<LineRenderer>();
-                                    tentacleData.lineRenderer.material = creatureMaterial;
-                                    tentacleData.lineRenderer.material.SetFloat("_StretchInX", 2f);
-                                    tentacleData.lineRenderer.material.SetColor("_OriginalColor", Color.black);
-                                    tentacleData.lineRenderer.sortingLayerName = "creature";
-
-                                    AnimationCurve widthCurve = new AnimationCurve();
-                                    for (int o = 0; o < segmentSizeList.Count; o++)
-                                    {
-                                        float t = (float)o / (segmentSizeList.Count - 1); // Normalized position along the line
-                                        float width = segmentSizeList[o] * 2.0f; // Diameter
-                                        widthCurve.AddKey(t, width);
-                                    }
-                                    tentacleData.lineRenderer.widthCurve = widthCurve;
-                                    tentacleData.lineRenderer.widthMultiplier = 1.0f;
-                                    tentacleData.lineRenderer.numCapVertices = 10;
-
-
-                                }
-
-                            }
-                            creatureData.tentacles.Add(newTentacle, tentacleData);
-
-                        }
+                        SpawnCreature(worldPosition, randomCreatureObject, randomChunk);
 
 
                     }
+
+
+
+
                 }
             }
         }
     }
+
 
     void HandleDespawning()
     {

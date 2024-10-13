@@ -29,6 +29,7 @@ public class ProjectileData
     public float explosionSpeed;
     public int ammoCount = 0;
     public Sprite sprite;
+    public float cameraShake;
 
     // Constructor to initialize fields
     public ProjectileData(
@@ -41,7 +42,8 @@ public class ProjectileData
         int fireAmount = 1,
         float explosionSpeed = 100f,
         int ammoCount = 1,
-        Sprite sprite = null
+        Sprite sprite = null,
+        float cameraShake = 1f
         )
     {
         this.reloadSpeed = reloadSpeed;
@@ -54,6 +56,7 @@ public class ProjectileData
         this.explosionSpeed = explosionSpeed;
         this.ammoCount = ammoCount;
         this.sprite = sprite;
+        this.cameraShake = cameraShake;
     }
 }
 
@@ -70,6 +73,7 @@ public class ItemObject : ScriptableObject
     public ItemObject spawningItem;
     public float regenerateTime;
     public List<Recipe> recipes;
+    public bool affectsCannons = false;
 
 
     public List<AbilityData> abilityList;

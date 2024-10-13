@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 2361384936445831412}
   - component: {fileID: 7055860298023829826}
   - component: {fileID: -6688535120312322746}
-  - component: {fileID: 949472830607873088}
   m_Layer: 0
   m_Name: testing tentacle
   m_TagString: Creature
@@ -149,22 +148,3 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.5
---- !u!114 &949472830607873088
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6285872198284085077}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5371b1580438aa49b7d482c7b7c5861, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _data:
-    source: {fileID: 0}
-    child: {fileID: 0}
-    sourceSr: {fileID: 0}
-    childSr: {fileID: 0}
-  height: 1
-  sr: {fileID: 0}

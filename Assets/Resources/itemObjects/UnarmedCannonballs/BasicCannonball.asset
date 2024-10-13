@@ -13,12 +13,13 @@ MonoBehaviour:
   m_Name: BasicCannonball
   m_EditorClassIdentifier: 
   itemName: BasicCannonball
-  itemSprite: {fileID: 21300000, guid: d8cf14733b49f654c8fa162bdb04e9e9, type: 3}
+  itemSprite: {fileID: 21300000, guid: 9a0bdf96e19743f4aa3591f35339d9ba, type: 3}
   mass: 1
   projectileData: []
   goldAmount: 0
   spawningItem: {fileID: 11400000, guid: 14a59b685d4da1b45bcdcb39bb8d75d4, type: 2}
   regenerateTime: 1
   recipes: []
+  affectsCannons: 0
   abilityList: []
   active: {fileID: 0}

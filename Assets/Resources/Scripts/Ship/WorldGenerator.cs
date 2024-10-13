@@ -181,7 +181,7 @@ public class WorldGenerator : MonoBehaviour
         }
 
         // Check if both chunkPosition.x and chunkPosition.y are even
-        if (chunkPosition.x % 2 == 0 && chunkPosition.y % 2 == 0)
+        if (chunkPosition.x % placeWaterTextureEveryChunk == 0 && chunkPosition.y % placeWaterTextureEveryChunk == 0)
         {
             // Calculate the world position of the center of this chunk
             Vector3 chunkCenterWorldPosition = seaTilemap.CellToWorld(new Vector3Int(
@@ -192,6 +192,7 @@ public class WorldGenerator : MonoBehaviour
 
             // Instantiate the small prefab at the center of the chunk
             chunkData.chunkWaterTexture = Instantiate(waterTexturePrefab, chunkCenterWorldPosition, Quaternion.identity, seaTilemap.transform);
+            Debug.Log(chunkPosition);
         }
     }
 

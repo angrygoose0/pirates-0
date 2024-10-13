@@ -9,11 +9,18 @@ public class CameraBrain : MonoBehaviour
     public CinemachineVirtualCamera playCamera;
     private CinemachineVirtualCamera currentCamera;
 
+
+    public CinemachineVirtualCamera camera2;
+
+    // List to store follow targets
+    public List<Transform> followTargets = new List<Transform>();
+
     void Start()
     {
         ResetAllCameraProperties();
         SwitchCamera(editCamera);
     }
+
     public void ResetAllCameraProperties()
     {
         CinemachineVirtualCamera[] allCameras = FindObjectsOfType<CinemachineVirtualCamera>();
@@ -24,15 +31,16 @@ public class CameraBrain : MonoBehaviour
             cam.Priority = 0;
         }
     }
+
     private void SwitchCamera(CinemachineVirtualCamera newCamera)
     {
         if (currentCamera != null)
         {
-            // Set the previous camera's priority to a lower value to deactivate it
+            // Deactivate the previous camera by setting its priority to 0
             currentCamera.Priority = 0;
         }
 
-        // Set the new camera's priority to a higher value to activate it
+        // Activate the new camera by setting its priority to a higher value
         newCamera.Priority = 10;
 
         // Update the current camera reference
@@ -43,4 +51,25 @@ public class CameraBrain : MonoBehaviour
     {
         SwitchCamera(playCamera);
     }
+
+    public void Camera2()
+    {
+        SwitchCamera(camera2);
+        ChangeFollowTarget(2);
+    }
+
+    // Method to change the follow target based on an index
+    public void ChangeFollowTarget(int index)
+    {
+        if (index >= 0 && index < followTargets.Count && currentCamera != null)
+        {
+            currentCamera.Follow = followTargets[index];
+        }
+        else
+        {
+            Debug.LogWarning("Invalid index or no camera available.");
+        }
+    }
+
+
 }

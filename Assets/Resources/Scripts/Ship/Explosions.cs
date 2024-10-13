@@ -27,7 +27,7 @@ public class Explosions : MonoBehaviour
 
     public void Explode(Vector3 explosionPosition, ProjectileData projectile, float startAngle = 0f, float endAngle = 360f)
     {
-        SingletonManager.Instance.feedbackManager.ExplosionFeedback(explosionPosition, projectile.explosionMultiplier);
+        SingletonManager.Instance.feedbackManager.ExplosionFeedback(explosionPosition, projectile.cameraShake);
         // Validate angles to ensure startAngle is less than endAngle
         if (startAngle >= endAngle)
         {

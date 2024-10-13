@@ -47,6 +47,6 @@ Material:
     - _RippleSpeed: 1
     - _WaterSize: 0.25
     m_Colors:
-    - _BaseColor1: {r: 0.10666606, g: 0.13468207, b: 0.4433962, a: 0}
-    - _BaseColor2: {r: 0.08156818, g: 0.23924087, b: 0.4433962, a: 0}
+    - _BaseColor1: {r: 0.27394092, g: 0.58158326, b: 0.7169812, a: 0}
+    - _BaseColor2: {r: 0.28114986, g: 0.62778634, b: 0.735849, a: 0}
   m_BuildTextureStacks: []

@@ -34,7 +34,7 @@ public class FeedbackManager : MonoBehaviour
         artifactPlaceFeedbackPlayer?.PlayFeedbacks();
     }
 
-    public void ExplosionFeedback(Vector3 position, float explosionMagnitude)
+    public void ExplosionFeedback(Vector3 position, float shakeMagnitude)
     {
         MMF_ParticlesInstantiation explosionParticlesFeedback = explosionFeedbackPlayer.GetFeedbackOfType<MMF_ParticlesInstantiation>();
         explosionParticlesFeedback.TargetWorldPosition = position;
@@ -43,7 +43,7 @@ public class FeedbackManager : MonoBehaviour
         Vector3 explosionSize = new Vector3(2f, 1f, 1f);
         ScaleTransformAndChildren(explosionParticle, explosionSize);
 
-        float cameraShakeMagnitude = explosionMagnitude * 1.5f;
+        float cameraShakeMagnitude = shakeMagnitude * 1.5f;
         MMF_CinemachineImpulse cinemachineImpulseFeedback = explosionFeedbackPlayer.GetFeedbackOfType<MMF_CinemachineImpulse>();
         cinemachineImpulseFeedback.Velocity = new Vector3(cameraShakeMagnitude, cameraShakeMagnitude, cameraShakeMagnitude);
 

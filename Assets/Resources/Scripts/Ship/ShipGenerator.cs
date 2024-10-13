@@ -25,6 +25,7 @@ public class ShipData
 }
 
 
+
 public class ShipGenerator : MonoBehaviour
 {
     public Dictionary<GameObject, ShipData> raftTileDict = new Dictionary<GameObject, ShipData>();
@@ -132,6 +133,8 @@ public class ShipGenerator : MonoBehaviour
 
 
 
+
+
     public float[,] ship = new float[,]
     {
     };
@@ -144,10 +147,6 @@ public class ShipGenerator : MonoBehaviour
     public List<GameObject> cannonBlocks;
 
 
-    public enum Direction
-    {
-        S, SE, E, NE, N, NW, W, SW
-    }
 
     void Start()
     {
@@ -929,29 +928,18 @@ public class ShipGenerator : MonoBehaviour
     public List<(Vector3Int position, Direction direction)> GetInteractableNeighbors(Vector3Int currentTilePosition)
     {
         List<(Vector3Int position, Direction direction)> interactableNeighbors = new List<(Vector3Int position, Direction direction)>();
-        Vector3Int[] directions = new Vector3Int[]
-        {
-            new Vector3Int( 0, -1, 0), // S
-            new Vector3Int( 1, -1, 0), // SE
-            new Vector3Int( 1,  0, 0), // E
-            new Vector3Int( 1,  1, 0), // NE
-            new Vector3Int( 0,  1, 0), // N
-            new Vector3Int(-1,  1, 0), // NW
-            new Vector3Int(-1,  0, 0), // W
-            new Vector3Int(-1, -1, 0)  // SW
-        };
 
-        Direction[] directionNames = new Direction[]
-        {
-            Direction.S, Direction.SE, Direction.E, Direction.NE, Direction.N, Direction.NW, Direction.W, Direction.SW
-        };
 
-        for (int i = 0; i < directions.Length; i++)
+        foreach (Direction direction in System.Enum.GetValues(typeof(Direction)))
         {
-            Vector3Int neighborPosition = currentTilePosition + directions[i];
+
+            // You can also use the extension method here to get the corresponding vector
+            Vector3Int vector = direction.ToVector3Int();
+
+            Vector3Int neighborPosition = currentTilePosition + vector;
             if (IsTileInteractable(neighborPosition))
             {
-                interactableNeighbors.Add((neighborPosition, directionNames[i]));
+                interactableNeighbors.Add((neighborPosition, direction));
             }
         }
 
