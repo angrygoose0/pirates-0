@@ -152,6 +152,8 @@ public class CreatureManager : MonoBehaviour
         return null;
     }
 
+    
+
 
     public void UpdateCreatureTiles(GameObject creatureGameObject, CreatureData creatureData)
     {

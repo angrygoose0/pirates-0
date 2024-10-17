@@ -36,6 +36,10 @@ public class WorldGenerator : MonoBehaviour
     public int worldSeed;
     private Vector3 worldCenterPosition;
     private Vector3Int previousCenterChunkPosition;
+    public Vector3Int _previousCenterChunkPosition
+    {
+        get { return previousCenterChunkPosition; }
+    }
     public Dictionary<Vector3Int, ChunkData> generatedChunks;
 
     public Vector3Int mouseTilePosition;

@@ -56,6 +56,33 @@ public class CameraBrain : MonoBehaviour
     {
         SwitchCamera(camera2);
         ChangeFollowTarget(2);
+        StartCoroutine(ZoomOutCoroutine(camera2, zoomSpeed, targetFOV));
+
+    }
+
+
+    public float zoomSpeed = 2f;    // How fast the zoom happens
+    public float targetFOV = 60f;
+    private IEnumerator ZoomOutCoroutine(CinemachineVirtualCamera camera, float zoomSpeed, float targetFOV)
+    {
+        // Get the current Field of View (FOV)
+        float startFOV = camera.m_Lens.OrthographicSize;
+
+        // Continue zooming out until we reach the target FOV
+        while (camera.m_Lens.OrthographicSize < targetFOV)
+        {
+            // Gradually increase the FOV over time
+            camera.m_Lens.OrthographicSize += zoomSpeed * Time.deltaTime;
+
+            // Ensure we don't overshoot the target FOV
+            if (camera.m_Lens.OrthographicSize > targetFOV)
+            {
+                camera.m_Lens.OrthographicSize = targetFOV;
+            }
+
+            // Wait until the next frame
+            yield return null;
+        }
     }
 
     // Method to change the follow target based on an index
