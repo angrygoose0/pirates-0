@@ -20,11 +20,7 @@ MonoBehaviour:
   minPackSpawn: 1
   maxPackSpawn: 1
   creatureValues: []
-  creatureDrops:
-  - droppedItemObject: {fileID: 11400000, guid: f8e85bfddbcee654d945c1060d1f6758, type: 2}
-    dropWeight: 90
-  - droppedItemObject: {fileID: 11400000, guid: 1dd939d623bbf704cb90d8de3d1d16dd, type: 2}
-    dropWeight: 1
+  creatureDrops: []
   tentacles: 0
   damage: 0.5
   rotationSpeed: 1000

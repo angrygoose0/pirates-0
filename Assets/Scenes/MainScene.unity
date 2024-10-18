@@ -777,8 +777,8 @@ RenderTexture:
   m_DownscaleFallback: 0
   m_IsAlphaChannelOptional: 0
   serializedVersion: 5
-  m_Width: 1162
-  m_Height: 532
+  m_Width: 1541
+  m_Height: 862
   m_AntiAliasing: 1
   m_MipCount: -1
   m_DepthStencilFormat: 0
@@ -942,8 +942,8 @@ RenderTexture:
   m_DownscaleFallback: 0
   m_IsAlphaChannelOptional: 0
   serializedVersion: 5
-  m_Width: 930
-  m_Height: 639
+  m_Width: 1233
+  m_Height: 1035
   m_AntiAliasing: 1
   m_MipCount: -1
   m_DepthStencilFormat: 0
@@ -1613,44 +1613,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac0b09e7857660247b1477e93731de29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!84 &233477164
-RenderTexture:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  m_ImageContentsHash:
-    serializedVersion: 2
-    Hash: 00000000000000000000000000000000
-  m_ForcedFallbackFormat: 4
-  m_DownscaleFallback: 0
-  m_IsAlphaChannelOptional: 0
-  serializedVersion: 5
-  m_Width: 581
-  m_Height: 266
-  m_AntiAliasing: 1
-  m_MipCount: -1
-  m_DepthStencilFormat: 0
-  m_ColorFormat: 8
-  m_MipMap: 0
-  m_GenerateMips: 1
-  m_SRGB: 0
-  m_UseDynamicScale: 0
-  m_BindMS: 0
-  m_EnableCompatibleFormat: 1
-  m_EnableRandomWrite: 1
-  m_TextureSettings:
-    serializedVersion: 2
-    m_FilterMode: 0
-    m_Aniso: 1
-    m_MipBias: 0
-    m_WrapU: 0
-    m_WrapV: 0
-    m_WrapW: 0
-  m_Dimension: 2
-  m_VolumeDepth: 1
-  m_ShadowSamplingMode: 2
 --- !u!1 &314867043
 GameObject:
   m_ObjectHideFlags: 0
@@ -2025,7 +1987,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   seaTilemap: {fileID: 170296654}
   chunkSize: 16
-  radius: 8
+  radius: 10
   depthScale: 0.01
   temperatureScale: 0.005
   weirdnessScale: 0.5
@@ -2414,6 +2376,8 @@ MonoBehaviour:
   followTargets:
   - {fileID: 1009773014}
   - {fileID: 1332207800}
+  zoomSpeed: 2
+  targetFOV: 60
 --- !u!114 &383585340
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2434,14 +2398,17 @@ MonoBehaviour:
     damageMultiplier: 100
     explosionMultiplier: 0.2
     explosionRange: 10
-    accuracy: 0.1
+    accuracy: 0.15
     explosionInverse: 0
-    fireAmount: 15
+    fireAmount: 7
     explosionSpeed: 100
     ammoCount: 0
     sprite: {fileID: 21300000, guid: 67cbd5af68d5fc44a9387aec12819139, type: 3}
     cameraShake: 4
   trailerCameraAnchor: {fileID: 1009773014}
+  creatureSpawnRadius: 3
+  creatureObjectList:
+  - {fileID: 11400000, guid: 51df317155f7c3147a6cd6734cb86571, type: 2}
 --- !u!114 &383585341
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2935,8 +2902,8 @@ RenderTexture:
   m_DownscaleFallback: 0
   m_IsAlphaChannelOptional: 0
   serializedVersion: 5
-  m_Width: 930
-  m_Height: 639
+  m_Width: 1233
+  m_Height: 1035
   m_AntiAliasing: 1
   m_MipCount: -1
   m_DepthStencilFormat: 0
@@ -3031,44 +2998,6 @@ Transform:
   - {fileID: 1094111943}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!84 &773824272
-RenderTexture:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  m_ImageContentsHash:
-    serializedVersion: 2
-    Hash: 00000000000000000000000000000000
-  m_ForcedFallbackFormat: 4
-  m_DownscaleFallback: 0
-  m_IsAlphaChannelOptional: 0
-  serializedVersion: 5
-  m_Width: 581
-  m_Height: 266
-  m_AntiAliasing: 1
-  m_MipCount: -1
-  m_DepthStencilFormat: 0
-  m_ColorFormat: 8
-  m_MipMap: 0
-  m_GenerateMips: 1
-  m_SRGB: 0
-  m_UseDynamicScale: 0
-  m_BindMS: 0
-  m_EnableCompatibleFormat: 1
-  m_EnableRandomWrite: 1
-  m_TextureSettings:
-    serializedVersion: 2
-    m_FilterMode: 0
-    m_Aniso: 1
-    m_MipBias: 0
-    m_WrapU: 0
-    m_WrapV: 0
-    m_WrapW: 0
-  m_Dimension: 2
-  m_VolumeDepth: 1
-  m_ShadowSamplingMode: 2
 --- !u!1 &799376113
 GameObject:
   m_ObjectHideFlags: 0
@@ -8894,8 +8823,8 @@ RenderTexture:
   m_DownscaleFallback: 0
   m_IsAlphaChannelOptional: 0
   serializedVersion: 5
-  m_Width: 930
-  m_Height: 426
+  m_Width: 1233
+  m_Height: 690
   m_AntiAliasing: 1
   m_MipCount: -1
   m_DepthStencilFormat: 0
@@ -9109,7 +9038,7 @@ MonoBehaviour:
     reflectionLayerIdx: -1
     copyMainBackground: 0
     lastOrtographicSize: 10.5
-    lastAspectRatio: 1.455399
+    lastAspectRatio: 1.1913043
   _run: 0
   startupQF: 1
   pivotDetectionAlphaTreshold: 0
@@ -9262,7 +9191,7 @@ MonoBehaviour:
     reflectionLayerIdx: -1
     copyMainBackground: 0
     lastOrtographicSize: 7
-    lastAspectRatio: 2.1830986
+    lastAspectRatio: 1.7869565
   _run: 0
 --- !u!20 &1215630147
 Camera:
@@ -14689,6 +14618,44 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
+--- !u!84 &1370630487
+RenderTexture:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_ForcedFallbackFormat: 4
+  m_DownscaleFallback: 0
+  m_IsAlphaChannelOptional: 0
+  serializedVersion: 5
+  m_Width: 770
+  m_Height: 431
+  m_AntiAliasing: 1
+  m_MipCount: -1
+  m_DepthStencilFormat: 0
+  m_ColorFormat: 8
+  m_MipMap: 0
+  m_GenerateMips: 1
+  m_SRGB: 0
+  m_UseDynamicScale: 0
+  m_BindMS: 0
+  m_EnableCompatibleFormat: 1
+  m_EnableRandomWrite: 1
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 0
+    m_Aniso: 1
+    m_MipBias: 0
+    m_WrapU: 0
+    m_WrapV: 0
+    m_WrapW: 0
+  m_Dimension: 2
+  m_VolumeDepth: 1
+  m_ShadowSamplingMode: 2
 --- !u!1 &1380487819
 GameObject:
   m_ObjectHideFlags: 0
@@ -24825,6 +24792,44 @@ Transform:
   m_Children: []
   m_Father: {fileID: 159972887}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!84 &1560317114
+RenderTexture:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_ForcedFallbackFormat: 4
+  m_DownscaleFallback: 0
+  m_IsAlphaChannelOptional: 0
+  serializedVersion: 5
+  m_Width: 770
+  m_Height: 431
+  m_AntiAliasing: 1
+  m_MipCount: -1
+  m_DepthStencilFormat: 0
+  m_ColorFormat: 8
+  m_MipMap: 0
+  m_GenerateMips: 1
+  m_SRGB: 0
+  m_UseDynamicScale: 0
+  m_BindMS: 0
+  m_EnableCompatibleFormat: 1
+  m_EnableRandomWrite: 1
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 0
+    m_Aniso: 1
+    m_MipBias: 0
+    m_WrapU: 0
+    m_WrapV: 0
+    m_WrapW: 0
+  m_Dimension: 2
+  m_VolumeDepth: 1
+  m_ShadowSamplingMode: 2
 --- !u!1 &1604011098
 GameObject:
   m_ObjectHideFlags: 0
@@ -30812,7 +30817,7 @@ MonoBehaviour:
     reflectionLayerIdx: 12
     copyMainBackground: 0
     lastOrtographicSize: 7
-    lastAspectRatio: 2.1830986
+    lastAspectRatio: 1.7869565
   _run: 0
   startupQF: 1
   pivotDetectionAlphaTreshold: 0
@@ -36143,7 +36148,7 @@ MonoBehaviour:
     reflectionLayerIdx: 11
     copyMainBackground: 0
     lastOrtographicSize: 8.75
-    lastAspectRatio: 2.1830986
+    lastAspectRatio: 1.7869565
   _run: 1
   overrideMainCamera:
     _value: 0
@@ -36158,8 +36163,8 @@ MonoBehaviour:
   uvShader: {fileID: 0}
   jfMaterial: {fileID: 0}
   uvMaterial: {fileID: 0}
-  jfRenderTexture1: {fileID: 773824272}
-  jfRenderTexture2: {fileID: 233477164}
+  jfRenderTexture1: {fileID: 1560317114}
+  jfRenderTexture2: {fileID: 1370630487}
   _mainCamera: {fileID: 519420031}
   genSDF: 0
 --- !u!20 &2005806464
@@ -36321,7 +36326,7 @@ MonoBehaviour:
     reflectionLayerIdx: -1
     copyMainBackground: 0
     lastOrtographicSize: 10.5
-    lastAspectRatio: 1.455399
+    lastAspectRatio: 1.1913043
   _run: 0
   startupQF: 1
   pivotDetectionAlphaTreshold: 0

@@ -64,7 +64,7 @@ public class GameStart : MonoBehaviour
 
         SingletonManager.Instance.cameraBrain.Camera2();
 
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 500; i++)
         {
             List<Vector3Int> perimeterChunkList = GetPerimeterChunks(SingletonManager.Instance.worldGenerator._previousCenterChunkPosition, creatureSpawnRadius);
             int randomChunkIndex = Random.Range(0, perimeterChunkList.Count);
@@ -75,7 +75,9 @@ public class GameStart : MonoBehaviour
             int randomCreatureIndex = Random.Range(0, creatureObjectList.Count);
             CreatureObject creatureToSpawn = creatureObjectList[randomCreatureIndex];
 
-            CreatureData newCreatureData = SingletonManager.Instance.creatureManager.SpawnCreature(Vector3.zero, creatureToSpawn, chunkData);
+            Vector3 worldPosition = SingletonManager.Instance.creatureManager.PickRandomTileFromChunk(chunkData);
+
+            CreatureData newCreatureData = SingletonManager.Instance.creatureManager.SpawnCreature(worldPosition, creatureToSpawn, chunkData);
 
         }
 

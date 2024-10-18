@@ -152,7 +152,7 @@ public class CreatureManager : MonoBehaviour
         return null;
     }
 
-    
+
 
 
     public void UpdateCreatureTiles(GameObject creatureGameObject, CreatureData creatureData)
@@ -1154,6 +1154,20 @@ public class CreatureManager : MonoBehaviour
 
         return creatureData;
     }
+
+    public Vector3 PickRandomTileFromChunk(ChunkData chunkData)
+    {
+        Vector3 worldPosition = Vector3.zero;
+        List<Vector3Int> tilePositions = new List<Vector3Int>(chunkData.tileDepths.Keys);
+        Vector3Int randomTilePosition = tilePositions[Random.Range(0, tilePositions.Count)];
+
+        if (chunkData.tileDepths.ContainsKey(randomTilePosition))
+        {
+            worldPosition = SingletonManager.Instance.worldGenerator.seaTilemap.CellToWorld(randomTilePosition);
+        }
+        return worldPosition;
+
+    }
     void mobSpawner()
     {
         List<Vector3Int> viableChunkList = new List<Vector3Int>(viableChunks);
@@ -1168,30 +1182,17 @@ public class CreatureManager : MonoBehaviour
             int currentMobPopulation = randomChunk.chunkPopulation;
             if (currentMobPopulation < maxGlobalChunkPopulation)
             {
-                List<Vector3Int> tilePositions = new List<Vector3Int>(randomChunk.tileDepths.Keys);
-                Vector3Int randomTilePosition = tilePositions[Random.Range(0, tilePositions.Count)];
+                Vector3 worldPosition = PickRandomTileFromChunk(randomChunk);
+                int packSize = Random.Range(randomCreatureObject.minPackSpawn, randomCreatureObject.maxPackSpawn);
 
-                if (randomChunk.tileDepths.ContainsKey(randomTilePosition))
+                for (int i = 0; i < packSize; i++)
                 {
-                    Vector3 worldPosition = SingletonManager.Instance.worldGenerator.seaTilemap.CellToWorld(randomTilePosition);
-
-                    int packSize = Random.Range(randomCreatureObject.minPackSpawn, randomCreatureObject.maxPackSpawn);
-
-                    for (int i = 0; i < packSize; i++)
-                    {
-
-                        SpawnCreature(worldPosition, randomCreatureObject, randomChunk);
-
-
-                    }
-
-
-
-
+                    SpawnCreature(worldPosition, randomCreatureObject, randomChunk);
                 }
             }
         }
     }
+
 
 
     void HandleDespawning()
