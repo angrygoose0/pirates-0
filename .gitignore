@@ -8,6 +8,8 @@
 [Bb]uilds/
 [Ll]ogs/
 
+Recordings/
+
 # Avoid crash reports
 *.pidb
 *.pidb.meta
