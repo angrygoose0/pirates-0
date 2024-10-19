@@ -4,10 +4,16 @@ using UnityEngine;
 using System.Linq;
 using UnityEngine.Rendering.Universal;
 
+
+
+
+// this should all gp in blockObjects
+
 public class blockPrefabScript : MonoBehaviour
 {
     public BlockObject blockObject; // Variable to store block objects
-    public Vector2 blockDirection = Vector2.up; // Variable to store the direction as a Vector2      
+    public Direction blockDirection;
+    private Transform directionUI;
     private SpriteRenderer directionSpriteRenderer;
     public List<GameObject> itemPrefabObject = new List<GameObject>(); //items that are in the block
     private ItemObject itemObject;
@@ -24,44 +30,85 @@ public class blockPrefabScript : MonoBehaviour
     private Collider2D spawnedItemCollider;
 
     public bool active = false;
-
-
     private bool isSpawning = false;
-    private Dictionary<Vector2, Sprite> directionToSprite;
+    private Coroutine fadeCoroutine;
 
-    public Sprite northSprite;
-    public Sprite northEastSprite;
-    public Sprite eastSprite;
-    public Sprite southEastSprite;
-    public Sprite southSprite;
-    public Sprite southWestSprite;
-    public Sprite westSprite;
-    public Sprite northWestSprite;
+
+
+    private IEnumerator FadeAlpha(SpriteRenderer spriteRenderer)
+    {
+        spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 1f);
+        float duration = 1.5f; // Duration of the fade-out effect
+        float elapsedTime = 0f;
+
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            float newAlpha = Mathf.Lerp(1f, 0f, elapsedTime / duration);
+            spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, newAlpha);
+
+            // Wait for the next frame before continuing the fade
+            yield return null;
+        }
+
+        // Ensure the alpha is set to 0 at the end
+        spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 0f);
+    }
+
+    public void RotateBlock(int steps, bool highlighted)
+    {
+        if (steps > 0)
+        {
+            blockDirection = blockDirection.Rotate(steps);
+            directionUI.rotation = Quaternion.Euler(0, 0, blockDirection.GetZRotation());
+
+            if (fadeCoroutine != null)
+            {
+                StopCoroutine(fadeCoroutine);
+            }
+
+            fadeCoroutine = StartCoroutine(FadeAlpha(directionSpriteRenderer));
+
+        }
+
+        SpriteRenderer blockSpriteRenderer = GetComponent<SpriteRenderer>();
+        if (blockObject.DirectionToSpriteDict.ContainsKey(blockDirection))
+        {
+            if (!highlighted)
+            {
+                blockSpriteRenderer.sprite = blockObject.DirectionToSpriteDict[blockDirection];
+            }
+            else if (highlighted)
+            {
+                if (blockObject.HighlightSpriteDict.ContainsKey(blockDirection))
+                {
+                    blockSpriteRenderer.sprite = blockObject.HighlightSpriteDict[blockDirection];
+                }
+            }
+        }
+    }
 
 
     void Start()
     {
-        shipObject = GameObject.Find("ship");
 
-        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-        spriteRenderer.sprite = blockObject.blockSprite;
+        shipObject = GameObject.Find("ship");
+        blockDirection = Direction.NW;
+
+        SpriteRenderer blockSpriteRenderer = GetComponent<SpriteRenderer>();
+        if (blockObject.DirectionToSpriteDict.ContainsKey(blockDirection))
+        {
+            // Set the sprite to the one corresponding to the new direction
+            blockSpriteRenderer.sprite = blockObject.DirectionToSpriteDict[blockDirection];
+        }
         blockLight = GetComponentInChildren<Light2D>();
         blockLight.intensity = 0;
-        directionSpriteRenderer = GetComponentInChildren<SpriteRenderer>();
 
-        directionToSprite = new Dictionary<Vector2, Sprite>
-        {
-            { new Vector2(0, 1), northSprite },         // North
-            { new Vector2(1, 1), northEastSprite },     // North-East
-            { new Vector2(1, 0), eastSprite },          // East
-            { new Vector2(1, -1), southEastSprite },    // South-East
-            { new Vector2(0, -1), southSprite },        // South
-            { new Vector2(-1, -1), southWestSprite },   // South-West
-            { new Vector2(-1, 0), westSprite },         // West
-            { new Vector2(-1, 1), northWestSprite }     // North-West
-        };
+        directionUI = transform.Find("DirectionUI");
+        directionSpriteRenderer = directionUI.gameObject.GetComponent<SpriteRenderer>();
 
     }
+
     void Update()
     {
         if (blockObject.blockType == BlockType.Payload)
@@ -141,24 +188,6 @@ public class blockPrefabScript : MonoBehaviour
 
 
     }
-
-
-    public void ChangeDirection(Vector2 direction)
-    {
-
-
-        // Set the block direction to the closest allowed direction
-        blockDirection = direction;
-        Debug.Log(direction);
-
-        // Change the sprite to match the new direction
-        if (directionToSprite.ContainsKey(direction))
-        {
-            directionSpriteRenderer.sprite = directionToSprite[direction];
-            Debug.Log("changedSprite");
-        }
-    }
-
 
 
 

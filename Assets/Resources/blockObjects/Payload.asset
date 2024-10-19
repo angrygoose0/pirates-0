@@ -13,7 +13,30 @@ MonoBehaviour:
   m_Name: Payload
   m_EditorClassIdentifier: 
   id: 3
-  blockSprite: {fileID: 21300000, guid: 8d1f498978dc9894094ce906be5a4e46, type: 3}
-  selectedSprite: {fileID: 21300000, guid: 0663ea9325614ca4b9c02ee2d87e6baf, type: 3}
   blockType: 1
   blockValues: []
+  directionToSpriteList:
+  - direction: 4
+    sprite: {fileID: 476853912, guid: ac247740d19c3ba40944e6e61bcaa22d, type: 3}
+    highlightSprite: {fileID: 249868827, guid: ac247740d19c3ba40944e6e61bcaa22d, type: 3}
+  - direction: 3
+    sprite: {fileID: 859587277, guid: ac247740d19c3ba40944e6e61bcaa22d, type: 3}
+    highlightSprite: {fileID: -1642061889, guid: ac247740d19c3ba40944e6e61bcaa22d, type: 3}
+  - direction: 2
+    sprite: {fileID: 633681602, guid: ac247740d19c3ba40944e6e61bcaa22d, type: 3}
+    highlightSprite: {fileID: -2095096829, guid: ac247740d19c3ba40944e6e61bcaa22d, type: 3}
+  - direction: 1
+    sprite: {fileID: -1754114672, guid: ac247740d19c3ba40944e6e61bcaa22d, type: 3}
+    highlightSprite: {fileID: -67095334, guid: ac247740d19c3ba40944e6e61bcaa22d, type: 3}
+  - direction: 0
+    sprite: {fileID: 476853912, guid: ac247740d19c3ba40944e6e61bcaa22d, type: 3}
+    highlightSprite: {fileID: 249868827, guid: ac247740d19c3ba40944e6e61bcaa22d, type: 3}
+  - direction: 7
+    sprite: {fileID: 859587277, guid: ac247740d19c3ba40944e6e61bcaa22d, type: 3}
+    highlightSprite: {fileID: -1642061889, guid: ac247740d19c3ba40944e6e61bcaa22d, type: 3}
+  - direction: 6
+    sprite: {fileID: 633681602, guid: ac247740d19c3ba40944e6e61bcaa22d, type: 3}
+    highlightSprite: {fileID: -2095096829, guid: ac247740d19c3ba40944e6e61bcaa22d, type: 3}
+  - direction: 5
+    sprite: {fileID: -1754114672, guid: ac247740d19c3ba40944e6e61bcaa22d, type: 3}
+    highlightSprite: {fileID: -67095334, guid: ac247740d19c3ba40944e6e61bcaa22d, type: 3}

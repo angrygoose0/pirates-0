@@ -36,7 +36,7 @@ public class ShipMovement : MonoBehaviour
             blockPrefabScript blockScript = mastBlock.GetComponent<blockPrefabScript>();
             if (blockScript.active)
             {
-                totalForce += blockScript.blockDirection.normalized * blockScript.GetBlockValueByName("mastForce");
+                totalForce += blockScript.blockDirection.ToVector2().normalized * blockScript.GetBlockValueByName("mastForce");
 
                 maxSpeed = totalForce.magnitude * kFactor;
             }

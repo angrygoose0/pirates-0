@@ -932,11 +932,9 @@ public class ShipGenerator : MonoBehaviour
 
         foreach (Direction direction in System.Enum.GetValues(typeof(Direction)))
         {
+            Vector2 vector = direction.ToVector2();
+            Vector3Int neighborPosition = currentTilePosition + new Vector3Int(Mathf.RoundToInt(vector.x), Mathf.RoundToInt(vector.y), 0);
 
-            // You can also use the extension method here to get the corresponding vector
-            Vector3Int vector = direction.ToVector3Int();
-
-            Vector3Int neighborPosition = currentTilePosition + vector;
             if (IsTileInteractable(neighborPosition))
             {
                 interactableNeighbors.Add((neighborPosition, direction));

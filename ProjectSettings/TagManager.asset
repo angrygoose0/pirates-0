@@ -8,6 +8,7 @@ TagManager:
   - Ship
   - Creature
   - RaftPivot
+  - Direction
   layers:
   - Default
   - TransparentFX

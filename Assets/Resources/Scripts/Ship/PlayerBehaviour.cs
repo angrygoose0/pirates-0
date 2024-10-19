@@ -366,11 +366,9 @@ public class PlayerBehaviour : MonoBehaviour
         GameObject blockPrefab = SingletonManager.Instance.shipGenerator.GetBlockPrefabAtTile(tilePosition);
         if (blockPrefab != null)
         {
-            SpriteRenderer sr = blockPrefab.GetComponent<SpriteRenderer>();
-            BlockObject blockObject = sr.GetComponent<blockPrefabScript>().blockObject;
-            sr.sprite = blockObject.selectedSprite;
-
             blockPrefabScript blockScript = blockPrefab.GetComponent<blockPrefabScript>();
+            blockScript.RotateBlock(0, true);
+
             GameObject blockItem = null;
 
             if (blockScript.itemPrefabObject != null && blockScript.itemPrefabObject.Count == 1)
@@ -386,7 +384,7 @@ public class PlayerBehaviour : MonoBehaviour
                 }
             }
             List<string> helpfulUIList = new List<string>(); // Initialize the list
-            switch (blockObject.blockType)
+            switch (blockScript.blockObject.blockType)
             {
                 case BlockType.Cannon:
                     helpfulUIList.Add("[E] Enter / Exit");
@@ -438,9 +436,8 @@ public class PlayerBehaviour : MonoBehaviour
         GameObject blockPrefab = SingletonManager.Instance.shipGenerator.GetBlockPrefabAtTile(tilePosition);
         if (blockPrefab != null)
         {
-            SpriteRenderer sr = blockPrefab.GetComponent<SpriteRenderer>();
-            BlockObject blockObject = sr.GetComponent<blockPrefabScript>().blockObject;
-            sr.sprite = blockObject.blockSprite;
+            blockPrefabScript blockScript = blockPrefab.GetComponent<blockPrefabScript>();
+            blockScript.RotateBlock(0, false);
 
             List<string> helpfulUIList = new List<string>();
             SingletonManager.Instance.uiManager.ToggleHelpfulUI(blockPrefab, helpfulUIList, false);
@@ -513,7 +510,7 @@ public class PlayerBehaviour : MonoBehaviour
         dashTime += Time.deltaTime;
 
         // Move in the direction the player is looking at or moving
-        transform.position += (Vector3)currentDirection.ToVector3Int() * dashSpeed * Time.deltaTime;
+        transform.position += (Vector3)currentDirection.ToVector2().normalized * dashSpeed * Time.deltaTime;
 
         // End the dash if it has lasted for the dashDuration
         if (dashTime >= dashDuration)

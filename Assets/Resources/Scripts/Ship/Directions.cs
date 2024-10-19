@@ -16,38 +16,63 @@ public enum Direction
 
 public static class DirectionExtensions
 {
-    // Extension method to convert Direction to Vector3Int
-    public static Vector3Int ToVector3Int(this Direction direction)
+    // Extension method to convert Direction to Vector2
+    public static Vector2 ToVector2(this Direction direction)
     {
         switch (direction)
         {
             case Direction.S:
-                return new Vector3Int(0, -1, 0); // South (0, -1)
+                return new Vector2(0, -1); // South (0, -1)
             case Direction.SE:
-                return new Vector3Int(1, -1, 0); // South-East (1, -1)
+                return new Vector2(1, -1); // South-East (1, -1)
             case Direction.E:
-                return new Vector3Int(1, 0, 0);  // East (1, 0)
+                return new Vector2(1, 0);  // East (1, 0)
             case Direction.NE:
-                return new Vector3Int(1, 1, 0);  // North-East (1, 1)
+                return new Vector2(1, 1);  // North-East (1, 1)
             case Direction.N:
-                return new Vector3Int(0, 1, 0);  // North (0, 1)
+                return new Vector2(0, 1);  // North (0, 1)
             case Direction.NW:
-                return new Vector3Int(-1, 1, 0); // North-West (-1, 1)
+                return new Vector2(-1, 1); // North-West (-1, 1)
             case Direction.W:
-                return new Vector3Int(-1, 0, 0); // West (-1, 0)
+                return new Vector2(-1, 0); // West (-1, 0)
             case Direction.SW:
-                return new Vector3Int(-1, -1, 0); // South-West (-1, -1)
+                return new Vector2(-1, -1); // South-West (-1, -1)
             default:
-                return Vector3Int.zero;         // Default to (0, 0, 0) if no direction is matched
+                return Vector2.zero;         // Default to (0, 0) if no direction is matched
         }
     }
 
     // positive=clockwise | negative=anti-clockwise
-    public static Direction Rotate(this Direction direction, int steps)
+    public static Direction Rotate(this Direction direction, int steps) // 1 step is 45 degrees
     {
         int totalDirections = System.Enum.GetValues(typeof(Direction)).Length; // Get the number of enum values (8)
         // Use modulo to wrap around in both positive and negative directions
         int next = ((int)direction + steps % totalDirections + totalDirections) % totalDirections;
         return (Direction)next;
+    }
+
+    public static int GetZRotation(this Direction direction)
+    {
+        switch (direction)
+        {
+            case Direction.N:
+                return 0;   // North
+            case Direction.NE:
+                return 45;  // North-East
+            case Direction.E:
+                return 90;  // East
+            case Direction.SE:
+                return 135; // South-East
+            case Direction.S:
+                return 180; // South
+            case Direction.SW:
+                return 225; // South-West
+            case Direction.W:
+                return 270; // West
+            case Direction.NW:
+                return 315; // North-West
+            default:
+                return 0;
+        }
     }
 }

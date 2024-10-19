@@ -13,7 +13,30 @@ MonoBehaviour:
   m_Name: Cannon
   m_EditorClassIdentifier: 
   id: 2
-  blockSprite: {fileID: 1224576287, guid: 6704893942dbe264aaa462d919fcc0f8, type: 3}
-  selectedSprite: {fileID: 1560793905, guid: 6704893942dbe264aaa462d919fcc0f8, type: 3}
   blockType: 0
   blockValues: []
+  directionToSpriteList:
+  - direction: 0
+    sprite: {fileID: 1224576287, guid: 6704893942dbe264aaa462d919fcc0f8, type: 3}
+    highlightSprite: {fileID: 1560793905, guid: 6704893942dbe264aaa462d919fcc0f8, type: 3}
+  - direction: 1
+    sprite: {fileID: 1224576287, guid: 6704893942dbe264aaa462d919fcc0f8, type: 3}
+    highlightSprite: {fileID: 1560793905, guid: 6704893942dbe264aaa462d919fcc0f8, type: 3}
+  - direction: 2
+    sprite: {fileID: 1224576287, guid: 6704893942dbe264aaa462d919fcc0f8, type: 3}
+    highlightSprite: {fileID: 1560793905, guid: 6704893942dbe264aaa462d919fcc0f8, type: 3}
+  - direction: 3
+    sprite: {fileID: 1224576287, guid: 6704893942dbe264aaa462d919fcc0f8, type: 3}
+    highlightSprite: {fileID: 1560793905, guid: 6704893942dbe264aaa462d919fcc0f8, type: 3}
+  - direction: 4
+    sprite: {fileID: 1224576287, guid: 6704893942dbe264aaa462d919fcc0f8, type: 3}
+    highlightSprite: {fileID: 1560793905, guid: 6704893942dbe264aaa462d919fcc0f8, type: 3}
+  - direction: 5
+    sprite: {fileID: 1224576287, guid: 6704893942dbe264aaa462d919fcc0f8, type: 3}
+    highlightSprite: {fileID: 1560793905, guid: 6704893942dbe264aaa462d919fcc0f8, type: 3}
+  - direction: 6
+    sprite: {fileID: 1224576287, guid: 6704893942dbe264aaa462d919fcc0f8, type: 3}
+    highlightSprite: {fileID: 1560793905, guid: 6704893942dbe264aaa462d919fcc0f8, type: 3}
+  - direction: 7
+    sprite: {fileID: 1224576287, guid: 6704893942dbe264aaa462d919fcc0f8, type: 3}
+    highlightSprite: {fileID: 1560793905, guid: 6704893942dbe264aaa462d919fcc0f8, type: 3}
