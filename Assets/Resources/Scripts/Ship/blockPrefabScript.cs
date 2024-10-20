@@ -38,7 +38,7 @@ public class blockPrefabScript : MonoBehaviour
     private IEnumerator FadeAlpha(SpriteRenderer spriteRenderer)
     {
         spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 1f);
-        float duration = 1.5f; // Duration of the fade-out effect
+        float duration = 0.75f; // Duration of the fade-out effect
         float elapsedTime = 0f;
 
         while (elapsedTime < duration)

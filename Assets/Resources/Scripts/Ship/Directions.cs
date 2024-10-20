@@ -51,26 +51,26 @@ public static class DirectionExtensions
         return (Direction)next;
     }
 
-    public static int GetZRotation(this Direction direction)
+    public static int GetZRotation(this Direction direction) // this is for the 2d isometric view
     {
         switch (direction)
         {
             case Direction.N:
                 return 0;   // North
             case Direction.NE:
-                return 45;  // North-East
+                return 60;  // North-East
             case Direction.E:
                 return 90;  // East
             case Direction.SE:
-                return 135; // South-East
+                return 120; // South-East
             case Direction.S:
                 return 180; // South
             case Direction.SW:
-                return 225; // South-West
+                return 240; // South-West
             case Direction.W:
                 return 270; // West
             case Direction.NW:
-                return 315; // North-West
+                return 300; // North-West
             default:
                 return 0;
         }
