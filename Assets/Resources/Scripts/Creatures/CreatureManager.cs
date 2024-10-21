@@ -79,7 +79,7 @@ public class CreatureData
     public float movementDelay;
     public GameObject targetPlayer;
     public float health;
-    public bool isDamaged;
+    public bool isDamaged = false;
     public float currentDamage;
     public List<EffectData> effects = new List<EffectData>();
     public HealthBar healthBar;
@@ -652,14 +652,11 @@ public class CreatureManager : MonoBehaviour
 
         if (hitCreatureData.isDamaged)
         {
-            if (damageMagnitude > hitCreatureData.currentDamage)
-            {
-                float damage = damageMagnitude - hitCreatureData.currentDamage;
-                hitCreatureData.health -= damage;
-                UpdateCreatureHealth(hitCreatureData);
-
-            }
+            hitTentacleData.lineRenderer.material.SetFloat("_WhiteAmount", 1f);
+            hitCreatureData.health -= damageMagnitude;
+            UpdateCreatureHealth(hitCreatureData);
         }
+
         else
         {
             hitCreatureData.currentDamage = damageMagnitude;
@@ -802,7 +799,6 @@ public class CreatureManager : MonoBehaviour
                 );
 
                 SingletonManager.Instance.explosions.Explode(creaturePosition, creatureProjectile, 0f, 360f);
-                Debug.Log("exploded");
             }
 
             AbilityData healorb = SingletonManager.Instance.abilityManager.GetAbilityData(Ability.HealOrb);
@@ -817,16 +813,7 @@ public class CreatureManager : MonoBehaviour
                 }
             }
 
-
-
-
-
-
             CreatureDeath(creatureObject);
-            Debug.Log("dead");
-
-
-
             yield break;
         }
 
@@ -930,7 +917,7 @@ public class CreatureManager : MonoBehaviour
         SingletonManager.Instance.shipGenerator.ApplyImpact(raftObject, creatureData.creatureObject.damage);
 
         //invulnerable ship / spiky ship
-        bool invincible = true;
+        bool invincible = false;
         if (invincible)
         {
             var firstTentacle = creatureData.tentacles.Values.FirstOrDefault();
@@ -1109,7 +1096,7 @@ public class CreatureManager : MonoBehaviour
 
                 CircleCollider2D collider = newTentacleSegment.GetComponent<CircleCollider2D>();
                 //SpriteRenderer renderer = newTentacleSegment.GetComponent<SpriteRenderer>();
-                collider.radius = segmentSize;
+                collider.radius = diameter * 5f;
                 newTentacleSegment.transform.localScale = new Vector3(obstructionScale, obstructionScale, 1);
                 TentacleSegment tentacleSegmentData = new TentacleSegment
                 {
@@ -1168,28 +1155,29 @@ public class CreatureManager : MonoBehaviour
         return worldPosition;
 
     }
-    void mobSpawner()
+    public void mobSpawner(CreatureObject creatureObject = null)
     {
         List<Vector3Int> viableChunkList = new List<Vector3Int>(viableChunks);
-        Vector3Int randomChunkPosition = viableChunkList[Random.Range(0, viableChunkList.Count)];
         ChunkData randomChunk;
-        SingletonManager.Instance.worldGenerator.generatedChunks.TryGetValue(randomChunkPosition, out randomChunk);
 
-        if (randomChunk != null)
+        do
         {
-            CreatureObject randomCreatureObject = PickRandomCreatureObject(randomChunk.chunkHostility);
+            Vector3Int randomChunkPosition = viableChunkList[Random.Range(0, viableChunkList.Count)];
+            SingletonManager.Instance.worldGenerator.generatedChunks.TryGetValue(randomChunkPosition, out randomChunk);
 
-            int currentMobPopulation = randomChunk.chunkPopulation;
-            if (currentMobPopulation < maxGlobalChunkPopulation)
-            {
-                Vector3 worldPosition = PickRandomTileFromChunk(randomChunk);
-                int packSize = Random.Range(randomCreatureObject.minPackSpawn, randomCreatureObject.maxPackSpawn);
+        } while (randomChunk != null && randomChunk.chunkPopulation > maxGlobalChunkPopulation);
 
-                for (int i = 0; i < packSize; i++)
-                {
-                    SpawnCreature(worldPosition, randomCreatureObject, randomChunk);
-                }
-            }
+        if (creatureObject == null)
+        {
+            creatureObject = PickRandomCreatureObject(randomChunk.chunkHostility);
+        }
+
+        Vector3 worldPosition = PickRandomTileFromChunk(randomChunk);
+        int packSize = Random.Range(creatureObject.minPackSpawn, creatureObject.maxPackSpawn);
+
+        for (int i = 0; i < packSize; i++)
+        {
+            SpawnCreature(worldPosition, creatureObject, randomChunk);
         }
     }
 

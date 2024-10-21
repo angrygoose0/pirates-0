@@ -140,6 +140,9 @@ public class InteractionManager : MonoBehaviour
                     {
                         if (blockItemObject.active != null)
                         {
+                            float multiplier = 1f;
+                            Vector3 newBlockPosition = blockScript.transform.position + new Vector3(0.0f, 0.125f, 0.0f);
+                            SingletonManager.Instance.feedbackManager.ArtifactPlaceFeedback(newBlockPosition, multiplier);
                             blockItemScript.ActivateActive(blockPrefab.transform.position, blockScript.blockDirection.ToVector2());
                         }
                     }

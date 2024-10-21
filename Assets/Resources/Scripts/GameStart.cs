@@ -5,12 +5,18 @@ using UnityEngine;
 public class GameStart : MonoBehaviour
 {
     public bool gameStarted = false;
+    public int trailerType;
     public bool trailer;
     public GameObject startButton;
     public ProjectileData projectileData;
     public Transform trailerCameraAnchor;
     public int creatureSpawnRadius;
     public List<CreatureObject> creatureObjectList;
+    // The decay factor (between 0 and 1), closer to 0 = slower decay
+    float decayFactor = 0.9f;
+
+    // How long the decay takes (in seconds)
+    float decayDuration = 5f;
     void Awake()
     {
         gameStarted = false;
@@ -32,11 +38,67 @@ public class GameStart : MonoBehaviour
 
         if (trailer)
         {
-            StartCoroutine(PlayTrailerSequence());
+            if (trailerType == 1)
+            {
+                StartCoroutine(PlayTrailer1Sequence());
+            }
+            else if (trailerType == 2)
+            {
+                StartCoroutine(PlayTrailer2Sequence());
+            }
+
         }
     }
 
-    IEnumerator PlayTrailerSequence()
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.U))
+        {
+            SingletonManager.Instance.shipMovement.currentVelocity = new Vector2(0.5f, 0.5f);
+        }
+
+    }
+
+    IEnumerator LightCoroutine()
+    {
+        float elapsedTime = 0f;
+        float lightLevel = 1f;
+
+        // Loop until the float value is close enough to 0
+        while (lightLevel > 0.01f)
+        {
+            elapsedTime += Time.deltaTime;
+            float timeFactor = elapsedTime / decayDuration;
+            lightLevel *= Mathf.Pow(decayFactor, Time.deltaTime);
+            lightLevel = Mathf.Max(0f, lightLevel);
+
+            SingletonManager.Instance.dayNightCycle.globalLight.intensity = lightLevel;
+            SingletonManager.Instance.dayNightCycle.shipLight.intensity = 1 - lightLevel;
+
+            yield return null;
+        }
+        lightLevel = 0f;
+    }
+
+    IEnumerator PlayTrailer2Sequence()
+    {
+        SingletonManager.Instance.dayNightCycle.globalLight.intensity = 1f;
+        SingletonManager.Instance.dayNightCycle.shipLight.intensity = 0f;
+        yield return new WaitForSeconds(2f);
+        StartCoroutine(LightCoroutine());
+
+        float spawnDelay = 2f;  // Start with 2 seconds delay
+
+        // Loop to progressively spawn more creatures with reduced delays
+        while (spawnDelay > 0.1f)
+        {
+            SingletonManager.Instance.creatureManager.mobSpawner(creatureObjectList[0]);
+            yield return new WaitForSeconds(spawnDelay);
+            spawnDelay *= 0.5f;
+        }
+
+    }
+    IEnumerator PlayTrailer1Sequence()
     {
         SingletonManager.Instance.cameraBrain.ChangeFollowTarget(0);
         yield return new WaitForSeconds(2f);

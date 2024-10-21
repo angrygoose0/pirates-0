@@ -25,6 +25,10 @@ PrefabInstance:
       value: creaturePrefab Variant
       objectReference: {fileID: 0}
     - target: {fileID: 3853018371985993264, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3853018371985993264, guid: 69138f0f9816dee438aa06236cac6905, type: 3}
       propertyPath: m_TagString
       value: Untagged
       objectReference: {fileID: 0}

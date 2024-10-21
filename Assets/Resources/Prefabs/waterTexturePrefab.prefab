@@ -263,9 +263,9 @@ MonoBehaviour:
         _value: 0
     _waterSettings:
       color:
-        _value: {r: 0.21026166, g: 0.4736294, b: 0.5943396, a: 0}
+        _value: {r: 1, g: 1, b: 1, a: 0}
       depthColor:
-        _value: {r: 0.21484515, g: 0.50741494, b: 0.6415094, a: 0}
+        _value: {r: 1, g: 1, b: 1, a: 0}
       coloringType: 1
       tiling:
         _value: {x: 1, y: 1}
@@ -373,7 +373,7 @@ MonoBehaviour:
         _value: 0
     _simulationSettings:
       resolution:
-        _value: {x: 1024, y: 512}
+        _value: {x: 1024, y: 256}
       waterCmp: {fileID: 7200000, guid: 14821a0cc6771aa45b7163f15854b208, type: 3}
       sr: {fileID: 4663153839929373587}
       obstruction: {fileID: 0}
@@ -385,7 +385,7 @@ MonoBehaviour:
       waveRad:
         _value: 0.005
       waveHeight:
-        _value: 1
+        _value: 1.1
       dispersion:
         _value: 0.7587
       iterations:
@@ -403,7 +403,7 @@ MonoBehaviour:
       rainSizeY:
         _value: 2
       normalStrength:
-        _value: 1.68
+        _value: 1.75
       waveColor:
         _value: {r: 1, g: 1, b: 1, a: 1}
       waveColorMinMaxHeight:

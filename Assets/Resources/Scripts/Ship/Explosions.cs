@@ -105,11 +105,12 @@ public class Explosions : MonoBehaviour
 
         while (projectile.explosionInverse ? currentRayForce < 1 : currentRayForce > 0)
         {
-            RaycastHit2D hit = Physics2D.Raycast(currentPosition, direction, projectile.explosionSpeed * Time.deltaTime);
+            int layerMask = LayerMask.GetMask("CreatureSegments", "Items");
+            RaycastHit2D hit = Physics2D.Raycast(currentPosition, direction, projectile.explosionSpeed * Time.deltaTime, layerMask);
 
             if (hit.collider != null)
             {
-                GameObject hitObject = hit.collider.gameObject;
+                Debug.Log(hit.collider.gameObject.tag);
                 float distance = Vector2.Distance(currentPosition, hit.point);
                 currentRayForce = projectile.explosionInverse
                     ? Mathf.Min(currentRayForce + distance * dissipationRate, 1)
@@ -128,18 +129,11 @@ public class Explosions : MonoBehaviour
                         rigidBody.AddForce(forceDirection * appliedForce, ForceMode2D.Impulse);
                     }
 
-                    if (hitObject != null)
+                    if (hit.collider.gameObject.tag == "Creature")
                     {
-                        if (hitObject.tag == "Creature")
-                        {
-                            SingletonManager.Instance.creatureManager.ApplyImpact(hitObject, appliedDamage);  //change TODO
-                        }
+                        SingletonManager.Instance.creatureManager.ApplyImpact(hit.collider.gameObject, appliedDamage);  //change TODO
+                    }
 
-                    }
-                    else
-                    {
-                        Debug.LogError("Hit object is null.");
-                    }
                 }
             }
             currentPosition += direction * projectile.explosionSpeed * Time.deltaTime;

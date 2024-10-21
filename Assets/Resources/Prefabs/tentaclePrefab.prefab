@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 262063449844135243}
   - component: {fileID: 2958390478183796086}
-  m_Layer: 11
+  m_Layer: 13
   m_Name: 'obstructor : tentaclePrefab'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: 4201901004375430019}
   - component: {fileID: 4330643005547318335}
   - component: {fileID: 7780085638778004239}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: tentaclePrefab
   m_TagString: Creature
   m_Icon: {fileID: 0}
@@ -197,7 +197,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
 --- !u!58 &4330643005547318335
 CircleCollider2D:
