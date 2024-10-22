@@ -77,13 +77,13 @@ public class ItemObject : ScriptableObject
 
 
     public List<AbilityData> abilityList;
-    public Active active;
+    public Active activeAbility;
 
     public void UseActive(Vector3 position, Vector2 blockDirection)
     {
-        if (active != null)
+        if (activeAbility != null)
         {
-            active.Activate(this, position, blockDirection);
+            activeAbility.Activate(this, position, blockDirection);
         }
     }
 

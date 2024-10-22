@@ -178,7 +178,7 @@ public class ItemScript : MonoBehaviour
     // Coroutine to handle active skill cooldown
     public void ActivateActive(Vector3 position, Vector2 blockDirection)
     {
-        if (itemObject.active == null)
+        if (itemObject.activeAbility == null)
         {
             return;
         }
@@ -189,7 +189,7 @@ public class ItemScript : MonoBehaviour
         }
 
         itemObject.UseActive(position, blockDirection);
-        StartCoroutine(ActiveCooldownCoroutine(itemObject.active.cooldown));
+        StartCoroutine(ActiveCooldownCoroutine(itemObject.activeAbility.cooldown));
     }
 
     private IEnumerator ActiveCooldownCoroutine(float cooldown)

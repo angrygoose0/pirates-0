@@ -90,12 +90,13 @@ public class GameStart : MonoBehaviour
         float spawnDelay = 2f;  // Start with 2 seconds delay
 
         // Loop to progressively spawn more creatures with reduced delays
-        while (spawnDelay > 0.1f)
+        while (spawnDelay > 0.001f)
         {
             SingletonManager.Instance.creatureManager.mobSpawner(creatureObjectList[0]);
             yield return new WaitForSeconds(spawnDelay);
             spawnDelay *= 0.5f;
         }
+        SingletonManager.Instance.creatureManager.mobSpawner(creatureObjectList[1]);
 
     }
     IEnumerator PlayTrailer1Sequence()
@@ -135,7 +136,7 @@ public class GameStart : MonoBehaviour
             SingletonManager.Instance.worldGenerator.generatedChunks.TryGetValue(chunkToSpawnCreature, out chunkData);
 
             int randomCreatureIndex = Random.Range(0, creatureObjectList.Count);
-            CreatureObject creatureToSpawn = creatureObjectList[randomCreatureIndex];
+            CreatureObject creatureToSpawn = creatureObjectList[0];
 
             Vector3 worldPosition = SingletonManager.Instance.creatureManager.PickRandomTileFromChunk(chunkData);
 

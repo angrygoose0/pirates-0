@@ -401,7 +401,9 @@ public class PlayerBehaviour : MonoBehaviour
                 case BlockType.Payload:
                     if (blockItem != null)
                     {
-                        if (blockItem.active)
+                        ItemScript blockItemScript = blockItem.GetComponent<ItemScript>();
+                        ItemObject blockItemObject = blockItemScript.itemObject;
+                        if (blockItemObject.activeAbility)
                         {
                             helpfulUIList.Add("[E] Activate");
                         }

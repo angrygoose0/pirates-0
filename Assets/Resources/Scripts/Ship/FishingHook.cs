@@ -11,19 +11,17 @@ public class FishingHook : MonoBehaviour
 
     public Transform playerTransform;
 
-    
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Item"))
         {
             ItemScript itemScript = other.gameObject.GetComponent<ItemScript>();
 
-            if(!itemScript.beingReeled)
+            if (!itemScript.beingReeled)
             {
                 itemScript.beingReeled = true;
                 StartCoroutine(PullToPlayer(playerTransform, other.gameObject, itemScript));
             }
-            
         }
     }
 
@@ -31,6 +29,8 @@ public class FishingHook : MonoBehaviour
     {
         while (Vector3.Distance(itemObject.transform.position, playerTransform.position) > 0.1f)
         {
+            Debug.Log("item" + itemObject.transform.position);
+            Debug.Log("plauer" + playerTransform.position);
             // Calculate the distance between the item and the player
             float distance = Vector3.Distance(itemObject.transform.position, playerTransform.position);
 
@@ -48,6 +48,8 @@ public class FishingHook : MonoBehaviour
             yield return null;
         }
 
+
         itemScript.beingReeled = false;
+        Destroy(gameObject);
     }
 }
