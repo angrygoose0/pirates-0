@@ -33,7 +33,7 @@ public class GameStart : MonoBehaviour
 
         if (!trailer)
         {
-            SingletonManager.Instance.shipMovement.currentVelocity = new Vector2(0.5f, 0.5f);
+            //SingletonManager.Instance.shipMovement.currentVelocity = new Vector2(0.5f, 0.5f);
         }
 
         if (trailer)
@@ -54,7 +54,7 @@ public class GameStart : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.U))
         {
-            SingletonManager.Instance.shipMovement.currentVelocity = new Vector2(0.5f, 0.5f);
+            //SingletonManager.Instance.shipMovement.currentVelocity = new Vector2(0.5f, 0.5f);
         }
 
     }
@@ -90,7 +90,7 @@ public class GameStart : MonoBehaviour
         float spawnDelay = 2f;  // Start with 2 seconds delay
 
         // Loop to progressively spawn more creatures with reduced delays
-        while (spawnDelay > 0.001f)
+        while (spawnDelay > 0.0001f)
         {
             SingletonManager.Instance.creatureManager.mobSpawner(creatureObjectList[0]);
             yield return new WaitForSeconds(spawnDelay);

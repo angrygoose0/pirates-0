@@ -27,7 +27,6 @@ public class FeedbackManager : MonoBehaviour
 
     public void ArtifactPlaceFeedback(Vector3 position, float multiplier)
     {
-        Debug.Log("playing artifact");
         MMF_ParticlesInstantiation artifactPlaceParticlesFeedback = artifactPlaceFeedbackPlayer.GetFeedbackOfType<MMF_ParticlesInstantiation>();
         artifactPlaceParticlesFeedback.TargetWorldPosition = position;
 

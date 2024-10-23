@@ -10,8 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: wave
-  m_EditorClassIdentifier: Assembly-CSharp::ExplosionActive
-  cooldown: 4
-  forceMagnitude: 1000
-  damageAmount: 0
+  m_Name: waveActive
+  m_EditorClassIdentifier: Assembly-CSharp::WaveActive
+  cooldown: 1
+  forceMagnitude: 50

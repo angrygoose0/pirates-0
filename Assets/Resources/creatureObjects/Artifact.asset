@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Artifact
   m_EditorClassIdentifier: 
   id: 0
-  startingHealth: 10
-  armor: 0
+  startingHealth: 25
+  armor: 2
   populationValue: 1
   spawnWeight: 1
   minPackSpawn: 1
@@ -26,19 +26,21 @@ MonoBehaviour:
   tentacles: 0
   damage: 1
   rotationSpeed: 1000
-  maxMoveSpeed: 5
-  acceleration: 3
+  maxMoveSpeed: 4
+  acceleration: 7
   deceleration: 2
   range: 1
   aggressionThreshold: 1
   tentacleList:
   - segmentSizes:
-    - 0.05
-    - 0.04
+    - 0.08
+    - 0.06
+    - 0.03
+    - 0.02
     - 0.01
-    setDistance: 0.025
-    acceleration: 15
-    maxMoveSpeed: 10
+    setDistance: 0.032
+    acceleration: 19
+    maxMoveSpeed: 8
     deceleration: 0
     pullStrength: 2
     wiggleFrequency: 10

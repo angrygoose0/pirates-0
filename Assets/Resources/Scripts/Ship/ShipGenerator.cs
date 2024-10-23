@@ -440,6 +440,18 @@ public class ShipGenerator : MonoBehaviour
 
         }
     }
+
+    public float GenerateFloatWithSeed(int x, int y, int seed)
+    {
+        // Combine x, y, and seed into a single unique seed value
+        int combinedSeed = x * 73856093 ^ y * 19349663 ^ seed;
+
+        // Initialize the random number generator with the combined seed
+        Random.InitState(combinedSeed);
+
+        // Return a random float between 0 and 1
+        return Random.value; // or you can use Random.Range(min, max) to get a specific range
+    }
     private void CombineRaftTilesIntoShip()
     {
 
@@ -522,89 +534,32 @@ public class ShipGenerator : MonoBehaviour
                         colliderPoints[k] += new Vector2(-2, 1);
                     }
 
-
                     shipCollider.points = colliderPoints;
 
-
-                    // Number of cannons and payloads you want to place
-                    int cannonCount = 1;
-                    int payloadCount = 2;
-
-                    // List to store already used positions (to avoid overlap)
-                    List<Vector2Int> usedPositions = new List<Vector2Int>();
-
-                    // Step 1: Place the payloads
-                    while (payloadCount > 0)
-                    {
-                        // Randomly select a position for the payload
-                        int randomX = UnityEngine.Random.Range(0, raftTileSize);
-                        int randomY = UnityEngine.Random.Range(0, raftTileSize);
-
-                        // Avoid overlap
-                        if (!usedPositions.Contains(new Vector2Int(randomX, randomY)))
-                        {
-                            usedPositions.Add(new Vector2Int(randomX, randomY));
-
-                            // Calculate the correct position in the ship array
-                            int shipX = i * raftTileSize + randomX;
-                            int shipY = j * raftTileSize + randomY;
-
-                            // Ensure within bounds and assign payload
-                            if (shipX < ship.GetLength(0) && shipY < ship.GetLength(1))
-                            {
-                                ship[shipX, shipY] = 3f; // set payload
-                                payloadCount--; // Decrease the number of payloads left to place
-                            }
-                        }
-                    }
-
-                    // Step 2: Place the cannons
-                    while (cannonCount > 0)
-                    {
-                        // Randomly select a position for the cannon
-                        int randomX = UnityEngine.Random.Range(0, raftTileSize);
-                        int randomY = UnityEngine.Random.Range(0, raftTileSize);
-
-                        // Avoid overlap with payloads and previously placed cannons
-                        if (!usedPositions.Contains(new Vector2Int(randomX, randomY)))
-                        {
-                            usedPositions.Add(new Vector2Int(randomX, randomY));
-
-                            // Calculate the correct position in the ship array
-                            int shipX = i * raftTileSize + randomX;
-                            int shipY = j * raftTileSize + randomY;
-
-                            // Ensure within bounds and assign cannon
-                            if (shipX < ship.GetLength(0) && shipY < ship.GetLength(1))
-                            {
-                                ship[shipX, shipY] = 2f; // set cannon
-                                cannonCount--; // Decrease the number of cannons left to place
-                            }
-                        }
-                    }
-
-                    // Step 3: Fill the remaining tiles with empty tiles (1f)
                     for (int x = 0; x < raftTileSize; x++)
                     {
                         for (int y = 0; y < raftTileSize; y++)
                         {
                             int shipX = i * raftTileSize + x;
                             int shipY = j * raftTileSize + y;
+                            int randomInt = Mathf.RoundToInt(100f * GenerateFloatWithSeed(shipX, shipY, 42));
 
-                            // Avoid out-of-bounds issues by checking if the coordinates fit in the ship array
-                            if (shipX < ship.GetLength(0) && shipY < ship.GetLength(1))
+                            if (randomInt <= 92)
                             {
-                                // If the current position is not already used for cannon/payload
-                                if (!usedPositions.Contains(new Vector2Int(x, y)))
-                                {
-                                    ship[shipX, shipY] = 1f; // empty tile
-                                }
+                                ship[shipX, shipY] = 1f; //empty
                             }
+                            else if (randomInt <= 98)
+                            {
+                                ship[shipX, shipY] = 3f; // payload
+                            }
+                            else if (randomInt <= 100)
+                            {
+                                ship[shipX, shipY] = 2f; // cannon
+                            }
+
+
                         }
                     }
-
-
-
                 }
             }
         }

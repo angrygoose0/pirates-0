@@ -176,7 +176,7 @@ public class ItemScript : MonoBehaviour
 
 
     // Coroutine to handle active skill cooldown
-    public void ActivateActive(Vector3 position, Vector2 blockDirection)
+    public void ActivateActive(Vector3 position, Direction blockDirection, Vector3 feedbackPosition)
     {
         if (itemObject.activeAbility == null)
         {
@@ -188,6 +188,9 @@ public class ItemScript : MonoBehaviour
             return;
         }
 
+        float multiplier = 1f;
+        SingletonManager.Instance.feedbackManager.ArtifactPlaceFeedback(feedbackPosition, multiplier);
+
         itemObject.UseActive(position, blockDirection);
         StartCoroutine(ActiveCooldownCoroutine(itemObject.activeAbility.cooldown));
     }
@@ -195,7 +198,7 @@ public class ItemScript : MonoBehaviour
     private IEnumerator ActiveCooldownCoroutine(float cooldown)
     {
         activeCooldown = false;
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(cooldown);
         activeCooldown = true;
     }
 }

@@ -13,14 +13,13 @@ MonoBehaviour:
   m_Name: Siren Scale
   m_EditorClassIdentifier: 
   itemName: 
-  itemSprite: {fileID: 21300000, guid: 154088f6852c7ee428f692c4e2b3de5e, type: 3}
+  itemSprite: {fileID: 21300000, guid: 90e96c3c7c7d2e34bb318d0d1d9e8a92, type: 3}
   mass: 5
   projectileData: []
   goldAmount: 0
   spawningItem: {fileID: 0}
   regenerateTime: 0
   recipes: []
-  abilityList:
-  - ability: 9
-    value: 2
-  active: {fileID: 0}
+  affectsCannons: 0
+  abilityList: []
+  activeAbility: {fileID: 11400000, guid: f5f196d1140d9fd44bcb7e791676edb4, type: 2}

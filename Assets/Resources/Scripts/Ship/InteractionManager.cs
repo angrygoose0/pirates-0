@@ -140,10 +140,8 @@ public class InteractionManager : MonoBehaviour
                     {
                         if (blockItemObject.activeAbility != null)
                         {
-                            float multiplier = 1f;
-                            Vector3 newBlockPosition = blockScript.transform.position + new Vector3(0.0f, 0.125f, 0.0f);
-                            SingletonManager.Instance.feedbackManager.ArtifactPlaceFeedback(newBlockPosition, multiplier);
-                            blockItemScript.ActivateActive(blockPrefab.transform.position, blockScript.blockDirection.ToVector2());
+                            Vector3 feedbackPosition = blockScript.transform.position + new Vector3(0.0f, 0.125f, 0.0f);
+                            blockItemScript.ActivateActive(blockPrefab.transform.position, blockScript.blockDirection, feedbackPosition);
                         }
                     }
                 }
@@ -316,7 +314,6 @@ public class InteractionManager : MonoBehaviour
 
             case 3:
                 blockScript.RotateBlock(1, false);
-                Debug.Log(blockScript.blockDirection);
                 break;
 
             default:

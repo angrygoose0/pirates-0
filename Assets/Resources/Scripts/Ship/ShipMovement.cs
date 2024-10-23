@@ -7,7 +7,7 @@ public class ShipMovement : MonoBehaviour
 {
     public GameObject shipTilemap; // Reference to the tilemap or parent object containing the tilemap
     public float kFactor; // constant that multiplies with totalForce to give maxSpeed;
-    private float maxSpeed; // The maximum speed at which the ship moves
+    public float maxSpeed; // The maximum speed at which the ship moves
     public float mass = 1f; // The mass of the ship, which affects acceleration and deceleration
 
     public Vector2 currentVelocity; // The current velocity of the ship
@@ -50,11 +50,13 @@ public class ShipMovement : MonoBehaviour
             // Calculate the acceleration based on the total force and mass
             Vector2 acceleration = totalForce / mass;
             currentVelocity = Vector2.ClampMagnitude(currentVelocity + acceleration * Time.deltaTime, maxSpeed);
+            Debug.Log("total force isnt zero?");
         }
         else
         {
+            Debug.Log("decelerate");
             // Decelerate to a stop
-            Vector2 deceleration = -currentVelocity.normalized * maxSpeed / mass;
+            Vector2 deceleration = -currentVelocity / mass;
             currentVelocity += deceleration * Time.deltaTime;
 
             // Ensure we don't overshoot and reverse direction
@@ -79,7 +81,5 @@ public class ShipMovement : MonoBehaviour
     {
         // Apply the recoil force to the current velocity
         currentVelocity += recoilForce / mass;
-        // Ensure the velocity doesn't exceed the maximum speed
-        currentVelocity = Vector2.ClampMagnitude(currentVelocity, maxSpeed);
     }
 }

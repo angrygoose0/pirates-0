@@ -196,7 +196,6 @@ public class WorldGenerator : MonoBehaviour
 
             // Instantiate the small prefab at the center of the chunk
             chunkData.chunkWaterTexture = Instantiate(waterTexturePrefab, chunkCenterWorldPosition, Quaternion.identity, seaTilemap.transform);
-            Debug.Log(chunkPosition);
         }
     }
 
