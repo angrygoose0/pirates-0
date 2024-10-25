@@ -673,7 +673,7 @@ public class ShipGenerator : MonoBehaviour
         float result = shipData.hp / shipData.raftObject.health;
 
         float roundedResult = Mathf.Round(result * 1000f) / 1000f;
-        shipData.healthBar.ModifyHealth(roundedResult);
+        //shipData.healthBar.ModifyHealth(roundedResult);
     }
 
     public void ApplyImpact(GameObject raftTile, float damageMagnitude)

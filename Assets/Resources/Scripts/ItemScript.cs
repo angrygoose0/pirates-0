@@ -1,5 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
+using UnityEngine.Rendering.Universal;
 using UnityEngine;
 
 public class ItemScript : MonoBehaviour
@@ -40,7 +40,11 @@ public class ItemScript : MonoBehaviour
         // Automatically find and assign the GameObject named "ghost" as the target
         targetObject = GameObject.Find("ghost");
 
+        glowLight = GetComponentInChildren<Light2D>();
+        glowLight.color = itemObject.glowColor;
+        glowLight.intensity = itemObject.glowIntensity;
 
+        StartCoroutine(PulseLight(glowLight));
 
         // Check if the GameObject has a parent on startup and that parent is not the world Tilemap
         if (transform.parent != null && transform.parent.name != "world")
@@ -52,16 +56,36 @@ public class ItemScript : MonoBehaviour
             isActive = false; //
             StartInactiveTimer();
         }
+
     }
 
     public float bobbingSpeed = 2f; // Speed of bobbing
     public float bobbingHeight = 0.5f; // Height of bobbing
+    private Light2D glowLight;
     void Update()
     {
         if (onPayload)
         {
             float newY = Mathf.Sin(Time.time * bobbingSpeed) * bobbingHeight;
             spriteRenderer.gameObject.transform.localPosition = new Vector3(0f, newY, 0f);
+        }
+
+    }
+
+    IEnumerator PulseLight(Light2D lightComponent)
+    {
+        // Set the range for intensity (20% down and 20% up from base)
+        float minIntensity = itemObject.glowIntensity * (1 - itemObject.glowAmplitude);
+        float maxIntensity = itemObject.glowIntensity * (1 + itemObject.glowAmplitude);
+
+        while (true)
+        {
+            // Lerp between min and max intensity using Mathf.PingPong
+            float t = Mathf.PingPong(Time.time * itemObject.pulseSpeed, 1.0f);
+            lightComponent.intensity = Mathf.Lerp(minIntensity, maxIntensity, t);
+
+            // Wait until the next frame
+            yield return null;
         }
     }
 

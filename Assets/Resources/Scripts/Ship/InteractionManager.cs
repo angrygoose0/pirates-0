@@ -16,6 +16,10 @@ public class InteractionManager : MonoBehaviour
         {
             SingletonManager.Instance.cannonBehaviour.cannonSelector();
         }
+        else
+        {
+            Destroy(SingletonManager.Instance.cannonBehaviour.selectorInstantiated);
+        }
 
     }
 

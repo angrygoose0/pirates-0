@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Aggro
   m_EditorClassIdentifier: 
   id: 0
-  startingHealth: 10
-  armor: 1
+  startingHealth: 5
+  armor: 0
   populationValue: 1
   spawnWeight: 1
   minPackSpawn: 1

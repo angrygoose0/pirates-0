@@ -16,18 +16,13 @@ public class CannonBehaviour : MonoBehaviour
     public float gravity = -9.81f; // Gravity affecting the cannonball
 
     private Vector3Int previousMousePosition = new Vector3Int();
-    private GameObject selectorInstantiated;
+    public GameObject selectorInstantiated;
     private Vector3 previousTilemapPosition;
     public Vector3Int currentMouseTileCoordinate; // Variable to store the mouse's tile coordinate
 
     void Start()
     {
         previousTilemapPosition = tilemap.transform.position;
-
-    }
-
-    void Update()
-    {
 
     }
 

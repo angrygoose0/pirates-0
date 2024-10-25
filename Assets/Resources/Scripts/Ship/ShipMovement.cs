@@ -43,6 +43,11 @@ public class ShipMovement : MonoBehaviour
         }
     }
 
+
+    public Vector2 targetVelocity = new Vector2(2, 0); // Target velocity to decelerate to
+    private Vector2 velocityChange = Vector2.zero; // This ref value will track velocity changes in SmoothDamp
+    public float smoothTime = 0.3f; // The time it takes to decelerate (higher values slow down deceleration)
+
     void UpdateVelocity()
     {
         if (totalForce != Vector2.zero)
@@ -50,22 +55,18 @@ public class ShipMovement : MonoBehaviour
             // Calculate the acceleration based on the total force and mass
             Vector2 acceleration = totalForce / mass;
             currentVelocity = Vector2.ClampMagnitude(currentVelocity + acceleration * Time.deltaTime, maxSpeed);
-            Debug.Log("total force isnt zero?");
-        }
-        else
-        {
-            Debug.Log("decelerate");
-            // Decelerate to a stop
-            Vector2 deceleration = -currentVelocity / mass;
-            currentVelocity += deceleration * Time.deltaTime;
 
-            // Ensure we don't overshoot and reverse direction
-            if (currentVelocity.magnitude < deceleration.magnitude * Time.deltaTime)
-            {
-                currentVelocity = Vector2.zero;
-            }
         }
+        if (currentVelocity != Vector2.zero)
+        {
+            // Smoothly decelerate to the target velocity
+            currentVelocity = Vector2.SmoothDamp(currentVelocity, targetVelocity, ref velocityChange, smoothTime);
+        }
+
+
     }
+
+
 
     void MoveShip()
     {

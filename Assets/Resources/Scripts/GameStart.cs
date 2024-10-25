@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class GameStart : MonoBehaviour
 {
     public bool gameStarted = false;
@@ -59,6 +60,7 @@ public class GameStart : MonoBehaviour
 
     }
 
+    public float maxExtraIntensity;
     IEnumerator LightCoroutine()
     {
         float elapsedTime = 0f;
@@ -72,8 +74,10 @@ public class GameStart : MonoBehaviour
             lightLevel *= Mathf.Pow(decayFactor, Time.deltaTime);
             lightLevel = Mathf.Max(0f, lightLevel);
 
+            float nightFactor = 1 - lightLevel; // How dark it is (closer to 1 at night, closer to 0 during day)
+            float extraLight = Mathf.Lerp(0, maxExtraIntensity, nightFactor); // Scale extra light based on nightFactor
             SingletonManager.Instance.dayNightCycle.globalLight.intensity = lightLevel;
-            SingletonManager.Instance.dayNightCycle.shipLight.intensity = 1 - lightLevel;
+            SingletonManager.Instance.dayNightCycle.shipLight.intensity = nightFactor + extraLight;
 
             yield return null;
         }
@@ -87,10 +91,12 @@ public class GameStart : MonoBehaviour
         yield return new WaitForSeconds(2f);
         StartCoroutine(LightCoroutine());
 
+        yield return new WaitForSeconds(3f);
+
         float spawnDelay = 2f;  // Start with 2 seconds delay
 
         // Loop to progressively spawn more creatures with reduced delays
-        while (spawnDelay > 0.0001f)
+        while (spawnDelay > 0.05f)
         {
             SingletonManager.Instance.creatureManager.mobSpawner(creatureObjectList[0]);
             yield return new WaitForSeconds(spawnDelay);

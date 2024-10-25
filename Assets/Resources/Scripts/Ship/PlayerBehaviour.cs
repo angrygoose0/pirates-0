@@ -40,8 +40,6 @@ public class PlayerBehaviour : MonoBehaviour
 
     public Direction currentDirection;
 
-    public GameObject pickupRadius;
-
     private bool isFiring = false;
     private Coroutine fireCoroutine;
     private float lastFireTime = 0f;
@@ -60,8 +58,6 @@ public class PlayerBehaviour : MonoBehaviour
             // Set the equipped item's position to the player's position
             equippedItem.transform.localPosition = Vector3.zero;
         }
-
-        pickupRadius.transform.parent = this.transform;
     }
     void Update()
     {

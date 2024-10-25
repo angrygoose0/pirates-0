@@ -53,7 +53,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: -876546973899608171, guid: 9465104cb197b38409f7571ad8659332, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -191,7 +191,7 @@ MonoBehaviour:
     _obstructorSettings:
       mainCamera: {fileID: 0}
       textureResolution:
-        _value: 1
+        _value: 0.774
       overrideMainCamera:
         _value: 0
       obstructionObjectsVisible:
@@ -277,11 +277,11 @@ MonoBehaviour:
       pixelPerfect:
         _value: 0
       obstructionWidth:
-        _value: 0.15
+        _value: 0.12
       obstructionColor:
         _value: {r: 1, g: 1, b: 1, a: 0}
       obstructionAlpha:
-        _value: 0
+        _value: 0.241
       foamColor:
         _value: {r: 0.86774653, g: 0.93894625, b: 0.9433962, a: 0}
       foamSize:
@@ -385,9 +385,9 @@ MonoBehaviour:
       waveRad:
         _value: 0.005
       waveHeight:
-        _value: 1.1
+        _value: 1
       dispersion:
-        _value: 0.7587
+        _value: 0.846
       iterations:
         _value: 3
       simulationSpeed:
@@ -403,7 +403,7 @@ MonoBehaviour:
       rainSizeY:
         _value: 2
       normalStrength:
-        _value: 1.75
+        _value: 2.46
       waveColor:
         _value: {r: 1, g: 1, b: 1, a: 1}
       waveColorMinMaxHeight:
