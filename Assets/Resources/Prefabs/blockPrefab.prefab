@@ -110,6 +110,7 @@ MonoBehaviour:
   blockLight: {fileID: 0}
   itemObjectList:
   - {fileID: 11400000, guid: 81de5d4855b024e4f98add07aea7d9e3, type: 2}
+  - {fileID: 11400000, guid: 76192aab6b73b514e890769aea5587c9, type: 2}
   active: 0
 --- !u!1 &2417152003151902707
 GameObject:

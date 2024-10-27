@@ -88,12 +88,13 @@ public class CannonBehaviour : MonoBehaviour
         Rigidbody2D rb = cannonball.AddComponent<Rigidbody2D>();
         rb.gravityScale = 0; // We'll handle gravity manually
 
-        float initialDistance = Vector3.Distance(start, tilemap.GetCellCenterWorld(endTile));
+        Vector3 initialEnd = tilemap.GetCellCenterWorld(endTile);
+        float initialDistance = Vector3.Distance(start, initialEnd);
 
         float timeToTarget = Mathf.Sqrt(2 * initialDistance / (cannonForce / mass));
 
         // Calculate initial velocity components
-        Vector3 initialEnd = tilemap.GetCellCenterWorld(endTile);
+
 
         Vector3 displacement = initialEnd - start;
 

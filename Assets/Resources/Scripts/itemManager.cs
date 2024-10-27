@@ -9,6 +9,7 @@ public class ItemManager : MonoBehaviour
     private Dictionary<string, ItemObject> itemDictionary;
 
     private GameObject worldTilemap;
+    public GameObject examplePrefab;
 
     private void Awake()
     {
@@ -48,9 +49,9 @@ public class ItemManager : MonoBehaviour
 
         ItemScript itemScript = createdItem.GetComponent<ItemScript>();
 
-        SpriteRenderer itemSpriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        itemScript.spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 
-        itemSpriteRenderer.sprite = createItemObject.itemSprite;
+        itemScript.spriteRenderer.sprite = createItemObject.itemSprite;
 
         itemScript.itemObject = createItemObject;
 
@@ -70,5 +71,83 @@ public class ItemManager : MonoBehaviour
 
         return createdItem;
     }
+
+    public float itemBounceForce;
+    public float gravity = -9.81f;
+    public GameObject itemEffectPrefab;
+
+    public void StartItemBounce(GameObject itemGameObject, Vector3 endLocalShipPosition)
+    {
+        StartCoroutine(ItemBounce(itemGameObject, endLocalShipPosition, 10f));
+    }
+    private IEnumerator ItemBounce(GameObject itemGameObject, Vector3 endLocalShipPosition, float firingForce)
+    {
+        Transform shipTransform = SingletonManager.Instance.shipGenerator.shipTilemapObject.transform;
+        GameObject itemEffectObject = Instantiate(itemEffectPrefab, shipTransform.TransformPoint(itemGameObject.transform.localPosition), Quaternion.identity, shipTransform);
+
+        // Get the LineRenderer component
+        LineRenderer lineRenderer = itemEffectObject.GetComponent<LineRenderer>();
+        if (lineRenderer == null)
+        {
+            Debug.LogError("LineRenderer not found on linePrefab.");
+            yield break;
+        }
+
+        // Initialize LineRenderer
+        List<Vector3> linePoints = new List<Vector3> { shipTransform.TransformPoint(itemEffectObject.transform.localPosition) };
+
+        Rigidbody2D rb = itemEffectObject.GetComponent<Rigidbody2D>();
+
+        float initialDistance = Vector3.Distance(itemEffectObject.transform.localPosition, endLocalShipPosition);
+        float timeToTarget = Mathf.Sqrt(2 * initialDistance / (firingForce));
+
+        Vector3 displacement = endLocalShipPosition - itemEffectObject.transform.localPosition;
+
+        float initialVelocityX = displacement.x / timeToTarget;
+        float initialVelocityY = (displacement.y - 0.5f * gravity * Mathf.Pow(timeToTarget, 2)) / timeToTarget;
+
+        rb.velocity = new Vector2(initialVelocityX, initialVelocityY);
+
+        float elapsedTime = 0f;
+
+        // Simulate the line flight to the end position
+        while (elapsedTime < timeToTarget)
+        {
+            elapsedTime += Time.deltaTime;
+
+            displacement = endLocalShipPosition - itemEffectObject.transform.localPosition;
+
+            float remainingTime = timeToTarget - elapsedTime;
+
+            if (remainingTime > 0)
+            {
+                rb.velocity = new Vector2(
+                    displacement.x / remainingTime,
+                    (displacement.y - 0.5f * gravity * Mathf.Pow(remainingTime, 2)) / remainingTime
+                );
+            }
+
+            // Apply gravity manually
+            rb.velocity += new Vector2(0, gravity) * Time.deltaTime;
+
+            // Add the current position of the line to the line points
+            linePoints.Add(shipTransform.TransformPoint(itemEffectObject.transform.localPosition));
+            lineRenderer.positionCount = linePoints.Count;
+            lineRenderer.SetPositions(linePoints.ToArray());
+
+            yield return null;
+        }
+        Destroy(itemEffectObject);
+
+        itemGameObject.transform.localPosition = endLocalShipPosition;
+
+        ItemScript itemScript = itemGameObject.GetComponent<ItemScript>();
+        itemScript.itemPickupable = true;
+        Color newColor = itemScript.spriteRenderer.color;
+        newColor.a = 1f;
+        itemScript.spriteRenderer.color = newColor;
+
+    }
+
 
 }

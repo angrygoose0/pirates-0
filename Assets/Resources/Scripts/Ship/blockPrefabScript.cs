@@ -20,18 +20,16 @@ public class blockPrefabScript : MonoBehaviour
     public GameObject player;
     public GameObject itemPrefab;
     public GameObject spawnedItem;
-    public GameObject shipObject;
     public int ammoCount;
     public Light2D blockLight;
 
-
-    public List<ItemObject> itemObjectList; // list for the global item scriptable objectlist
     private ItemScript spawnedItemScript;
     private Collider2D spawnedItemCollider;
 
     public bool active = false;
     private bool isSpawning = false;
     private Coroutine fadeCoroutine;
+
 
 
 
@@ -91,8 +89,6 @@ public class blockPrefabScript : MonoBehaviour
 
     void Start()
     {
-
-        shipObject = GameObject.Find("ship");
         blockDirection = Direction.NW;
 
         SpriteRenderer blockSpriteRenderer = GetComponent<SpriteRenderer>();
@@ -141,6 +137,7 @@ public class blockPrefabScript : MonoBehaviour
 
                 if (intersectionList.Count > 0)
                 {
+                    Random.InitState(System.DateTime.Now.Millisecond);
                     foreach (GameObject item in itemPrefabObject)
                     {
                         Destroy(item);
@@ -148,23 +145,69 @@ public class blockPrefabScript : MonoBehaviour
                     itemPrefabObject.Clear();
                     foreach (ItemObject resultItem in intersectionList)
                     {
-                        GameObject craftedItemObject = Instantiate(itemPrefab, gameObject.transform.position, Quaternion.identity);
-                        craftedItemObject = SingletonManager.Instance.itemManager.CreateItem(resultItem, gameObject.transform.position);
+                        GameObject craftedItemObject = SingletonManager.Instance.itemManager.CreateItem(resultItem, gameObject.transform.position);
+                        craftedItemObject.transform.SetParent(SingletonManager.Instance.shipGenerator.shipTilemapObject.transform);
 
                         ItemScript craftedItemScript = craftedItemObject.GetComponent<ItemScript>();
-                        craftedItemScript.NewParent(shipObject);
+                        craftedItemScript.itemPickupable = false;
+                        Color newColor = craftedItemScript.spriteRenderer.color;
+                        newColor.a = 0f;
+                        craftedItemScript.spriteRenderer.color = newColor;
+                        craftedItemScript.spriteRenderer.enabled = false;
 
-                        itemPrefabObject.Add(craftedItemObject);
+                        Debug.Log("cjamged");
+
+
+                        Vector3 newItemPosition = craftedItemObject.transform.position;
+                        newItemPosition.y += 0.125f;
+                        craftedItemObject.transform.position = newItemPosition;
+
+                        blockLight.intensity = 0f;
+
+                        // disable spriterenderer and other things
+
+                        Vector3Int blockTilePosition = SingletonManager.Instance.shipGenerator.tilemap.WorldToCell(gameObject.transform.position);
+                        List<Vector3Int> possibleTiles = SingletonManager.Instance.creatureManager.GetSurroundingTiles(blockTilePosition, 4f);
+
+                        List<Vector3Int> validTiles = new List<Vector3Int>();
+
+                        foreach (Vector3Int tilePosition in possibleTiles)
+                        {
+                            if (SingletonManager.Instance.shipGenerator.tilemap.HasTile(tilePosition))
+                            {
+                                validTiles.Add(tilePosition);
+
+                            }
+                        }
+
+
+                        for (int i = 0; i < 1; i++)
+                        {
+                            Vector3Int randomEndTile = validTiles[Random.Range(0, validTiles.Count)];
+                            Vector3 randomEndPosition = SingletonManager.Instance.shipGenerator.tilemap.CellToWorld(randomEndTile);
+
+                            Vector3 tileSize = SingletonManager.Instance.shipGenerator.tilemap.cellSize;
+                            float offsetX = Random.Range(-0.5f, 0.5f) * tileSize.x;
+                            float offsetY = Random.Range(-0.5f, 0.5f) * tileSize.y;
+
+                            randomEndPosition.x += offsetX;
+                            randomEndPosition.y += offsetY;
+
+                            Vector3 localShipRandomEndPosition = SingletonManager.Instance.shipGenerator.shipTilemapObject.transform.InverseTransformPoint(randomEndPosition);
+                            SingletonManager.Instance.itemManager.StartItemBounce(craftedItemObject, localShipRandomEndPosition);
+
+                        }
+
+
+
+
                     }
-
-
                 }
                 else
                 {
                     Debug.Log("no recipes"); //shoot out both ingredients
                     return;
                 }
-
             }
             else if (itemPrefabObject.Count == 1)
             {
@@ -183,17 +226,12 @@ public class blockPrefabScript : MonoBehaviour
                     }
                 }
             }
-
         }
-
-
     }
-
-
 
     public List<ItemObject> FilterByRecipe(ItemObject targetItem)
     {
-        return itemObjectList.Where(item => item.recipes != null && item.recipes.Any(recipe => recipe.materials.Contains(targetItem))).ToList();
+        return SingletonManager.Instance.itemManager.itemObjects.Where(item => item.recipes != null && item.recipes.Any(recipe => recipe.materials.Contains(targetItem))).ToList();
     }
 
 

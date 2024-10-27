@@ -41,7 +41,6 @@ public class SingletonManager : MonoBehaviour
     public FishingLine fishingLine { get; private set; }
     public CameraBrain cameraBrain { get; private set; }
     public GameStart gameStart { get; private set; }
-    public WaterShader waterShader { get; private set; }
 
     private void Awake()
     {
@@ -73,7 +72,6 @@ public class SingletonManager : MonoBehaviour
         fishingLine = GetComponent<FishingLine>();
         cameraBrain = GetComponent<CameraBrain>();
         gameStart = GetComponent<GameStart>();
-        waterShader = GetComponent<WaterShader>();
 
         // Debugging: Check if each component is missing
         if (shipGenerator == null) Debug.LogError("ShipGenerator script is missing!");
@@ -93,6 +91,5 @@ public class SingletonManager : MonoBehaviour
         if (fishingLine == null) Debug.LogError("FishingLine script is missing!");
         if (cameraBrain == null) Debug.LogError("CameraBrain script is missing!");
         if (gameStart == null) Debug.LogError("GameStart script is missing!");
-        if (waterShader == null) Debug.LogError("WaterShader script is missing!");
     }
 }

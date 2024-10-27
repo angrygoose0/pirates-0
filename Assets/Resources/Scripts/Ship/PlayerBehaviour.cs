@@ -539,12 +539,10 @@ public class PlayerBehaviour : MonoBehaviour
     {
         if (equippedItem != null)
         {
-            // Set the equipped item's position to the player's current position
-            equippedItem.transform.position = rb.position;
 
-            // Remove the parent from the equipped item
             ItemScript itemScript = equippedItem.GetComponent<ItemScript>();
-            itemScript.NewParent(null);
+            itemScript.NewParent(SingletonManager.Instance.shipGenerator.shipTilemapObject);
+            equippedItem.transform.position = rb.position;
 
             // Set equippedItem to null as the player no longer has the item equipped
             equippedItem = null;

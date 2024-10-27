@@ -703,8 +703,6 @@ public class CreatureManager : MonoBehaviour
                     segmentToTentacle.Remove(segmentObject);
 
                 }
-
-                SingletonManager.Instance.waterShader.RemoveFromWaterDataDict(segmentObject.transform);
                 Destroy(segmentObject);
             }
             Destroy(tentacleEntry.Key);
@@ -929,17 +927,17 @@ public class CreatureManager : MonoBehaviour
     }
 
 
-    public List<Vector3Int> GetSurroundingTiles(Vector3Int centerTile, float range)
+    public List<Vector3Int> GetSurroundingTiles(Vector3Int centerTile, float radius)
     {
         List<Vector3Int> tiles = new List<Vector3Int>();
-        int rangeInt = Mathf.CeilToInt(range);
+        int radiusInt = Mathf.CeilToInt(radius);
 
-        for (int x = -rangeInt; x <= rangeInt; x++)
+        for (int x = -radiusInt; x <= radiusInt; x++)
         {
-            for (int y = -rangeInt; y <= rangeInt; y++)
+            for (int y = -radiusInt; y <= radiusInt; y++)
             {
                 Vector3Int tile = new Vector3Int(centerTile.x + x, centerTile.y + y, centerTile.z);
-                if (Vector3Int.Distance(centerTile, tile) <= range)
+                if (Vector3Int.Distance(centerTile, tile) <= radius)
                 {
                     tiles.Add(tile);
                 }
@@ -1090,9 +1088,6 @@ public class CreatureManager : MonoBehaviour
                 diameter = segmentSize * 2.0f;
 
                 float obstructionScale = Mathf.Pow(1000f, segmentSize) * segmentSize;
-
-
-                SingletonManager.Instance.waterShader.AddToWaterDataDict(newTentacleSegment.transform, segmentSize, firstSegmentObject);
 
                 CircleCollider2D collider = newTentacleSegment.GetComponent<CircleCollider2D>();
                 //SpriteRenderer renderer = newTentacleSegment.GetComponent<SpriteRenderer>();

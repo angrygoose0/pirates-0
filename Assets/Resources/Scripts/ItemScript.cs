@@ -35,7 +35,9 @@ public class ItemScript : MonoBehaviour
             spriteRenderer.sprite = itemObject.itemSprite;
         }
 
-        itemPickupable = true; //
+        itemPickupable = true;
+
+        Debug.Log("assigned item");
 
         // Automatically find and assign the GameObject named "ghost" as the target
         targetObject = GameObject.Find("ghost");
@@ -44,7 +46,7 @@ public class ItemScript : MonoBehaviour
         glowLight.color = itemObject.glowColor;
         glowLight.intensity = itemObject.glowIntensity;
 
-        StartCoroutine(PulseLight(glowLight));
+        //StartCoroutine(PulseLight(glowLight));
 
         // Check if the GameObject has a parent on startup and that parent is not the world Tilemap
         if (transform.parent != null && transform.parent.name != "world")

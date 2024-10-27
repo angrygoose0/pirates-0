@@ -10,20 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c2612e6d609656140ad524876ab86968, type: 3}
-  m_Name: Siren Scale
+  m_Name: COOL
   m_EditorClassIdentifier: 
   itemName: 
-  itemSprite: {fileID: 21300000, guid: 90e96c3c7c7d2e34bb318d0d1d9e8a92, type: 3}
-  mass: 5
+  itemSprite: {fileID: 21300000, guid: d8cf14733b49f654c8fa162bdb04e9e9, type: 3}
+  mass: 10
   projectileData: []
   goldAmount: 0
   spawningItem: {fileID: 0}
   regenerateTime: 0
-  recipes: []
+  recipes:
+  - materials:
+    - {fileID: 11400000, guid: f8e85bfddbcee654d945c1060d1f6758, type: 2}
+    - {fileID: 11400000, guid: 1dd939d623bbf704cb90d8de3d1d16dd, type: 2}
   affectsCannons: 0
-  glowColor: {r: 0, g: 1, b: 0.19104314, a: 1}
+  glowColor: {r: 0.12666878, g: 0.9150943, b: 0.11654504, a: 1}
   glowIntensity: 1
   pulseSpeed: 1
   glowAmplitude: 0.2
   abilityList: []
-  activeAbility: {fileID: 11400000, guid: f5f196d1140d9fd44bcb7e791676edb4, type: 2}
+  activeAbility: {fileID: 0}
