@@ -10,13 +10,10 @@ public class ItemScript : MonoBehaviour
     public SpriteRenderer spriteRenderer;
 
     public bool isActive;
-    public GameObject targetObject; // The GameObject towards which the item will lerp
-    public float lerpDuration; // Duration of the lerp movement
     public float inactiveTimer;
 
     private float inactiveTime = 0f;
     private Coroutine fadeCoroutine;
-    private Coroutine lerpCoroutine; // Coroutine for lerping
     public bool itemTaken = false;
     public bool itemPickupable;
     public bool beingReeled = false;
@@ -39,8 +36,7 @@ public class ItemScript : MonoBehaviour
 
         Debug.Log("assigned item");
 
-        // Automatically find and assign the GameObject named "ghost" as the target
-        targetObject = GameObject.Find("ghost");
+
 
         glowLight = GetComponentInChildren<Light2D>();
         glowLight.color = itemObject.glowColor;
@@ -103,14 +99,6 @@ public class ItemScript : MonoBehaviour
         }
     }
 
-    // Method to unparent the GameObject
-    public void UnparentGameObject()
-    {
-        transform.parent = null;
-        isActive = false; // Set isActive to false when unparented
-        StartInactiveTimer();
-    }
-
     // Method to set a new parent for the GameObject
     public void NewParent(GameObject newParent)
     {
@@ -122,10 +110,6 @@ public class ItemScript : MonoBehaviour
                 rb.velocity = Vector3.zero;           // Reset linear velocity
                 rb.angularVelocity = Vector3.zero;    // Reset angular velocity
             }
-
-            transform.parent = newParent.transform;
-            transform.localPosition = Vector3.zero;
-
 
             transform.parent = newParent.transform;
             transform.localPosition = new Vector3(0, 0.25f, 0);
@@ -142,8 +126,9 @@ public class ItemScript : MonoBehaviour
         }
         else
         {
-            // If the newParent is null, unparent the GameObject
-            UnparentGameObject();
+            transform.parent = null;
+            isActive = false; // Set isActive to false when unparented
+            StartInactiveTimer();
         }
     }
 
