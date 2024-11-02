@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 // Assuming you're using Universal Render Pipeline
 
 public class ItemData
@@ -13,7 +14,7 @@ public class ItemData
     public bool beingReeled = false;
     public bool onPayload = false;
 
-    public bool isActive;
+    public bool isActive = false;
     public float inactiveTime = 0f;
     public Coroutine fadeCoroutine;
     // Store the GameObject reference
@@ -36,6 +37,15 @@ public class ItemData
     public void NewParent(Transform parentTransform)
     {
         itemGameObject.transform.SetParent(parentTransform);
+
+        if (parentTransform.GetComponent<Tilemap>() != null) // ship or sea
+        {
+            isActive = false;
+        }
+        else // not a tilemap
+        {
+            SingletonManager.Instance.itemManager.ItemIsActive(this);
+        }
     }
 }
 
@@ -159,6 +169,7 @@ public class ItemManager : MonoBehaviour
     public void ItemIsActive(ItemData itemData)
     {
         itemData.isActive = true;
+        itemData.inactiveTime = 0f;
         // Stop the fading coroutine if it's running
         if (itemData.fadeCoroutine != null)
         {
@@ -204,8 +215,6 @@ public class ItemManager : MonoBehaviour
     public void DisableItemRigidBody(GameObject itemGameObject)
     { }
 
-    public void NewParent(GameObject itemGameObject, GameObject parentGameObject)
-    { }
 
     public void PlaceItemOnBlock(GameObject itemGameObject, GameObject blockGameObject)
     {
@@ -220,15 +229,14 @@ public class ItemManager : MonoBehaviour
 
             itemData.NewParent(blockGameObject.transform);
             itemGameObject.transform.localPosition = new Vector3(0, 0.25f, 0);
-
-            ItemIsActive(itemData);
         }
     }
     public GameObject CreateItem(ItemObject createItemObject, Vector3 position, Transform parentTransform)
     {
-        GameObject createdItemGameObject = Instantiate(itemPrefab, position, Quaternion.identity, parentTransform);
+        GameObject createdItemGameObject = Instantiate(itemPrefab, position, Quaternion.identity);
 
         ItemData itemData = new ItemData(createItemObject, createdItemGameObject);
+        itemData.NewParent(parentTransform);
         itemDictionary[createdItemGameObject] = itemData;
         //itemData.spriteRenderer.sprite = createItemObject.itemSprite;
 
