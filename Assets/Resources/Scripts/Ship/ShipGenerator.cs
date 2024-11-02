@@ -97,16 +97,12 @@ public class ShipGenerator : MonoBehaviour
         return Vector3Int.zero;
     }
 
-
-
-    public GameObject shipTilemapObject;
     public GameObject grid;
     public RaftObject deafultRaft;
 
     public TileBase tile;
-    public GameObject blockPrefab; // Reference to the block prefab
     public List<BlockObject> blockObjects; // List of all BlockObject ScriptableObjects
-    public Tilemap tilemap;
+    public Tilemap shipTilemap;
 
 
 
@@ -150,7 +146,6 @@ public class ShipGenerator : MonoBehaviour
 
     void Start()
     {
-        tilemap = shipTilemapObject.GetComponent<Tilemap>();
         CombineRaftTilesIntoShip();
 
         tileToBlockPrefabMap = new Dictionary<Vector3Int, GameObject>();
@@ -174,7 +169,7 @@ public class ShipGenerator : MonoBehaviour
         mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
 
         // Convert world position to shiptilemap cell position in isometric grid
-        tilePos = tilemap.WorldToCell(mouseWorldPos);
+        tilePos = shipTilemap.WorldToCell(mouseWorldPos);
 
         UpdateRaftTimers();
 
@@ -220,7 +215,7 @@ public class ShipGenerator : MonoBehaviour
         centerTile = GetNearestGridCenter(tilePos);
 
 
-        hasTile = tilemap.HasTile(centerTile);
+        hasTile = shipTilemap.HasTile(centerTile);
         newRaftPosition = IsTileAdjacentToShip(centerTile);
 
 
@@ -328,9 +323,9 @@ public class ShipGenerator : MonoBehaviour
             Vector3Int checkPos = tilePos + direction;  // Calculate position in the given direction
 
             // Check if there is a tile at the checkPos in the tilemap
-            if (tilemap.HasTile(checkPos))
+            if (shipTilemap.HasTile(checkPos))
             {
-                ShipData closestShipData = GetShipDataAtTile(tilemap.CellToWorld(checkPos));
+                ShipData closestShipData = GetShipDataAtTile(shipTilemap.CellToWorld(checkPos));
                 Vector3Int arrayPosition = FindPositionInArray(closestShipData);
 
 
@@ -381,10 +376,10 @@ public class ShipGenerator : MonoBehaviour
     public GameObject GenerateIndividualRaft(int size, Vector3Int position)
     {
         // Instantiate the raft at the given position
-        GameObject raftTileInstance = Instantiate(raftTilePrefab, shipTilemapObject.transform);
+        GameObject raftTileInstance = Instantiate(raftTilePrefab, shipTilemap.transform);
 
         // Move the entire raft tile to the correct position in the world
-        raftTileInstance.transform.position = tilemap.CellToWorld(position);
+        raftTileInstance.transform.position = shipTilemap.CellToWorld(position);
 
         Tilemap raftTilemap = raftTileInstance.GetComponent<Tilemap>();
 
@@ -565,21 +560,11 @@ public class ShipGenerator : MonoBehaviour
         }
     }
 
-    private List<GameObject> instantiatedBlocks = new List<GameObject>();
     public void GenerateTilemap(float[,] ship)
     {
+        SingletonManager.Instance.blockManager.DestroyAllBlocks();
 
-        // Destroy all existing block prefabs at the start
-        foreach (GameObject block in instantiatedBlocks)
-        {
-            if (block != null)
-            {
-                Destroy(block);
-            }
-        }
-        instantiatedBlocks.Clear();
-
-        tilemap.ClearAllTiles();
+        shipTilemap.ClearAllTiles();
         tileToBlockPrefabMap.Clear();
         mastBlocks.Clear(); // Clear the list in case of regeneration
         cannonBlocks.Clear();
@@ -588,7 +573,7 @@ public class ShipGenerator : MonoBehaviour
         int cols = ship.GetLength(1);
 
         /*
-        PolygonCollider2D shipCollider = shipTilemapObject.GetComponent<PolygonCollider2D>();
+        PolygonCollider2D shipCollider = shipTilemap.GetComponent<PolygonCollider2D>();
 
         Vector2[] colliderPoints = new Vector2[]
         {
@@ -610,41 +595,36 @@ public class ShipGenerator : MonoBehaviour
 
                 if (ship[y, x] > 0)
                 {
-                    tilemap.SetTile(tilePosition, tile);
+                    shipTilemap.SetTile(tilePosition, tile);
 
                     if (ship[y, x] > 1.0f)
                     {
                         // Convert tilemap position to world position
-                        Vector3 worldPosition = tilemap.CellToWorld(tilePosition) + tilemap.tileAnchor;
+                        Vector3 worldPosition = shipTilemap.CellToWorld(tilePosition) + shipTilemap.tileAnchor;
                         worldPosition.z = 0; // Ensure the block is at the correct Z position if needed
 
                         // Adjust the position as required
                         worldPosition.x -= 0.5f;
                         worldPosition.y -= 0.225f;
 
-
-                        // Instantiate the block prefab
-                        GameObject blockInstance = Instantiate(blockPrefab, worldPosition, Quaternion.identity, shipTilemapObject.transform);
-
                         // Find the correct BlockObject based on the ID
                         BlockObject blockObject = blockObjects.Find(b => Mathf.Approximately(b.id, ship[y, x]));
 
                         if (blockObject != null)
                         {
+                            GameObject blockInstance = SingletonManager.Instance.blockManager.CreateNewBlock(blockObject, worldPosition, shipTilemap.transform);
 
-
-                            blockPrefabScript blockScript = blockInstance.GetComponent<blockPrefabScript>();
-                            blockScript.blockObject = blockObject;
+                            // Store the mapping between the tile position and the block instance
+                            tileToBlockPrefabMap[tilePosition] = blockInstance;
                         }
                         else
                         {
                             Debug.LogWarning($"BlockObject with ID {ship[y, x]} not found.");
                         }
 
-                        // Store the mapping between the tile position and the block instance
-                        tileToBlockPrefabMap[tilePosition] = blockInstance;
-                        // Add the block instance to the list for future destruction
-                        instantiatedBlocks.Add(blockInstance);
+
+
+
                     }
                 }
             }
@@ -769,7 +749,7 @@ public class ShipGenerator : MonoBehaviour
 
     private IEnumerator CreateTrail(Transform startBlock, Transform endBlock)
     {
-        GameObject trailObject = Instantiate(trailPrefab, startBlock.position, Quaternion.identity, shipTilemapObject.transform);
+        GameObject trailObject = Instantiate(trailPrefab, startBlock.position, Quaternion.identity, shipTilemap.transform);
         LineRenderer lineRenderer = trailObject.GetComponent<LineRenderer>();
 
         lineRenderer.positionCount = 2;
@@ -813,7 +793,7 @@ public class ShipGenerator : MonoBehaviour
         Vector3Int centerTilePosition = new Vector3Int(cols / 2, -rows / 2, 0);
 
         // Convert center tile position to world position
-        Vector3 worldCenterPosition = tilemap.CellToWorld(centerTilePosition) + tilemap.tileAnchor;
+        Vector3 worldCenterPosition = shipTilemap.CellToWorld(centerTilePosition) + shipTilemap.tileAnchor;
         worldCenterPosition.z = 0; // Ensure the center position is at the correct Z position if needed
 
         // Adjust the position as required (based on tilemap anchor)
@@ -846,8 +826,8 @@ public class ShipGenerator : MonoBehaviour
 
     public GameObject GetBlockPrefabAtTile(Vector3Int tilePosition)
     {
-        tileToBlockPrefabMap.TryGetValue(tilePosition, out GameObject blockPrefab);
-        return blockPrefab;
+        tileToBlockPrefabMap.TryGetValue(tilePosition, out GameObject blockGameObject);
+        return blockGameObject;
     }
 
     public void UpdateBlockEffects()
@@ -855,23 +835,21 @@ public class ShipGenerator : MonoBehaviour
         SingletonManager.Instance.abilityManager.abilityList.Clear();
         foreach (var kvp in tileToBlockPrefabMap)
         {
-            GameObject blockPrefab = kvp.Value;
+            GameObject blockGameObject = kvp.Value;
 
-            blockPrefabScript blockScript = blockPrefab.GetComponent<blockPrefabScript>();
-            if (blockScript.itemPrefabObject == null || blockScript.itemPrefabObject.Count != 1 || blockScript.blockObject.blockType != BlockType.Payload)
+            BlockData blockData = SingletonManager.Instance.blockManager.blockDictionary[blockGameObject];
+            if (blockData.itemsInBlock == null || blockData.itemsInBlock.Count != 1 || blockData.blockObject.blockType != BlockType.Payload)
             {
                 continue;
             }
 
-            GameObject blockItem = blockScript.itemPrefabObject[0];
-            ItemScript blockItemScript = blockItem.GetComponent<ItemScript>();
-            ItemObject blockItemObject = blockItemScript.itemObject;
+            ItemData blockItemData = SingletonManager.Instance.itemManager.itemDictionary[blockData.itemsInBlock[0]];
 
-            if (blockItemObject.abilityList.Count < 1)
+            if (blockItemData.itemObject.abilityList.Count < 1)
             {
                 continue;
             }
-            foreach (AbilityData ability in blockItemObject.abilityList)
+            foreach (AbilityData ability in blockItemData.itemObject.abilityList)
             {
                 SingletonManager.Instance.abilityManager.AddOrUpdateAbility(ability.ability, ability.value);
             }
@@ -906,18 +884,17 @@ public class ShipGenerator : MonoBehaviour
         foreach (var entry in tileToBlockPrefabMap)
         {
             GameObject blockInstance = entry.Value;
-            blockPrefabScript blockScript = blockInstance.GetComponent<blockPrefabScript>();
-            if (blockScript != null && blockScript.blockObject != null)
+            BlockData blockData = SingletonManager.Instance.blockManager.blockDictionary[blockInstance];
+
+            if (blockData.blockObject.blockType == BlockType.Mast)
             {
-                if (blockScript.blockObject.blockType == BlockType.Mast)
-                {
-                    mastBlocks.Add(blockInstance);
-                }
-                else if (blockScript.blockObject.blockType == BlockType.Cannon)
-                {
-                    cannonBlocks.Add(blockInstance);
-                }
+                mastBlocks.Add(blockInstance);
             }
+            else if (blockData.blockObject.blockType == BlockType.Cannon)
+            {
+                cannonBlocks.Add(blockInstance);
+            }
+
 
         }
     }

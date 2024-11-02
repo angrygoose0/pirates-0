@@ -52,8 +52,8 @@ public class PlayerBehaviour : MonoBehaviour
 
         if (equippedItem != null)
         {
-            ItemScript itemScript = equippedItem.GetComponent<ItemScript>();
-            itemScript.NewParent(gameObject);
+            ItemData itemData = SingletonManager.Instance.itemManager.itemDictionary[equippedItem];
+            itemData.NewParent(gameObject.transform);
 
             // Set the equipped item's position to the player's position
             equippedItem.transform.localPosition = Vector3.zero;
@@ -105,31 +105,15 @@ public class PlayerBehaviour : MonoBehaviour
 
                 if (selectedBlockPrefab != null)
                 {
-                    blockPrefabScript blockScript = selectedBlockPrefab.GetComponent<blockPrefabScript>();
-                    BlockObject blockObject = blockScript.blockObject;
-                    GameObject blockItem = null;
+                    BlockData blockData = SingletonManager.Instance.blockManager.blockDictionary[selectedBlockPrefab];
 
-                    if (blockScript.itemPrefabObject != null && blockScript.itemPrefabObject.Count == 1)
+                    if (blockData.itemsInBlock != null && blockData.itemsInBlock.Count == 1)
                     {
-                        blockItem = blockScript.itemPrefabObject[0];
-                    }
+                        ItemData itemData = SingletonManager.Instance.itemManager.itemDictionary[blockData.itemsInBlock[0]];
 
-
-                    ItemScript blockItemScript = null;
-                    ItemObject blockItemObject = null;
-                    if (blockItem != null)
-                    {
-                        blockItemScript = blockItem.GetComponent<ItemScript>();
-                        blockItemObject = blockItemScript.itemObject;
-                    }
-
-                    if (blockItemObject != null)
-                    {
-                        if (blockItemObject.projectileData != null && blockItemObject.projectileData.Count == 1)
+                        if (itemData.itemObject.projectileData != null)
                         {
-                            ProjectileData projectile = blockItemObject.projectileData[0];
-
-                            float attackRate = projectile.reloadSpeed;
+                            float attackRate = itemData.itemObject.projectileData.reloadSpeed;
                             AbilityData haste = SingletonManager.Instance.abilityManager.GetAbilityData(Ability.Haste);
 
                             if (haste != null)
@@ -222,7 +206,7 @@ public class PlayerBehaviour : MonoBehaviour
         Vector3 worldPosition = transform.parent.TransformPoint(newLocalPosition);
 
         // Convert the world position to a tilemap position
-        Vector3Int tilePosition = SingletonManager.Instance.shipGenerator.tilemap.WorldToCell(new Vector3(worldPosition.x, worldPosition.y, 0)) + new Vector3Int((int)tileOffset.x, (int)tileOffset.y, 0);
+        Vector3Int tilePosition = SingletonManager.Instance.shipGenerator.shipTilemap.WorldToCell(new Vector3(worldPosition.x, worldPosition.y, 0)) + new Vector3Int((int)tileOffset.x, (int)tileOffset.y, 0);
 
         // Check if the new tile position is walkable
         if (SingletonManager.Instance.shipGenerator.IsTileWalkable(tilePosition))
@@ -258,10 +242,10 @@ public class PlayerBehaviour : MonoBehaviour
         foreach (GameObject item in items)
         {
             // Get the ItemScript component from the item
-            ItemScript itemScript = item.GetComponent<ItemScript>();
+            ItemData itemData = SingletonManager.Instance.itemManager.itemDictionary[item];
 
             // Check if itemScript is not null and itemPickupable is true
-            if (itemScript != null && itemScript.itemPickupable)
+            if (itemData != null && itemData.itemPickupable)
             {
                 // Add the item to the list
                 pickupableItems.Add(item);
@@ -296,7 +280,7 @@ public class PlayerBehaviour : MonoBehaviour
 
     void CalculateFacingTile()
     {
-        Vector3Int playerTilePosition = SingletonManager.Instance.shipGenerator.tilemap.WorldToCell(rb.position) + new Vector3Int((int)tileOffset.x, (int)tileOffset.y, 0);
+        Vector3Int playerTilePosition = SingletonManager.Instance.shipGenerator.shipTilemap.WorldToCell(rb.position) + new Vector3Int((int)tileOffset.x, (int)tileOffset.y, 0);
 
         // Get the list of interactable tiles around the player
         List<(Vector3Int position, Direction direction)> interactableTiles = SingletonManager.Instance.shipGenerator.GetInteractableNeighbors(playerTilePosition);
@@ -356,35 +340,26 @@ public class PlayerBehaviour : MonoBehaviour
         }
 
         // Set the new tile to the interactable sprite
-        SingletonManager.Instance.shipGenerator.tilemap.SetTile(tilePosition, interactableTileSprite);
+        SingletonManager.Instance.shipGenerator.shipTilemap.SetTile(tilePosition, interactableTileSprite);
 
-        // Check if the new tile has a blockPrefab and set its sprite to selectedSprite
-        GameObject blockPrefab = SingletonManager.Instance.shipGenerator.GetBlockPrefabAtTile(tilePosition);
-        if (blockPrefab != null)
+        // Check if the new tile has a blockGameObject and set its sprite to selectedSprite
+        GameObject blockGameObject = SingletonManager.Instance.shipGenerator.GetBlockPrefabAtTile(tilePosition);
+        if (blockGameObject != null)
         {
-            blockPrefabScript blockScript = blockPrefab.GetComponent<blockPrefabScript>();
-            blockScript.RotateBlock(0, true);
+            BlockData blockData = SingletonManager.Instance.blockManager.blockDictionary[blockGameObject];
+            SingletonManager.Instance.blockManager.RotateBlock(blockGameObject, 0, true);
 
-            GameObject blockItem = null;
-
-            if (blockScript.itemPrefabObject != null && blockScript.itemPrefabObject.Count == 1)
+            /*
+            if (blockData.itemsInBlock != null && blockData.itemsInBlock.Count == 1)
             {
-                blockItem = blockScript.itemPrefabObject[0];
-
-                ItemScript blockItemScript;
-                ItemObject blockItemObject;
-                if (blockItem != null)
-                {
-                    blockItemScript = blockItem.GetComponent<ItemScript>();
-                    blockItemObject = blockItemScript.itemObject;
-                }
+                blockItemData = SingletonManager.Instance.itemManager.itemDictionary[blockData.itemPrefabObject[0]];
             }
             List<string> helpfulUIList = new List<string>(); // Initialize the list
             switch (blockScript.blockObject.blockType)
             {
                 case BlockType.Cannon:
                     helpfulUIList.Add("[E] Enter / Exit");
-                    if (blockItem != null)
+                    if (blockData.itemPrefabObject != null && blockData.itemPrefabObjec.Count == 1)
                     {
                         helpfulUIList.Add("[Left Click] Fire");
                     }
@@ -397,8 +372,8 @@ public class PlayerBehaviour : MonoBehaviour
                 case BlockType.Payload:
                     if (blockItem != null)
                     {
-                        ItemScript blockItemScript = blockItem.GetComponent<ItemScript>();
-                        ItemObject blockItemObject = blockItemScript.itemObject;
+                        ItemData blockItemData = SingletonManager.Instance.itemManager.itemDictionary[blockItem];
+                        ItemObject blockItemObject = blockItemData.itemObject;
                         if (blockItemObject.activeAbility)
                         {
                             helpfulUIList.Add("[E] Activate");
@@ -419,6 +394,8 @@ public class PlayerBehaviour : MonoBehaviour
 
             SingletonManager.Instance.uiManager.ToggleHelpfulUI(blockPrefab, helpfulUIList, false);
 
+            */
+
             // Update the previous interactable tile position
             previousInteractableTilePosition = tilePosition;
         }
@@ -428,17 +405,16 @@ public class PlayerBehaviour : MonoBehaviour
     void ResetTile(Vector3Int tilePosition)
     {
         // Reset the tile to the default sprite
-        SingletonManager.Instance.shipGenerator.tilemap.SetTile(tilePosition, defaultTileSprite);
+        SingletonManager.Instance.shipGenerator.shipTilemap.SetTile(tilePosition, defaultTileSprite);
 
         // Check if the tile has a blockPrefab and reset its sprite
-        GameObject blockPrefab = SingletonManager.Instance.shipGenerator.GetBlockPrefabAtTile(tilePosition);
-        if (blockPrefab != null)
+        GameObject blockGameObject = SingletonManager.Instance.shipGenerator.GetBlockPrefabAtTile(tilePosition);
+        if (blockGameObject != null)
         {
-            blockPrefabScript blockScript = blockPrefab.GetComponent<blockPrefabScript>();
-            blockScript.RotateBlock(0, false);
+            SingletonManager.Instance.blockManager.RotateBlock(blockGameObject, 0, false);
 
             List<string> helpfulUIList = new List<string>();
-            SingletonManager.Instance.uiManager.ToggleHelpfulUI(blockPrefab, helpfulUIList, false);
+            SingletonManager.Instance.uiManager.ToggleHelpfulUI(blockGameObject, helpfulUIList, false);
         }
     }
 
@@ -540,8 +516,8 @@ public class PlayerBehaviour : MonoBehaviour
         if (equippedItem != null)
         {
 
-            ItemScript itemScript = equippedItem.GetComponent<ItemScript>();
-            itemScript.NewParent(SingletonManager.Instance.shipGenerator.shipTilemapObject);
+            ItemData itemData = SingletonManager.Instance.itemManager.itemDictionary[equippedItem];
+            itemData.NewParent(SingletonManager.Instance.shipGenerator.shipTilemap.transform);
             equippedItem.transform.position = rb.position;
 
             // Set equippedItem to null as the player no longer has the item equipped
@@ -549,13 +525,13 @@ public class PlayerBehaviour : MonoBehaviour
         }
         else if (closestItem != null)
         {
-            ItemScript itemScript = closestItem.GetComponent<ItemScript>();
-            if (itemScript.itemPickupable == true)
+            ItemData itemData = SingletonManager.Instance.itemManager.itemDictionary[closestItem];
+            if (itemData.itemPickupable == true)
             {
                 equippedItem = closestItem;
                 // Set the new parent for the equipped item
-                itemScript.NewParent(gameObject);
-                itemScript.itemTaken = true;
+                itemData.NewParent(gameObject.transform);
+                itemData.itemTaken = true;
             }
 
         }

@@ -175,7 +175,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3867047219889575512}
-  - component: {fileID: 189507199783012625}
   - component: {fileID: 7653777232405761642}
   - component: {fileID: 8012790264291954748}
   - component: {fileID: 146979686736704199}
@@ -203,31 +202,6 @@ Transform:
   - {fileID: 2877863183976658561}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &189507199783012625
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7643066971796696554}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4fee9fc16ee4fc9468393b4201f27797, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemObject: {fileID: 0}
-  activeCooldown: 1
-  spriteRenderer: {fileID: 0}
-  isActive: 0
-  targetObject: {fileID: 0}
-  lerpDuration: 0.5
-  inactiveTimer: 60
-  itemTaken: 0
-  itemPickupable: 1
-  beingReeled: 0
-  onPayload: 0
-  bobbingSpeed: 2
-  bobbingHeight: 0.05
 --- !u!50 &7653777232405761642
 Rigidbody2D:
   serializedVersion: 4

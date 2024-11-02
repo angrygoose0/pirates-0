@@ -15,17 +15,17 @@ public class FishingHook : MonoBehaviour
     {
         if (other.CompareTag("Item"))
         {
-            ItemScript itemScript = other.gameObject.GetComponent<ItemScript>();
+            ItemData itemData = SingletonManager.Instance.itemManager.itemDictionary[other.gameObject];
 
-            if (!itemScript.beingReeled)
+            if (!itemData.beingReeled)
             {
-                itemScript.beingReeled = true;
-                StartCoroutine(PullToPlayer(playerTransform, other.gameObject, itemScript));
+                itemData.beingReeled = true;
+                StartCoroutine(PullToPlayer(playerTransform, other.gameObject, itemData));
             }
         }
     }
 
-    private IEnumerator PullToPlayer(Transform playerTransform, GameObject itemObject, ItemScript itemScript)
+    private IEnumerator PullToPlayer(Transform playerTransform, GameObject itemObject, ItemData itemData)
     {
         while (Vector3.Distance(itemObject.transform.position, playerTransform.position) > 0.1f)
         {
@@ -49,7 +49,7 @@ public class FishingHook : MonoBehaviour
         }
 
 
-        itemScript.beingReeled = false;
+        itemData.beingReeled = false;
         Destroy(gameObject);
     }
 }

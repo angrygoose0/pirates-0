@@ -7,9 +7,9 @@ public class ItemData
 {
     public ItemObject itemObject;
 
-    public bool activeCooldown = true;
+    public float abilityActiveCooldown; // 0 means user can use ability.
     public bool itemTaken = false;
-    public bool itemPickupable;
+    public bool itemPickupable = true;
     public bool beingReeled = false;
     public bool onPayload = false;
 
@@ -25,10 +25,18 @@ public class ItemData
         this.itemObject = itemObject;
         this.itemGameObject = itemGameObject;
     }
-
-    public ProjectileData projectile => itemObject.projectile;
     public UnityEngine.Rendering.Universal.Light2D Light => itemGameObject.GetComponent<UnityEngine.Rendering.Universal.Light2D>();
     public SpriteRenderer spriteRenderer => itemGameObject.GetComponent<SpriteRenderer>();
+    private Collider2D collider => itemGameObject.GetComponent<Collider2D>();
+    public void SetCollider(bool boolean)
+    {
+        collider.enabled = boolean;
+    }
+
+    public void NewParent(Transform parentTransform)
+    {
+        itemGameObject.transform.SetParent(parentTransform);
+    }
 }
 
 
@@ -36,16 +44,14 @@ public class ItemData
 public class ItemManager : MonoBehaviour
 {
 
-    public Dictionary<GameObject, ItemData> itemDictionary;
+    public Dictionary<GameObject, ItemData> itemDictionary = new Dictionary<GameObject, ItemData>();
     public GameObject itemPrefab;
     public List<ItemObject> itemObjects;
-    private Dictionary<string, ItemObject> itemNameToItemObject;
 
     public float bobbingSpeed = 2f; // Speed of bobbing
     public float bobbingHeight = 0.5f; // Height of bobbing
 
     private GameObject worldTilemap;
-    public GameObject examplePrefab;
 
     public float inactivityThreshold = 30f;
 
@@ -53,15 +59,6 @@ public class ItemManager : MonoBehaviour
     public float fadeDuration = 5f; // Duration of the fading period
     public float fadeTime = 0f;
     public float fadeSpeed = 0.5f;
-
-    private void Awake()
-    {
-        itemNameToItemObject = new Dictionary<string, ItemObject>();
-        foreach (var item in itemObjects)
-        {
-            itemNameToItemObject[item.itemName] = item;
-        }
-    }
     void Start()
     {
         worldTilemap = GameObject.Find("world");
@@ -71,9 +68,9 @@ public class ItemManager : MonoBehaviour
     {
         foreach (KeyValuePair<GameObject, ItemData> entry in itemDictionary)
         {
-            if (entry.value.itemObject.onPayload)
+            if (entry.Value.onPayload)
             {
-                HoverItem(entry.key);
+                HoverItem(entry.Key);
             }
 
         }
@@ -85,7 +82,7 @@ public class ItemManager : MonoBehaviour
         {
             foreach (KeyValuePair<GameObject, ItemData> entry in itemDictionary)
             {
-                itemObjects itemObject = entry.Value.itemObject;
+                ItemObject itemObject = entry.Value.itemObject;
 
                 // Set the range for intensity (20% down and 20% up from base)
                 float minIntensity = itemObject.glowIntensity * (1 - itemObject.glowAmplitude);
@@ -118,15 +115,20 @@ public class ItemManager : MonoBehaviour
 
                 if (itemData.inactiveTime >= inactivityThreshold)
                 {
-                    itemData.fadeCoroutine = StartCoroutine(FadeAndDestroy);
+                    itemData.fadeCoroutine = StartCoroutine(FadeAndDestroy(entry.Key));
                 }
 
                 if (!itemData.isActive)
                 {
-                    itemData.inactiveTime += 1;
+                    itemData.inactiveTime += 0.01f;
+                }
+
+                if (itemData.abilityActiveCooldown != 0)
+                {
+                    itemData.abilityActiveCooldown -= 0.01f;
                 }
             }
-            yield return new WaitForSeconds(1f);  // Check every second
+            yield return new WaitForSeconds(0.01f);  // Check every second
         }
     }
 
@@ -154,8 +156,9 @@ public class ItemManager : MonoBehaviour
         Destroy(gameObject);
     }
 
-    public void ItemActive(ItemData itemData)
+    public void ItemIsActive(ItemData itemData)
     {
+        itemData.isActive = true;
         // Stop the fading coroutine if it's running
         if (itemData.fadeCoroutine != null)
         {
@@ -176,17 +179,26 @@ public class ItemManager : MonoBehaviour
 
 
 
-    public ItemObject GetItemByName(string itemName)
+    public void ActivateActive(GameObject itemGameObject, Vector3 position, Direction blockDirection, Vector3 feedbackPosition)
     {
-        if (itemNameToItemObject.TryGetValue(itemName, out ItemObject itemObject))
+
+        if (itemDictionary.TryGetValue(itemGameObject, out ItemData itemData))
+
+            if (itemData.itemObject.activeAbility == null)
+            {
+                return;
+            }
+
+        if (itemData.abilityActiveCooldown != 0f)
         {
-            return itemObject;
+            return;
         }
-        else
-        {
-            Debug.LogWarning($"Item with name {itemName} not found!");
-            return null;
-        }
+
+        float multiplier = 1f;
+        SingletonManager.Instance.feedbackManager.ArtifactPlaceFeedback(feedbackPosition, multiplier);
+
+        itemData.itemObject.UseActive(position, blockDirection);
+        itemData.abilityActiveCooldown = itemData.itemObject.activeAbility.cooldown;
     }
 
     public void DisableItemRigidBody(GameObject itemGameObject)
@@ -195,28 +207,34 @@ public class ItemManager : MonoBehaviour
     public void NewParent(GameObject itemGameObject, GameObject parentGameObject)
     { }
 
-    public void PlaceItemOnBlock(GameObject itemGameObject)
+    public void PlaceItemOnBlock(GameObject itemGameObject, GameObject blockGameObject)
     {
         if (itemDictionary.TryGetValue(itemGameObject, out ItemData itemData))
         {
+            Rigidbody rb = GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.velocity = Vector3.zero;           // Reset linear velocity
+                rb.angularVelocity = Vector3.zero;    // Reset angular velocity
+            }
 
+            itemData.NewParent(blockGameObject.transform);
+            itemGameObject.transform.localPosition = new Vector3(0, 0.25f, 0);
+
+            ItemIsActive(itemData);
         }
     }
-
-
-    // Start is called before the first frame update
-    public GameObject CreateItem(ItemObject createItemObject, Vector3 position)
+    public GameObject CreateItem(ItemObject createItemObject, Vector3 position, Transform parentTransform)
     {
-        GameObject createdItemGameObject = Instantiate(itemPrefab, position, Quaternion.identity);
+        GameObject createdItemGameObject = Instantiate(itemPrefab, position, Quaternion.identity, parentTransform);
 
         ItemData itemData = new ItemData(createItemObject, createdItemGameObject);
         itemDictionary[createdItemGameObject] = itemData;
+        //itemData.spriteRenderer.sprite = createItemObject.itemSprite;
 
-        createdItemGameObject.transform.SetParent(worldTilemap.transform);
-        itemData.spriteRenderer.sprite = createItemObject.itemSprite;
-
-
-        /*
+        return createdItemGameObject;
+    }
+    /*
         Rigidbody2D rigidbody2D = createdItem.GetComponent<Rigidbody2D>();
         if (rigidbody2D != null)
         {
@@ -229,23 +247,34 @@ public class ItemManager : MonoBehaviour
             rigidbody2D.mass = createItemObject.mass;
             rigidbody2D.AddForce(forceDirection * forceMagnitude);
         }
-        */
+    */
 
-        return createdItem;
-    }
 
     public float itemBounceForce;
     public float gravity = -9.81f;
     public GameObject itemEffectPrefab;
 
-    public void StartItemBounce(GameObject itemGameObject, Vector3 endLocalShipPosition)
+    public void StartItemBounce(ItemObject itemObject, Vector3 startPosition, Vector3 endPosition, Transform parentTransform)
     {
-        StartCoroutine(ItemBounce(itemGameObject, endLocalShipPosition, 10f));
+        StartCoroutine(ItemBounce(itemObject, startPosition, endPosition, parentTransform, 10f));
     }
-    private IEnumerator ItemBounce(GameObject itemGameObject, Vector3 endLocalShipPosition, float firingForce)
+    private IEnumerator ItemBounce(ItemObject itemObject, Vector3 startPosition, Vector3 endPosition, Transform parentTransform, float firingForce)
     {
-        Transform shipTransform = SingletonManager.Instance.shipGenerator.shipTilemapObject.transform;
-        GameObject itemEffectObject = Instantiate(itemEffectPrefab, shipTransform.TransformPoint(itemGameObject.transform.localPosition), Quaternion.identity, shipTransform);
+        GameObject craftedItemObject = SingletonManager.Instance.itemManager.CreateItem(itemObject, startPosition, parentTransform);
+
+        Vector3 localStartPosition = parentTransform.InverseTransformPoint(startPosition);
+        Vector3 localEndPosition = parentTransform.InverseTransformPoint(endPosition);
+
+        ItemData craftedItemData = SingletonManager.Instance.itemManager.itemDictionary[craftedItemObject];
+        craftedItemData.itemPickupable = false;
+
+        Color newColor = craftedItemData.spriteRenderer.color;
+        newColor.a = 0f;
+        craftedItemData.spriteRenderer.color = newColor;
+
+        craftedItemData.spriteRenderer.enabled = false;
+
+        GameObject itemEffectObject = Instantiate(itemEffectPrefab, startPosition, Quaternion.identity, parentTransform);
 
         // Get the LineRenderer component
         LineRenderer lineRenderer = itemEffectObject.GetComponent<LineRenderer>();
@@ -256,14 +285,14 @@ public class ItemManager : MonoBehaviour
         }
 
         // Initialize LineRenderer
-        List<Vector3> linePoints = new List<Vector3> { shipTransform.TransformPoint(itemEffectObject.transform.localPosition) };
+        List<Vector3> linePoints = new List<Vector3> { startPosition };
 
         Rigidbody2D rb = itemEffectObject.GetComponent<Rigidbody2D>();
 
-        float initialDistance = Vector3.Distance(itemEffectObject.transform.localPosition, endLocalShipPosition);
+        float initialDistance = Vector3.Distance(localStartPosition, localEndPosition);
         float timeToTarget = Mathf.Sqrt(2 * initialDistance / (firingForce));
 
-        Vector3 displacement = endLocalShipPosition - itemEffectObject.transform.localPosition;
+        Vector3 displacement = localEndPosition - localStartPosition;
 
         float initialVelocityX = displacement.x / timeToTarget;
         float initialVelocityY = (displacement.y - 0.5f * gravity * Mathf.Pow(timeToTarget, 2)) / timeToTarget;
@@ -277,7 +306,7 @@ public class ItemManager : MonoBehaviour
         {
             elapsedTime += Time.deltaTime;
 
-            displacement = endLocalShipPosition - itemEffectObject.transform.localPosition;
+            displacement = localEndPosition - itemEffectObject.transform.localPosition;
 
             float remainingTime = timeToTarget - elapsedTime;
 
@@ -293,7 +322,7 @@ public class ItemManager : MonoBehaviour
             rb.velocity += new Vector2(0, gravity) * Time.deltaTime;
 
             // Add the current position of the line to the line points
-            linePoints.Add(shipTransform.TransformPoint(itemEffectObject.transform.localPosition));
+            linePoints.Add(parentTransform.TransformPoint(itemEffectObject.transform.localPosition));
             lineRenderer.positionCount = linePoints.Count;
             lineRenderer.SetPositions(linePoints.ToArray());
 
@@ -301,13 +330,12 @@ public class ItemManager : MonoBehaviour
         }
         Destroy(itemEffectObject);
 
-        itemGameObject.transform.localPosition = endLocalShipPosition;
+        craftedItemObject.transform.localPosition = localEndPosition;
+        ItemData itemData = SingletonManager.Instance.itemManager.itemDictionary[craftedItemObject];
+        itemData.itemPickupable = true;
 
-        ItemScript itemScript = itemGameObject.GetComponent<ItemScript>();
-        itemScript.itemPickupable = true;
-        Color newColor = itemScript.spriteRenderer.color;
         newColor.a = 1f;
-        itemScript.spriteRenderer.color = newColor;
+        itemData.spriteRenderer.color = newColor;
 
     }
 

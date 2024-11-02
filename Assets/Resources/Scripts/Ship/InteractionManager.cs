@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class InteractionManager : MonoBehaviour
 {
@@ -55,97 +56,75 @@ public class InteractionManager : MonoBehaviour
 
 
     public void InteractWithBlock(int interaction, GameObject player) // 0=primary 1=secondary interaction  
-    //sometimes when a player interacts, the blockPrefab shouldnt have to be defined, as the player might already be equipped to a block, so it should check the dictionary to see what block the player is attatched to first.
+    //sometimes when a player interacts, the blockGameObject shouldnt have to be defined, as the player might already be equipped to a block, so it should check the dictionary to see what block the player is attatched to first.
     {
 
         PlayerBehaviour playerScript = player.GetComponent<PlayerBehaviour>();
 
-        GameObject blockPrefab = null;
+        GameObject blockGameObject = null;
 
         if (playerBlockRelations.ContainsKey(player))
         {
-            blockPrefab = playerBlockRelations[player];
+            blockGameObject = playerBlockRelations[player];
             // if exists, continue to use the block the player is equipped rn
 
         }
         else
         {
-            blockPrefab = playerScript.selectedBlockPrefab;
+            blockGameObject = playerScript.selectedBlockPrefab;
             //use the blockprefab the player is looking at rn. because the player hasnt equipped a block.
         }
 
+        GameObject equippedItem = playerScript.equippedItem;
+        ItemData equippedItemData = null;
 
-        GameObject equippedItem = null;
-        equippedItem = playerScript.equippedItem;
-        ItemScript equippedItemScript = null;
-
-        ItemObject equippedItemObject = null;
-        if (playerScript.equippedItem != null)
+        if (equippedItem != null)
         {
-            equippedItemScript = equippedItem.GetComponent<ItemScript>();
-            equippedItemObject = equippedItemScript.itemObject;
+            equippedItemData = SingletonManager.Instance.itemManager.itemDictionary[equippedItem];
         }
 
-
-        blockPrefabScript blockScript = blockPrefab.GetComponent<blockPrefabScript>();
-        BlockObject blockObject = blockScript.blockObject;
-        GameObject blockItem = null;
-
-        if (blockScript.itemPrefabObject != null && blockScript.itemPrefabObject.Count == 1)
-        {
-            blockItem = blockScript.itemPrefabObject[0];
-        }
-
-
-        ItemScript blockItemScript = null;
-        ItemObject blockItemObject = null;
-        if (blockItem != null)
-        {
-            blockItemScript = blockItem.GetComponent<ItemScript>();
-            blockItemObject = blockItemScript.itemObject;
-        }
+        BlockData blockData = SingletonManager.Instance.blockManager.blockDictionary[blockGameObject];
 
         switch (interaction)
         {
             case 0:
-                if (blockObject.blockType == BlockType.Cannon)
+                if (blockData.blockObject.blockType == BlockType.Cannon)
                 {
-
                     //the player is equipped to a block, so he is leaving.
                     if (playerBlockRelations.ContainsKey(player))
                     {
                         playerBlockRelations.Remove(player);
-                        playerBlockRelations.Remove(blockPrefab);
+                        playerBlockRelations.Remove(blockGameObject);
                         //player exits cannon
                     }
                     else //the player isn't equipped to a block, so he's entering
                     {
-                        playerBlockRelations[player] = blockPrefab; // the player shouldn't have another instance with the same key
+                        playerBlockRelations[player] = blockGameObject; // the player shouldn't have another instance with the same key
 
-                        if (playerBlockRelations.ContainsKey(blockPrefab))
+                        if (playerBlockRelations.ContainsKey(blockGameObject))
                         {
-                            GameObject existingPlayer = playerBlockRelations[blockPrefab];
+                            GameObject existingPlayer = playerBlockRelations[blockGameObject];
                             playerBlockRelations.Remove(existingPlayer);
                         }
 
-                        playerBlockRelations[blockPrefab] = player;
+                        playerBlockRelations[blockGameObject] = player;
 
 
                         //player equips empty / kicks out another player
                     }
                 }
-                else if (blockObject.blockType == BlockType.Mast)
+                else if (blockData.blockObject.blockType == BlockType.Mast)
                 {
-                    blockScript.active = !blockScript.active;
+                    //blockData.active = !blockData.active;
                 }
-                else if (blockObject.blockType == BlockType.Payload)
+                else if (blockData.blockObject.blockType == BlockType.Payload)
                 {
-                    if (blockItemObject != null)
+                    if (blockData.itemsInBlock != null && blockData.itemsInBlock.Count == 1)
                     {
-                        if (blockItemObject.activeAbility != null)
+                        if (SingletonManager.Instance.itemManager.itemDictionary[blockData.itemsInBlock[0]].itemObject.activeAbility != null)
                         {
-                            Vector3 feedbackPosition = blockScript.transform.position + new Vector3(0.0f, 0.125f, 0.0f);
-                            blockItemScript.ActivateActive(blockPrefab.transform.position, blockScript.blockDirection, feedbackPosition);
+                            Vector3 feedbackPosition = blockGameObject.transform.position + new Vector3(0.0f, 0.125f, 0.0f);
+                            SingletonManager.Instance.itemManager.ActivateActive(blockData.itemsInBlock[0], blockGameObject.transform.position, blockData.blockDirection, feedbackPosition);
                         }
                     }
                 }
@@ -153,26 +132,26 @@ public class InteractionManager : MonoBehaviour
 
             case 1:
 
-                if (blockObject.blockType == BlockType.Cannon)
+                if (blockData.blockObject.blockType == BlockType.Cannon)
                 {
 
-                    if (equippedItemObject.projectileData == null || equippedItemScript == null || equippedItemObject.projectileData.Count != 1) // so not ammo
+                    if (equippedItemData.itemObject.projectileData == null || equippedItemData == null || equippedItemData.itemObject.projectileData == null) // so not ammo
                     {
                         break;
                     }
-                    ProjectileData projectile = equippedItemObject.projectileData[0];
+                    ProjectileData projectile = equippedItemData.itemObject.projectileData;
 
-                    equippedItemScript.SetCollider(false);
-                    equippedItemScript.NewParent(blockPrefab);
-                    equippedItemScript.itemPickupable = false;
-                    if (blockScript.itemPrefabObject.Count == 0)
+                    equippedItemData.SetCollider(false);
+                    SingletonManager.Instance.itemManager.PlaceItemOnBlock(equippedItem, blockGameObject);
+                    equippedItemData.itemPickupable = false;
+                    if (blockData.itemsInBlock.Count == 0)
                     {
-                        blockScript.itemPrefabObject.Add(equippedItem);
+                        blockData.itemsInBlock.Add(equippedItem);
                     }
                     else
                     {
-                        Destroy(blockScript.itemPrefabObject[0]);
-                        blockScript.itemPrefabObject[0] = equippedItem;
+                        Destroy(blockData.itemsInBlock[0]);
+                        blockData.itemsInBlock[0] = equippedItem;
                     }
                     playerScript.equippedItem = null;
 
@@ -184,47 +163,47 @@ public class InteractionManager : MonoBehaviour
                         updatedAmmoCount = Mathf.RoundToInt(projectile.ammoCount * extra.value);
                     }
 
-                    blockScript.ammoCount = updatedAmmoCount;
+                    blockData.ammoCount = updatedAmmoCount;
 
-                    SingletonManager.Instance.uiManager.ShowAmmoCount(blockPrefab, blockScript.ammoCount, updatedAmmoCount);
+                    SingletonManager.Instance.uiManager.ShowAmmoCount(blockGameObject, blockData.ammoCount, updatedAmmoCount);
 
 
                 }
 
-                if (blockObject.blockType == BlockType.Payload)
+                if (blockData.blockObject.blockType == BlockType.Payload)
                 {
 
-                    if (equippedItemScript == null || equippedItemObject.projectileData.Count > 0) // so is ammo
+                    if (equippedItemData == null || equippedItemData.itemObject.projectileData != null) // so is ammo
                     {
                         break;
                     }
 
-                    equippedItemScript.SetCollider(false);
-                    equippedItemScript.NewParent(blockPrefab);
-                    equippedItemScript.onPayload = true;
-                    equippedItemScript.itemPickupable = false;
+                    equippedItemData.SetCollider(false);
+                    equippedItemData.NewParent(blockGameObject.transform);
+                    equippedItemData.onPayload = true;
+                    equippedItemData.itemPickupable = false;
 
-                    if (equippedItemScript.itemObject.spawningItem != null)
+                    if (equippedItemData.itemObject.spawningItem != null)
                     {
-                        equippedItemScript.spriteRenderer.sprite = equippedItemScript.itemObject.spawningItem.itemSprite;
-                        Color newColor = equippedItemScript.spriteRenderer.color;
+                        equippedItemData.spriteRenderer.sprite = equippedItemData.itemObject.spawningItem.itemSprite;
+                        Color newColor = equippedItemData.spriteRenderer.color;
                         newColor.a = 0.5f;
-                        equippedItemScript.spriteRenderer.color = newColor;
+                        equippedItemData.spriteRenderer.color = newColor;
                     }
 
-                    blockScript.itemPrefabObject.Add(equippedItem);
-                    blockScript.blockLight.intensity = 1.5f;
+                    blockData.itemsInBlock.Add(equippedItem);
+                    blockGameObject.GetComponentInChildren<Light2D>().intensity = 1.5f;
                     playerScript.equippedItem = null;
 
                     float multiplier = 1f;
-                    Vector3 newBlockPosition = blockScript.transform.position + new Vector3(0.0f, 0.125f, 0.0f);
+                    Vector3 newBlockPosition = blockGameObject.transform.position + new Vector3(0.0f, 0.125f, 0.0f);
                     SingletonManager.Instance.feedbackManager.ArtifactPlaceFeedback(newBlockPosition, multiplier);
 
                     SingletonManager.Instance.shipGenerator.UpdateBlockEffects();
 
-                    if (equippedItemObject.affectsCannons)
+                    if (equippedItemData.itemObject.affectsCannons)
                     {
-                        SingletonManager.Instance.shipGenerator.MakeTrailEffects(blockScript.transform);
+                        SingletonManager.Instance.shipGenerator.MakeTrailEffects(blockGameObject.transform);
                     }
 
 
@@ -232,28 +211,28 @@ public class InteractionManager : MonoBehaviour
                 break;
 
             case 2:
-                if (blockObject.blockType == BlockType.Cannon)
+                if (blockData.blockObject.blockType == BlockType.Cannon)
                 {
 
                     if (playerBlockRelations.ContainsKey(player))
                     {
-                        ProjectileData projectile = null;
-                        if (blockItemObject.projectileData != null)
-                        {
-                            if (blockItemObject.projectileData.Count > 0)
-                            {
-                                projectile = blockItemObject.projectileData[0];
-                            }
-
-                            // Use projectile here
-                        }
-                        if (blockItemObject == null && blockScript.ammoCount == 0 && projectile != null)
+                        if (blockData.itemsInBlock.Count != 1 || blockData.itemsInBlock[0] == null || blockData.ammoCount == 0)
                         {
                             Debug.Log("shoot blanks");
                             break;
                         }
 
-                        Vector3 blockPosition = blockPrefab.transform.position;
+                        ItemData blockItemData = SingletonManager.Instance.itemManager.itemDictionary[blockData.itemsInBlock[0]];
+
+                        if (blockItemData.itemObject.projectileData == null)
+                        {
+                            Debug.Log("shoot blanks");
+                            break;
+                        }
+
+                        ProjectileData projectile = blockItemData.itemObject.projectileData;
+
+                        Vector3 blockPosition = blockGameObject.transform.position;
                         Vector3 selectorPosition = SingletonManager.Instance.cannonBehaviour.GetSelectorPosition();
                         Vector3Int selectorTilePosition = SingletonManager.Instance.cannonBehaviour.WorldToCell(selectorPosition);
 
@@ -290,10 +269,8 @@ public class InteractionManager : MonoBehaviour
                                 tilesList = additionalTilesList;
                             }
                             Vector3Int targetTile = tilesList[Random.Range(0, tilesList.Count)];
-                            SingletonManager.Instance.cannonBehaviour.FireInTheHole(blockPosition, targetTile, projectile, blockItemObject.mass);
-                            StartCoroutine(WhiteFlashCoroutine(blockPrefab.GetComponent<SpriteRenderer>()));
-
-
+                            SingletonManager.Instance.cannonBehaviour.FireInTheHole(blockPosition, targetTile, projectile, SingletonManager.Instance.itemManager.itemDictionary[blockData.itemsInBlock[0]].itemObject.mass);
+                            StartCoroutine(WhiteFlashCoroutine(blockGameObject.GetComponent<SpriteRenderer>()));
                         }
 
                         AbilityData extra = SingletonManager.Instance.abilityManager.GetAbilityData(Ability.Extra);
@@ -304,12 +281,13 @@ public class InteractionManager : MonoBehaviour
                             updatedAmmoCount = Mathf.RoundToInt(projectile.ammoCount * extra.value);
                         }
 
-                        blockScript.ammoCount -= 1;
-                        SingletonManager.Instance.uiManager.ShowAmmoCount(blockPrefab, blockScript.ammoCount, updatedAmmoCount);
-                        if (blockScript.ammoCount == 0)
+                        blockData.ammoCount -= 1;
+                        SingletonManager.Instance.uiManager.ShowAmmoCount(blockGameObject, blockData.ammoCount, updatedAmmoCount);
+                        if (blockData.ammoCount == 0)
                         {
-                            blockScript.itemPrefabObject.Clear();
-                            Destroy(blockItem);
+                            Destroy(blockData.itemsInBlock[0]);
+                            blockData.itemsInBlock.Clear();
+
                         }
 
                     }
@@ -317,7 +295,7 @@ public class InteractionManager : MonoBehaviour
                 break;
 
             case 3:
-                blockScript.RotateBlock(1, false);
+                SingletonManager.Instance.blockManager.RotateBlock(blockGameObject, 1, false);
                 break;
 
             default:

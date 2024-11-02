@@ -32,6 +32,7 @@ public class SingletonManager : MonoBehaviour
     public CannonBehaviour cannonBehaviour { get; private set; }
     public GoldManager goldManager { get; private set; }
     public ItemManager itemManager { get; private set; }
+    public BlockManager blockManager { get; private set; }
     public CreatureManager creatureManager { get; private set; }
     public StructureManager structureManager { get; private set; }
     public DayNightCycle dayNightCycle { get; private set; }
@@ -63,6 +64,7 @@ public class SingletonManager : MonoBehaviour
         cannonBehaviour = GetComponent<CannonBehaviour>();
         goldManager = GetComponent<GoldManager>();
         itemManager = GetComponent<ItemManager>();
+        blockManager = GetComponent<BlockManager>();
         creatureManager = GetComponent<CreatureManager>();
         structureManager = GetComponent<StructureManager>();
         dayNightCycle = GetComponent<DayNightCycle>();
@@ -82,6 +84,7 @@ public class SingletonManager : MonoBehaviour
         if (cannonBehaviour == null) Debug.LogError("CannonBehaviour script is missing!");
         if (goldManager == null) Debug.LogError("GoldManager script is missing!");
         if (itemManager == null) Debug.LogError("ItemManager script is missing!");
+        if (blockManager == null) Debug.LogError("BlockManager script is missing!");
         if (creatureManager == null) Debug.LogError("CreatureManager script is missing!");
         if (structureManager == null) Debug.LogError("StructureManager script is missing!");
         if (dayNightCycle == null) Debug.LogError("DayNightCycle script is missing!");

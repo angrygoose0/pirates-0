@@ -31,16 +31,19 @@ public class ShipMovement : MonoBehaviour
     {
         totalForce = Vector2.zero;
 
+        //rework movement system, with certain items in payloads giving movement instead of mast blocks
+        /*
         foreach (GameObject mastBlock in SingletonManager.Instance.shipGenerator.mastBlocks)
         {
-            blockPrefabScript blockScript = mastBlock.GetComponent<blockPrefabScript>();
-            if (blockScript.active)
+            BlockData blockData = SingletonManager.Instance.blockManager.blockDictionary[mastBlock];
+            if (blockData.active)
             {
-                totalForce += blockScript.blockDirection.ToVector2().normalized * blockScript.GetBlockValueByName("mastForce");
+                totalForce += blockData.blockDirection.ToVector2().normalized * blockData.GetBlockValueByName("mastForce");
 
                 maxSpeed = totalForce.magnitude * kFactor;
             }
         }
+        */
     }
 
 

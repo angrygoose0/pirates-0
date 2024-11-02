@@ -767,14 +767,14 @@ public class CreatureManager : MonoBehaviour
             // Instantiate the item prefabs based on the gold drop
             for (int i = 0; i < goldDrop; i++)
             {
-                GameObject createdItem = SingletonManager.Instance.itemManager.CreateItem(goldItemObject, creaturePosition);
+                GameObject createdItem = SingletonManager.Instance.itemManager.CreateItem(goldItemObject, creaturePosition, worldTilemap.transform);
 
             }
             ItemObject dropItemObject = creatureData.creatureObject.DetermineDrop();
 
             if (dropItemObject != null)
             {
-                GameObject droppedItem = SingletonManager.Instance.itemManager.CreateItem(dropItemObject, creaturePosition);
+                GameObject droppedItem = SingletonManager.Instance.itemManager.CreateItem(dropItemObject, creaturePosition, worldTilemap.transform);
             }
 
             EffectData strongestNovaEffect = null;
@@ -806,7 +806,7 @@ public class CreatureManager : MonoBehaviour
                 // Instantiate the item prefabs based on the gold drop
                 for (int i = 0; i < healOrbAmount; i++)
                 {
-                    SingletonManager.Instance.itemManager.CreateItem(healOrbObject, creaturePosition);
+                    SingletonManager.Instance.itemManager.CreateItem(healOrbObject, creaturePosition, worldTilemap.transform);
 
                 }
             }

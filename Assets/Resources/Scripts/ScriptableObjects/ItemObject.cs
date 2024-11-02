@@ -68,7 +68,7 @@ public class ItemObject : ScriptableObject
     public Sprite itemSprite;
     public float mass = 1f;
 
-    public List<ProjectileData> projectileData = null;
+    public ProjectileData projectileData = null;
     public int goldAmount = 0;
     public ItemObject spawningItem;
     public float regenerateTime;

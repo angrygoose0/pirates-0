@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7885377508773513607}
   - component: {fileID: 2696595840653866505}
-  - component: {fileID: -6150544390399807383}
   m_Layer: 0
   m_Name: blockPrefab
   m_TagString: Untagged
@@ -87,31 +86,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &-6150544390399807383
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1886374172837679357}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a1b15edccab41e4bab2547bda22d188, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  blockObject: {fileID: 0}
-  blockDirection: 4
-  itemPrefabObject: []
-  player: {fileID: 0}
-  itemPrefab: {fileID: 7643066971796696554, guid: a02dfe49a58e0af428c86086ccfa3b23, type: 3}
-  spawnedItem: {fileID: 0}
-  shipObject: {fileID: 0}
-  ammoCount: 0
-  blockLight: {fileID: 0}
-  itemObjectList:
-  - {fileID: 11400000, guid: 81de5d4855b024e4f98add07aea7d9e3, type: 2}
-  - {fileID: 11400000, guid: 76192aab6b73b514e890769aea5587c9, type: 2}
-  active: 0
 --- !u!1 &2417152003151902707
 GameObject:
   m_ObjectHideFlags: 0
