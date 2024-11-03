@@ -67,11 +67,10 @@ public class ItemObject : ScriptableObject
     public string itemName;
     public Sprite itemSprite;
     public float mass = 1f;
-
-    public ProjectileData projectileData = null;
+    public List<ProjectileData> projectile;
     public int goldAmount = 0;
     public ItemObject spawningItem;
-    public float regenerateTime;
+    //public float regenerateTime;
     public List<Recipe> recipes;
     public bool affectsCannons = false;
     public Color glowColor;

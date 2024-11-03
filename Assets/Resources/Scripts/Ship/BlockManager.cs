@@ -13,16 +13,16 @@ public class BlockData
     public Coroutine directionFadeCoroutine;
     public List<GameObject> itemsInBlock;
     public GameObject spawnedItem;
-    public bool isSpawning;
+    public Coroutine itemSpawningCoroutine;
     // Constructor
     public BlockData(BlockObject blockObject)
     {
         this.blockObject = blockObject;
-        this.blockDirection = Direction.NW;
+        this.blockDirection = Direction.N;
         this.ammoCount = 0;
         this.itemsInBlock = new List<GameObject>();
         this.spawnedItem = null;
-        this.isSpawning = false;
+        this.itemSpawningCoroutine = null;
         this.directionFadeCoroutine = null;
     }
 
@@ -34,9 +34,9 @@ public class BlockManager : MonoBehaviour
     public Dictionary<GameObject, BlockData> blockDictionary = new Dictionary<GameObject, BlockData>();
     public GameObject blockPrefab;
 
-    void Update()
+    void Start()
     {
-
+        StartCoroutine(GlobalCoroutine());
     }
 
     private IEnumerator GlobalCoroutine()
@@ -52,11 +52,12 @@ public class BlockManager : MonoBehaviour
         }
     }
 
+    // call this whenever an item is added to a block
     public void SpawnItemFromPayload(GameObject blockGameObject)
     {
         if (blockDictionary.TryGetValue(blockGameObject, out BlockData blockData))
         {
-            if (blockData.blockObject.blockType == BlockType.Payload) return;
+            if (blockData.blockObject.blockType != BlockType.Payload) return;
             // Proceed only if there is exactly one item in the block
             if (blockData.itemsInBlock.Count != 1) return;
 
@@ -64,7 +65,7 @@ public class BlockManager : MonoBehaviour
             ItemData itemData = SingletonManager.Instance.itemManager.itemDictionary[blockData.itemsInBlock[0]];
 
             // Check if the block can spawn and if the spawning item exists
-            if (blockData.isSpawning || itemData.itemObject.spawningItem == null) return;
+            if (blockData.itemSpawningCoroutine != null || itemData.itemObject.spawningItem == null) return;
 
             // Check conditions to spawn the item
             bool shouldSpawnItem = blockData.spawnedItem == null || SingletonManager.Instance.itemManager.itemDictionary[blockData.spawnedItem].itemTaken;
@@ -72,7 +73,7 @@ public class BlockManager : MonoBehaviour
             if (shouldSpawnItem)
             {
                 blockData.spawnedItem = null;
-                StartCoroutine(SpawnItemWithDelay(blockGameObject, 2f, itemData.itemObject.spawningItem));
+                blockData.itemSpawningCoroutine = StartCoroutine(SpawnItemWithDelay(blockGameObject, 2f, itemData.itemObject.spawningItem));
             }
         }
     }
@@ -83,6 +84,8 @@ public class BlockManager : MonoBehaviour
         blockInstance.GetComponentInChildren<Light2D>().intensity = 0f;
         BlockData newBlockData = new BlockData(blockObject);
         blockDictionary[blockInstance] = newBlockData;
+
+        RotateBlock(blockInstance, 0, false);
 
         return blockInstance;
     }
@@ -113,10 +116,6 @@ public class BlockManager : MonoBehaviour
             RemoveBlock(blockInstance);
         }
     }
-
-
-
-
 
 
 
@@ -177,9 +176,34 @@ public class BlockManager : MonoBehaviour
         }
     }
 
+    public Vector3 GetRandomPositionInShipFromBlock(GameObject blockGameObject)
+    {
+        Vector3Int blockTilePosition = SingletonManager.Instance.shipGenerator.shipTilemap.WorldToCell(blockGameObject.transform.position);
+        List<Vector3Int> possibleTiles = SingletonManager.Instance.creatureManager.GetSurroundingTiles(blockTilePosition, 4f);
+        List<Vector3Int> validTiles = new List<Vector3Int>();
+
+        foreach (Vector3Int tilePosition in possibleTiles)
+        {
+            if (SingletonManager.Instance.shipGenerator.shipTilemap.HasTile(tilePosition))
+            {
+                validTiles.Add(tilePosition);
+            }
+        }
+
+        Vector3Int randomEndTile = validTiles[Random.Range(0, validTiles.Count)];
+        Vector3 randomEndPosition = SingletonManager.Instance.shipGenerator.shipTilemap.CellToWorld(randomEndTile);
+        Vector3 tileSize = SingletonManager.Instance.shipGenerator.shipTilemap.cellSize;
+        float offsetX = Random.Range(-0.5f, 0.5f) * tileSize.x;
+        float offsetY = Random.Range(-0.5f, 0.5f) * tileSize.y;
+        randomEndPosition.x += offsetX;
+        randomEndPosition.y += offsetY;
+
+        return randomEndPosition;
+
+    }
+
     public void CanCraftNew(GameObject blockGameObject) // call this whenever a new item is placed inside the block
     {
-
         if (blockDictionary.TryGetValue(blockGameObject, out BlockData blockData))
         {
             if (blockData.blockObject.blockType != BlockType.Payload)
@@ -189,7 +213,6 @@ public class BlockManager : MonoBehaviour
 
             if (blockData.itemsInBlock.Count > 1)
             {
-
                 List<List<ItemObject>> craftedItems = new List<List<ItemObject>>();
 
                 for (int i = 0; i < blockData.itemsInBlock.Count; i++)
@@ -199,10 +222,8 @@ public class BlockManager : MonoBehaviour
 
                     // filter by recipe
                     List<ItemObject> craftedItem = SingletonManager.Instance.itemManager.itemObjects.Where(item => item.recipes != null && item.recipes.Any(recipe => recipe.materials.Contains(itemObject))).ToList();
-
                     craftedItems.Add(craftedItem);
                 }
-
 
                 List<ItemObject> intersectionList = craftedItems.Skip(1)
                     .Aggregate(
@@ -211,45 +232,35 @@ public class BlockManager : MonoBehaviour
                     ).ToList();  // Convert to List
                                  // (Optional) Set up any visu
 
-
+                Random.InitState(System.DateTime.Now.Millisecond);
                 if (intersectionList.Count > 0)
                 {
-                    Random.InitState(System.DateTime.Now.Millisecond);
                     foreach (GameObject item in blockData.itemsInBlock)
                     {
-                        Destroy(item);
+                        SingletonManager.Instance.itemManager.RemoveItem(item);
                     }
                     blockData.itemsInBlock.Clear();
                     foreach (ItemObject resultItem in intersectionList)
                     {
                         blockGameObject.GetComponentInChildren<Light2D>().intensity = 0f;
 
-                        Vector3Int blockTilePosition = SingletonManager.Instance.shipGenerator.shipTilemap.WorldToCell(blockGameObject.transform.position);
-                        List<Vector3Int> possibleTiles = SingletonManager.Instance.creatureManager.GetSurroundingTiles(blockTilePosition, 4f);
-                        List<Vector3Int> validTiles = new List<Vector3Int>();
-
-                        foreach (Vector3Int tilePosition in possibleTiles)
-                        {
-                            if (SingletonManager.Instance.shipGenerator.shipTilemap.HasTile(tilePosition))
-                            {
-                                validTiles.Add(tilePosition);
-                            }
-                        }
-
-                        Vector3Int randomEndTile = validTiles[Random.Range(0, validTiles.Count)];
-                        Vector3 randomEndPosition = SingletonManager.Instance.shipGenerator.shipTilemap.CellToWorld(randomEndTile);
-                        Vector3 tileSize = SingletonManager.Instance.shipGenerator.shipTilemap.cellSize;
-                        float offsetX = Random.Range(-0.5f, 0.5f) * tileSize.x;
-                        float offsetY = Random.Range(-0.5f, 0.5f) * tileSize.y;
-                        randomEndPosition.x += offsetX;
-                        randomEndPosition.y += offsetY;
-
+                        Vector3 randomEndPosition = GetRandomPositionInShipFromBlock(blockGameObject);
                         SingletonManager.Instance.itemManager.StartItemBounce(resultItem, blockGameObject.transform.position, randomEndPosition, SingletonManager.Instance.shipGenerator.shipTilemap.transform);
                     }
                 }
                 else
                 {
                     Debug.Log("no recipes"); //shoot out both ingredients
+                    blockGameObject.GetComponentInChildren<Light2D>().intensity = 0f;
+
+                    foreach (GameObject itemGameObject in blockData.itemsInBlock)
+                    {
+                        Vector3 randomEndPosition = GetRandomPositionInShipFromBlock(blockGameObject);
+                        
+                        SingletonManager.Instance.itemManager.StartItemBounce(itemGameObject, blockGameObject.transform.position, randomEndPosition, SingletonManager.Instance.shipGenerator.shipTilemap.transform);
+                    }
+
+                    blockData.itemsInBlock.Clear();
                     return;
                 }
             }
@@ -260,11 +271,11 @@ public class BlockManager : MonoBehaviour
     {
         if (blockDictionary.TryGetValue(blockGameObject, out BlockData blockData))
         {
-
-            blockData.isSpawning = true;
             yield return new WaitForSeconds(delay);
-            blockData.spawnedItem = SingletonManager.Instance.itemManager.CreateItem(spawningItemObject, blockGameObject.transform.position, blockGameObject.transform);
-            blockData.isSpawning = false;
+            Vector3 spawnPosition = new Vector3(blockGameObject.transform.position.x, blockGameObject.transform.position.y + 0.25f, blockGameObject.transform.position.z);
+            blockData.spawnedItem = SingletonManager.Instance.itemManager.CreateItem(spawningItemObject, spawnPosition, blockGameObject.transform);
+
+            blockData.itemSpawningCoroutine = null;
         }
     }
 

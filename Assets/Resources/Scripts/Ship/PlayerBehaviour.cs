@@ -91,6 +91,7 @@ public class PlayerBehaviour : MonoBehaviour
 
             else if (Input.GetKeyDown(KeyCode.Q))
             {
+                Debug.Log("q pressed");
                 InteractWithBlock(1);
             }
             else if (Input.GetKeyDown(KeyCode.R))
@@ -103,17 +104,17 @@ public class PlayerBehaviour : MonoBehaviour
             {
                 mouseDownTime = Time.time;
 
-                if (selectedBlockPrefab != null)
+                if (SingletonManager.Instance.interactionManager.playerBlockRelations.TryGetValue(gameObject, out GameObject blockGameObject))
                 {
-                    BlockData blockData = SingletonManager.Instance.blockManager.blockDictionary[selectedBlockPrefab];
+                    BlockData blockData = SingletonManager.Instance.blockManager.blockDictionary[blockGameObject];
 
                     if (blockData.itemsInBlock != null && blockData.itemsInBlock.Count == 1)
                     {
                         ItemData itemData = SingletonManager.Instance.itemManager.itemDictionary[blockData.itemsInBlock[0]];
 
-                        if (itemData.itemObject.projectileData != null)
+                        if (itemData.itemObject.projectile.Count == 1)
                         {
-                            float attackRate = itemData.itemObject.projectileData.reloadSpeed;
+                            float attackRate = itemData.itemObject.projectile[0].reloadSpeed;
                             AbilityData haste = SingletonManager.Instance.abilityManager.GetAbilityData(Ability.Haste);
 
                             if (haste != null)
@@ -130,6 +131,7 @@ public class PlayerBehaviour : MonoBehaviour
                     }
                 }
             }
+
 
 
             // When mouse is released
@@ -508,6 +510,10 @@ public class PlayerBehaviour : MonoBehaviour
             Vector3Int tilePosition = previousInteractableTilePosition.Value;
             selectedBlockPrefab = SingletonManager.Instance.shipGenerator.GetBlockPrefabAtTile(tilePosition);
             SingletonManager.Instance.interactionManager.InteractWithBlock(interaction, gameObject);
+        }
+        else
+        {
+            Debug.Log("doesnt have value");
         }
     }
 

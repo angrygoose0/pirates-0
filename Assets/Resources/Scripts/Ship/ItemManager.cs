@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.Rendering.Universal;
 // Assuming you're using Universal Render Pipeline
 
 public class ItemData
@@ -27,7 +28,7 @@ public class ItemData
         this.itemGameObject = itemGameObject;
     }
     public UnityEngine.Rendering.Universal.Light2D Light => itemGameObject.GetComponent<UnityEngine.Rendering.Universal.Light2D>();
-    public SpriteRenderer spriteRenderer => itemGameObject.GetComponent<SpriteRenderer>();
+    public SpriteRenderer spriteRenderer => itemGameObject.GetComponentInChildren<SpriteRenderer>();
     private Collider2D collider => itemGameObject.GetComponent<Collider2D>();
     public void SetCollider(bool boolean)
     {
@@ -41,10 +42,12 @@ public class ItemData
         if (parentTransform.GetComponent<Tilemap>() != null) // ship or sea
         {
             isActive = false;
+            this.SetCollider(true);
         }
         else // not a tilemap
         {
             SingletonManager.Instance.itemManager.ItemIsActive(this);
+            this.SetCollider(false);
         }
     }
 }
@@ -72,6 +75,8 @@ public class ItemManager : MonoBehaviour
     void Start()
     {
         worldTilemap = GameObject.Find("world");
+        StartCoroutine(PulseLights());
+        StartCoroutine(GlobalCoroutine());
     }
 
     void Update()
@@ -83,6 +88,15 @@ public class ItemManager : MonoBehaviour
                 HoverItem(entry.Key);
             }
 
+        }
+        // Loop through number keys 0-9
+        for (int i = 0; i <= 9; i++)
+        {
+            // Check if the key corresponding to the current number is pressed
+            if (Input.GetKeyDown(i.ToString()))
+            {
+                CreateItem(itemObjects[i], Vector3.zero, SingletonManager.Instance.shipGenerator.shipTilemap.transform);
+            }
         }
     }
 
@@ -115,7 +129,7 @@ public class ItemManager : MonoBehaviour
         }
     }
 
-    private IEnumerator CheckItemsInactivity()
+    private IEnumerator GlobalCoroutine()
     {
         while (true)
         {
@@ -146,24 +160,24 @@ public class ItemManager : MonoBehaviour
 
     private IEnumerator FadeAndDestroy(GameObject itemGameObject)
     {
-        SpriteRenderer spriteRenderer = itemGameObject.GetComponent<SpriteRenderer>();
-
-
-        Color originalColor = spriteRenderer.color;
-
-        while (fadeTime < fadeDuration)
+        if (itemDictionary.TryGetValue(itemGameObject, out ItemData itemData))
         {
-            float alpha = Mathf.PingPong(Time.time * fadeSpeed, 1f);
-            spriteRenderer.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
-            yield return null;
+            Color originalColor = itemData.spriteRenderer.color;
 
-            fadeTime += Time.deltaTime;
-            // Increase the fading speed over time
-            fadeSpeed = Mathf.Min(10f, fadeSpeed + Time.deltaTime);
+            while (fadeTime < fadeDuration)
+            {
+                float alpha = Mathf.PingPong(Time.time * fadeSpeed, 1f);
+                itemData.spriteRenderer.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
+                yield return null;
+
+                fadeTime += Time.deltaTime;
+                // Increase the fading speed over time
+                fadeSpeed = Mathf.Min(10f, fadeSpeed + Time.deltaTime);
+            }
+
+            // remove item
+            RemoveItem(itemGameObject);
         }
-
-        // Destroy the GameObject after fading
-        Destroy(gameObject);
     }
 
     public void ItemIsActive(ItemData itemData)
@@ -184,7 +198,7 @@ public class ItemManager : MonoBehaviour
 
     public void HoverItem(GameObject itemGameObject)
     {
-        float newY = Mathf.Sin(Time.time * bobbingSpeed) * bobbingHeight;
+        float newY = Mathf.Sin(Time.time * bobbingSpeed) * bobbingHeight + 0.25f;
         itemGameObject.transform.localPosition = new Vector3(0f, newY, 0f);
     }
 
@@ -212,23 +226,90 @@ public class ItemManager : MonoBehaviour
         itemData.abilityActiveCooldown = itemData.itemObject.activeAbility.cooldown;
     }
 
-    public void DisableItemRigidBody(GameObject itemGameObject)
-    { }
-
-
     public void PlaceItemOnBlock(GameObject itemGameObject, GameObject blockGameObject)
     {
         if (itemDictionary.TryGetValue(itemGameObject, out ItemData itemData))
         {
-            Rigidbody rb = GetComponent<Rigidbody>();
-            if (rb != null)
+            if (SingletonManager.Instance.blockManager.blockDictionary.TryGetValue(blockGameObject, out BlockData blockData))
             {
-                rb.velocity = Vector3.zero;           // Reset linear velocity
-                rb.angularVelocity = Vector3.zero;    // Reset angular velocity
-            }
+                Rigidbody rb = itemGameObject.GetComponent<Rigidbody>();
+                if (rb != null)
+                {
+                    rb.velocity = Vector3.zero;           // Reset linear velocity
+                    rb.angularVelocity = Vector3.zero;    // Reset angular velocity
+                }
+                if (blockData.blockObject.blockType == BlockType.Payload)
+                {
+                    if (itemData.itemObject.projectile.Count > 0) // item is projectile
+                    {
+                        return;
+                    }
 
-            itemData.NewParent(blockGameObject.transform);
-            itemGameObject.transform.localPosition = new Vector3(0, 0.25f, 0);
+                    blockData.itemsInBlock.Add(itemGameObject);
+                    itemData.NewParent(blockGameObject.transform);
+                    itemGameObject.transform.localPosition = new Vector3(0, 0.25f, 0);
+                    itemData.onPayload = true;
+                    itemData.itemPickupable = false;
+
+                    if (itemData.itemObject.spawningItem != null)
+                    {
+                        itemData.spriteRenderer.sprite = itemData.itemObject.spawningItem.itemSprite;
+                        Color newColor = itemData.spriteRenderer.color;
+                        newColor.a = 0.5f;
+                        itemData.spriteRenderer.color = newColor;
+                    }
+
+                    blockGameObject.GetComponentInChildren<Light2D>().intensity = 1.5f;
+
+                    float multiplier = 1f;
+                    Vector3 newBlockPosition = blockGameObject.transform.position + new Vector3(0.0f, 0.125f, 0.0f);
+                    SingletonManager.Instance.feedbackManager.ArtifactPlaceFeedback(newBlockPosition, multiplier);
+
+                    SingletonManager.Instance.shipGenerator.UpdateBlockEffects();
+
+                    if (itemData.itemObject.affectsCannons)
+                    {
+                        SingletonManager.Instance.shipGenerator.MakeTrailEffects(blockGameObject.transform);
+                    }
+
+                    SingletonManager.Instance.blockManager.CanCraftNew(blockGameObject);
+                }
+                else if (blockData.blockObject.blockType == BlockType.Cannon)
+                {
+                    if (itemData.itemObject.projectile.Count != 1) // item is not projectile
+                    {
+                        return;
+                    }
+                    if (blockData.itemsInBlock.Count == 0)
+                    {
+                        blockData.itemsInBlock.Add(itemGameObject);
+                    }
+                    else
+                    {
+                        Destroy(blockData.itemsInBlock[0]);
+                        blockData.itemsInBlock[0] = itemGameObject;
+                    }
+
+                    itemData.NewParent(blockGameObject.transform);
+                    itemGameObject.transform.localPosition = new Vector3(0, 0.25f, 0);
+                    itemData.onPayload = true;
+                    itemData.itemPickupable = false;
+
+                    float multiplier = 1f;
+                    Vector3 newBlockPosition = blockGameObject.transform.position + new Vector3(0.0f, 0.125f, 0.0f);
+                    SingletonManager.Instance.feedbackManager.ArtifactPlaceFeedback(newBlockPosition, multiplier);
+
+                    AbilityData extra = SingletonManager.Instance.abilityManager.GetAbilityData(Ability.Extra);
+
+                    int updatedAmmoCount = itemData.itemObject.projectile[0].ammoCount;
+                    if (extra != null)
+                    {
+                        updatedAmmoCount = Mathf.RoundToInt(updatedAmmoCount * extra.value);
+                    }
+                    blockData.ammoCount = updatedAmmoCount;
+                    SingletonManager.Instance.uiManager.ShowAmmoCount(blockGameObject, blockData.ammoCount, updatedAmmoCount);
+                }
+            }
         }
     }
     public GameObject CreateItem(ItemObject createItemObject, Vector3 position, Transform parentTransform)
@@ -238,10 +319,38 @@ public class ItemManager : MonoBehaviour
         ItemData itemData = new ItemData(createItemObject, createdItemGameObject);
         itemData.NewParent(parentTransform);
         itemDictionary[createdItemGameObject] = itemData;
-        //itemData.spriteRenderer.sprite = createItemObject.itemSprite;
+        itemData.spriteRenderer.sprite = createItemObject.itemSprite;
 
         return createdItemGameObject;
     }
+
+    public void RemoveItem(GameObject itemGameObject)
+    {
+        if (itemDictionary.TryGetValue(itemGameObject, out ItemData itemData))
+        {
+            // Remove the item data from the dictionary
+            itemDictionary.Remove(itemGameObject);
+
+            // Destroy the GameObject to remove it from the scene
+            Destroy(itemGameObject);
+        }
+    }
+
+    public void RemoveAllItems()
+    {
+        // Create a list of all GameObjects to avoid modifying the dictionary while iterating
+        List<GameObject> itemsToRemove = new List<GameObject>(itemDictionary.Keys);
+
+        // Use RemoveItem to remove each item individually
+        foreach (GameObject itemGameObject in itemsToRemove)
+        {
+            RemoveItem(itemGameObject);
+        }
+
+        // Clear the dictionary to ensure it's empty
+        itemDictionary.Clear();
+    }
+
     /*
         Rigidbody2D rigidbody2D = createdItem.GetComponent<Rigidbody2D>();
         if (rigidbody2D != null)
@@ -262,35 +371,50 @@ public class ItemManager : MonoBehaviour
     public float gravity = -9.81f;
     public GameObject itemEffectPrefab;
 
-    public void StartItemBounce(ItemObject itemObject, Vector3 startPosition, Vector3 endPosition, Transform parentTransform)
+    public void StartItemBounce(object itemOrGameObject, Vector3 startPosition, Vector3 endPosition, Transform parentTransform)
     {
-        StartCoroutine(ItemBounce(itemObject, startPosition, endPosition, parentTransform, 10f));
-    }
-    private IEnumerator ItemBounce(ItemObject itemObject, Vector3 startPosition, Vector3 endPosition, Transform parentTransform, float firingForce)
-    {
-        GameObject craftedItemObject = SingletonManager.Instance.itemManager.CreateItem(itemObject, startPosition, parentTransform);
+        GameObject craftedItemObject;
 
+        if (itemOrGameObject is ItemObject itemObject)
+        {
+            // If the input is an ItemObject, create the item.
+            craftedItemObject = SingletonManager.Instance.itemManager.CreateItem(itemObject, startPosition, parentTransform);
+        }
+        else if (itemOrGameObject is GameObject itemGameObject)
+        {
+            // If the input is a GameObject, use it directly.
+            craftedItemObject = itemGameObject;
+            itemDictionary[craftedItemObject].NewParent(parentTransform);
+            itemDictionary[craftedItemObject].onPayload = false;
+            craftedItemObject.transform.position = startPosition;  // Set start position in case it's not already set
+        }
+        else
+        {
+            Debug.LogError("StartItemBounce: Unsupported type. Must be ItemObject or GameObject.");
+            return;
+        }
+        StartCoroutine(ItemBounce(craftedItemObject, startPosition, endPosition, parentTransform, 10f));
+    }
+
+    private IEnumerator ItemBounce(GameObject craftedItemObject, Vector3 startPosition, Vector3 endPosition, Transform parentTransform, float firingForce)
+    {
         Vector3 localStartPosition = parentTransform.InverseTransformPoint(startPosition);
         Vector3 localEndPosition = parentTransform.InverseTransformPoint(endPosition);
 
         ItemData craftedItemData = SingletonManager.Instance.itemManager.itemDictionary[craftedItemObject];
+        craftedItemData.spriteRenderer.sprite = craftedItemData.itemObject.itemSprite;
         craftedItemData.itemPickupable = false;
 
         Color newColor = craftedItemData.spriteRenderer.color;
         newColor.a = 0f;
         craftedItemData.spriteRenderer.color = newColor;
 
-        craftedItemData.spriteRenderer.enabled = false;
-
         GameObject itemEffectObject = Instantiate(itemEffectPrefab, startPosition, Quaternion.identity, parentTransform);
 
         // Get the LineRenderer component
         LineRenderer lineRenderer = itemEffectObject.GetComponent<LineRenderer>();
-        if (lineRenderer == null)
-        {
-            Debug.LogError("LineRenderer not found on linePrefab.");
-            yield break;
-        }
+        lineRenderer.startWidth = 0.05f;
+        lineRenderer.endWidth = 0.2f;
 
         // Initialize LineRenderer
         List<Vector3> linePoints = new List<Vector3> { startPosition };
