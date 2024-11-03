@@ -13,24 +13,27 @@ MonoBehaviour:
   m_Name: Cannonball (active)
   m_EditorClassIdentifier: 
   itemName: 
-  itemSprite: {fileID: 21300000, guid: 90e96c3c7c7d2e34bb318d0d1d9e8a92, type: 3}
+  itemSprite: {fileID: 21300000, guid: 0d39ea00c1ec2cc46988bb35b30b7dd4, type: 3}
   mass: 2
-  projectileData:
+  projectile:
   - reloadSpeed: 0.1
     damageMultiplier: 10
-    explosionMultiplier: 10
-    explosionRange: 5
+    explosionMultiplier: 5
+    explosionRange: 4
     accuracy: 100
     explosionInverse: 0
     fireAmount: 1
-    explosionSpeed: 100
-    ammoCount: 100
-    sprite: {fileID: 1995357319, guid: 4e66665f289e3564fa08619cbba5150b, type: 3}
-    cameraShake: 1
+    explosionSpeed: 1000
+    ammoCount: 5
+    sprite: {fileID: 21300000, guid: 0d39ea00c1ec2cc46988bb35b30b7dd4, type: 3}
+    cameraShake: 2
   goldAmount: 0
   spawningItem: {fileID: 0}
-  regenerateTime: 0
   recipes: []
   affectsCannons: 0
+  glowColor: {r: 0, g: 0, b: 0, a: 0}
+  glowIntensity: 0
+  pulseSpeed: 0
+  glowAmplitude: 0.2
   abilityList: []
   activeAbility: {fileID: 0}
