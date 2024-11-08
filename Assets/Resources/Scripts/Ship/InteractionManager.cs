@@ -84,6 +84,8 @@ public class InteractionManager : MonoBehaviour
             case 0:
                 if (blockData.blockObject.blockType == BlockType.Cannon)
                 {
+                    Vector3 feedbackPosition = blockGameObject.transform.position + new Vector3(0.0f, 0.125f, 0.0f);
+                    SingletonManager.Instance.feedbackManager.ArtifactPlaceFeedback(feedbackPosition, 3f);
                     //the player is equipped to a block, so he is leaving.
                     if (playerBlockRelations.ContainsKey(player))
                     {
@@ -151,6 +153,9 @@ public class InteractionManager : MonoBehaviour
                             Debug.Log("shoot blanks");
                             break;
                         }
+
+                        Vector3 feedbackPosition = blockGameObject.transform.position + new Vector3(0.0f, 0.125f, 0.0f);
+                        SingletonManager.Instance.feedbackManager.ArtifactPlaceFeedback(feedbackPosition, 1f, blockItemData.itemObject.effectColor);
 
                         ProjectileData projectile = blockItemData.itemObject.projectile[0];
 

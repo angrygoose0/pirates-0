@@ -19,7 +19,6 @@ MonoBehaviour:
   spawnWeight: 1
   minPackSpawn: 1
   maxPackSpawn: 1
-  creatureValues: []
   creatureDrops:
   - droppedItemObject: {fileID: 11400000, guid: 1dd939d623bbf704cb90d8de3d1d16dd, type: 2}
     dropWeight: 1
@@ -45,7 +44,7 @@ MonoBehaviour:
     pullStrength: 2
     wiggleFrequency: 10
     wiggleAmplitude: 0.01
-    endTarget: 0
+    endTarget: 1
   goldDropRange: {x: 0, y: 0}
   hostilityMultiplier: 0
   emptyWeight: 0

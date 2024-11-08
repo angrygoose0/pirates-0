@@ -24,5 +24,6 @@ MonoBehaviour:
   glowIntensity: 1
   pulseSpeed: 1
   glowAmplitude: 0.2
+  effectColor: {r: 0, g: 1, b: 0.37385654, a: 1}
   abilityList: []
   activeAbility: {fileID: 0}

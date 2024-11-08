@@ -220,7 +220,7 @@ public class ItemManager : MonoBehaviour
         }
 
         float multiplier = 1f;
-        SingletonManager.Instance.feedbackManager.ArtifactPlaceFeedback(feedbackPosition, multiplier);
+        SingletonManager.Instance.feedbackManager.ArtifactPlaceFeedback(feedbackPosition, multiplier, itemData.itemObject.effectColor);
 
         itemData.itemObject.UseActive(position, blockDirection);
         itemData.abilityActiveCooldown = itemData.itemObject.activeAbility.cooldown;
@@ -261,9 +261,9 @@ public class ItemManager : MonoBehaviour
 
                     blockGameObject.GetComponentInChildren<Light2D>().intensity = 1.5f;
 
-                    float multiplier = 1f;
+                    float multiplier = 5f;
                     Vector3 newBlockPosition = blockGameObject.transform.position + new Vector3(0.0f, 0.125f, 0.0f);
-                    SingletonManager.Instance.feedbackManager.ArtifactPlaceFeedback(newBlockPosition, multiplier);
+                    SingletonManager.Instance.feedbackManager.ArtifactPlaceFeedback(newBlockPosition, multiplier, itemData.itemObject.effectColor);
 
                     SingletonManager.Instance.shipGenerator.UpdateBlockEffects();
 
@@ -297,7 +297,7 @@ public class ItemManager : MonoBehaviour
 
                     float multiplier = 1f;
                     Vector3 newBlockPosition = blockGameObject.transform.position + new Vector3(0.0f, 0.125f, 0.0f);
-                    SingletonManager.Instance.feedbackManager.ArtifactPlaceFeedback(newBlockPosition, multiplier);
+                    SingletonManager.Instance.feedbackManager.ArtifactPlaceFeedback(newBlockPosition, multiplier, itemData.itemObject.effectColor);
 
                     AbilityData extra = SingletonManager.Instance.abilityManager.GetAbilityData(Ability.Extra);
 
@@ -413,8 +413,8 @@ public class ItemManager : MonoBehaviour
 
         // Get the LineRenderer component
         LineRenderer lineRenderer = itemEffectObject.GetComponent<LineRenderer>();
-        lineRenderer.startWidth = 0.05f;
-        lineRenderer.endWidth = 0.2f;
+        lineRenderer.startWidth = 0.01f;
+        lineRenderer.endWidth = 0.1f;
 
         // Initialize LineRenderer
         List<Vector3> linePoints = new List<Vector3> { startPosition };
@@ -463,11 +463,11 @@ public class ItemManager : MonoBehaviour
         Destroy(itemEffectObject);
 
         craftedItemObject.transform.localPosition = localEndPosition;
-        ItemData itemData = SingletonManager.Instance.itemManager.itemDictionary[craftedItemObject];
-        itemData.itemPickupable = true;
+        SingletonManager.Instance.feedbackManager.ArtifactPlaceFeedback(craftedItemObject.transform.position, 1f, craftedItemData.itemObject.effectColor);
+        craftedItemData.itemPickupable = true;
 
         newColor.a = 1f;
-        itemData.spriteRenderer.color = newColor;
+        craftedItemData.spriteRenderer.color = newColor;
 
     }
 

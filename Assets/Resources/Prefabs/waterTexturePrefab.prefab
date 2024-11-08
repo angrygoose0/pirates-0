@@ -40,7 +40,7 @@ SpriteRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1510258363471395792}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -270,7 +270,7 @@ MonoBehaviour:
       tiling:
         _value: {x: 1, y: 1}
       baseAlpha:
-        _value: 0.283
+        _value: 1
       alphaTexture: {fileID: 0}
       numOfPixels:
         _value: 270
@@ -281,7 +281,7 @@ MonoBehaviour:
       obstructionColor:
         _value: {r: 1, g: 1, b: 1, a: 0}
       obstructionAlpha:
-        _value: 0.241
+        _value: 0.392
       foamColor:
         _value: {r: 0.86774653, g: 0.93894625, b: 0.9433962, a: 0}
       foamSize:

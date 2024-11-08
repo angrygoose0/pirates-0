@@ -13,9 +13,8 @@ MonoBehaviour:
   m_Name: Mast
   m_EditorClassIdentifier: 
   id: 4
-  blockSprite: {fileID: 21300000, guid: 8d1f498978dc9894094ce906be5a4e46, type: 3}
-  selectedSprite: {fileID: 21300000, guid: 0663ea9325614ca4b9c02ee2d87e6baf, type: 3}
   blockType: 2
   blockValues:
   - name: mastForce
     value: 5
+  directionToSpriteList: []

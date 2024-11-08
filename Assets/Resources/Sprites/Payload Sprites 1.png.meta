@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: ac247740d19c3ba40944e6e61bcaa22d
+guid: 60c808e8100428a488f019e25759dd90
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -97,7 +97,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: E_payload
+      name: N_PAYLOAD
       rect:
         serializedVersion: 2
         x: 0
@@ -111,14 +111,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: edf9b4ca6575fd74d870957ebf16f3e7
-      internalID: 633681602
+      spriteID: 0efbffdc61c947540a1ac701d57946b6
+      internalID: -304182885
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: E_payloadH
+      name: Nh_PAYLOAD
       rect:
         serializedVersion: 2
         x: 16
@@ -132,14 +132,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cf41d721061cd324fa97b623471e45d4
-      internalID: -2095096829
+      spriteID: 2e56193c823004b46a01d2915657b216
+      internalID: 16420217
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: S_payload
+      name: NE_PAYLOAD
       rect:
         serializedVersion: 2
         x: 32
@@ -153,14 +153,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 037186265f0fa6346b6c96a439282520
-      internalID: 476853912
+      spriteID: e544f07a9d1cbc44b8be2970786293fe
+      internalID: 10799167
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: S_payloadH
+      name: NEh_PAYLOAD
       rect:
         serializedVersion: 2
         x: 0
@@ -174,14 +174,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 57a4e18578784534fb4c8cc6652b64f1
-      internalID: 249868827
+      spriteID: 491e3567b8b61b74ab5f0ba22d5152b0
+      internalID: -55090441
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: NE_payload
+      name: E_PAYLOAD
       rect:
         serializedVersion: 2
         x: 16
@@ -195,14 +195,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6d802251bc2d26646a7877866859330b
-      internalID: 859587277
+      spriteID: 3ba659a7be1db3141b7652a390f83812
+      internalID: -1876217264
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: NE_payloadH
+      name: Eh_PAYLOAD
       rect:
         serializedVersion: 2
         x: 32
@@ -216,14 +216,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1cc5b23d073fd2a409a9f087a4a84047
-      internalID: -1642061889
+      spriteID: c19ffe20c80665e46b754c80b5b589c2
+      internalID: -38179707
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SE_payload
+      name: SE_PAYLOAD
       rect:
         serializedVersion: 2
         x: 0
@@ -237,14 +237,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 70167fd6533a94a44965fd6ca0501f8e
-      internalID: -1754114672
+      spriteID: b129c8da832961440a463e85ac4518f4
+      internalID: 1711361941
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SE_payloadH
+      name: SEh_PAYLOAD
       rect:
         serializedVersion: 2
         x: 16
@@ -258,8 +258,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c4552490ddfe2d54bb3c90994609976f
-      internalID: -67095334
+      spriteID: cec6229be8cfd5448935e44834a8ffcc
+      internalID: 2031215465
       vertices: []
       indices: 
       edges: []
@@ -275,14 +275,14 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      E_payload: 633681602
-      E_payloadH: -2095096829
-      NE_payload: 859587277
-      NE_payloadH: -1642061889
-      SE_payload: -1754114672
-      SE_payloadH: -67095334
-      S_payload: 476853912
-      S_payloadH: 249868827
+      E_PAYLOAD: -1876217264
+      Eh_PAYLOAD: -38179707
+      NE_PAYLOAD: 10799167
+      NEh_PAYLOAD: -55090441
+      N_PAYLOAD: -304182885
+      Nh_PAYLOAD: 16420217
+      SE_PAYLOAD: 1711361941
+      SEh_PAYLOAD: 2031215465
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

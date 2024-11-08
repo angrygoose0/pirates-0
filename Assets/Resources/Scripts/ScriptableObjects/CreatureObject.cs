@@ -47,8 +47,6 @@ public class CreatureObject : ScriptableObject
     public int spawnWeight;
     public int minPackSpawn;
     public int maxPackSpawn;
-    public List<CreatureValue> creatureValues;
-
     public List<CreatureDrops> creatureDrops;
     public int tentacles;
 

@@ -12,6 +12,7 @@ public class FeedbackManager : MonoBehaviour
     public MMF_Player shipDamagedFeedbackPlayer;
     public MMF_Player explosionFeedbackPlayer;
     public MMF_Player artifactPlaceFeedbackPlayer;
+    public ParticleSystem defaultParticles;
     public Transform explosionParticle;
 
     public float shipDamagedCameraShakeMagnitude;
@@ -25,11 +26,20 @@ public class FeedbackManager : MonoBehaviour
         shipDamagedFeedbackPlayer?.PlayFeedbacks();
     }
 
-    public void ArtifactPlaceFeedback(Vector3 position, float multiplier)
+    public void ArtifactPlaceFeedback(Vector3 position, float multiplier, Color color = default)
     {
+        if (color == default && ColorUtility.TryParseHtmlString("#f1e8ae", out Color defaultColor))
+        {
+            color = defaultColor;
+        }
+
+        ParticleSystem.MainModule mainModule = defaultParticles.main;
+        mainModule.startSize = new ParticleSystem.MinMaxCurve(multiplier, multiplier * 2.0f);
+        mainModule.startColor = color;
+
+
         MMF_ParticlesInstantiation artifactPlaceParticlesFeedback = artifactPlaceFeedbackPlayer.GetFeedbackOfType<MMF_ParticlesInstantiation>();
         artifactPlaceParticlesFeedback.TargetWorldPosition = position;
-
         artifactPlaceFeedbackPlayer?.PlayFeedbacks();
     }
 

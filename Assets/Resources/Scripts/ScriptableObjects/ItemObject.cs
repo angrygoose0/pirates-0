@@ -79,6 +79,8 @@ public class ItemObject : ScriptableObject
     // Set the range for intensity (0.2 == 20% down and 20% up from base)
     public float glowAmplitude = 0.2f;
 
+    public Color effectColor;
+
 
     public List<AbilityData> abilityList;
     public ItemAbilityClass activeAbility;

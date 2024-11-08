@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-269513912752421880
+--- !u!114 &-6318893491788704813
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
@@ -20,9 +20,9 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: WaterMaterial 1.0
-  m_Shader: {fileID: -6465566751694194690, guid: a36ac2a2e44127f45baea5b960953220, type: 3}
-  m_Parent: {fileID: -876546973899608171, guid: a36ac2a2e44127f45baea5b960953220, type: 3}
+  m_Name: BackgroundMaterial
+  m_Shader: {fileID: -6465566751694194690, guid: e8f3bced60c6b694f89a980daf9e3bf6, type: 3}
+  m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -36,18 +36,29 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _WaterDataTex:
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _RippleDensity: 0.25
-    - _RippleSlimness: 10
-    - _RippleSpeed: 1
-    - _WaterSize: 0.25
+    - _Darkness: 0.5
+    - _MovementMultiplier: 0.00001
+    - _Multiplier: 0.5
+    - _Scale: 50
     m_Colors:
-    - _BaseColor1: {r: 1, g: 1, b: 1, a: 0}
-    - _BaseColor2: {r: 1, g: 1, b: 1, a: 0}
-    - _RippleColor: {r: 1, g: 1, b: 1, a: 0}
+    - _SeaColor: {r: 0.05490196, g: 0.09019608, b: 0.3215686, a: 0}
+    - _ShipOffset: {r: 111.26716, g: 2.9533565, b: 0, a: 0}
   m_BuildTextureStacks: []

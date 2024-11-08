@@ -10,6 +10,8 @@ public class ShipMovement : MonoBehaviour
     public float maxSpeed; // The maximum speed at which the ship moves
     public float mass = 1f; // The mass of the ship, which affects acceleration and deceleration
 
+    public Material backgroundMaterial;
+
     public Vector2 currentVelocity; // The current velocity of the ship
     private Vector2 totalForce; // The total force exerted by the mast blocks
 
@@ -22,6 +24,8 @@ public class ShipMovement : MonoBehaviour
         UpdateVelocity();
 
         MoveShip();
+
+        backgroundMaterial.SetVector("_ShipOffset", shipTilemap.transform.position);
 
 
     }

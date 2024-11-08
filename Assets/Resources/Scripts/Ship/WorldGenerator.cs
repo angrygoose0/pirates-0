@@ -184,6 +184,8 @@ public class WorldGenerator : MonoBehaviour
             SingletonManager.Instance.structureManager.GenerateStructure(chunkCenterWorldPosition);
         }
 
+
+        /*
         // Check if both chunkPosition.x and chunkPosition.y are even
         if (chunkPosition.x % placeWaterTextureEveryChunk == 0 && chunkPosition.y % placeWaterTextureEveryChunk == 0)
         {
@@ -197,6 +199,7 @@ public class WorldGenerator : MonoBehaviour
             // Instantiate the small prefab at the center of the chunk
             chunkData.chunkWaterTexture = Instantiate(waterTexturePrefab, chunkCenterWorldPosition, Quaternion.identity, seaTilemap.transform);
         }
+        */
     }
 
 

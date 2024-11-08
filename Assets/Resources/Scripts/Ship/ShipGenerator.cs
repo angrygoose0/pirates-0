@@ -111,7 +111,6 @@ public class ShipGenerator : MonoBehaviour
     public GameObject canvas;
 
 
-    public bool assignmentBool;
     public TileBase transparentTile;
     private List<Vector3Int> placedHoverTiles = new List<Vector3Int>(); // List to store tile positions
     private Vector3Int? lastPlacedCenterTile = null;
@@ -173,7 +172,7 @@ public class ShipGenerator : MonoBehaviour
 
         UpdateRaftTimers();
 
-        if (!SingletonManager.Instance.gameStart.gameStarted && !assignmentBool)
+        if (!SingletonManager.Instance.gameStart.gameStarted)
         {
             HandleHoverEffect();
 
@@ -747,7 +746,7 @@ public class ShipGenerator : MonoBehaviour
 
     }
 
-    private IEnumerator CreateTrail(Transform startBlock, Transform endBlock)
+    private IEnumerator CreateTrail(Transform startBlock, Transform endBlock) // get color
     {
         GameObject trailObject = Instantiate(trailPrefab, startBlock.position, Quaternion.identity, shipTilemap.transform);
         LineRenderer lineRenderer = trailObject.GetComponent<LineRenderer>();

@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6964e917b3233974dade53e6ca69ae75, type: 3}
+  m_Name: BIG TENTACLE
+  m_EditorClassIdentifier: 
+  id: 0
+  startingHealth: 200
+  armor: 5
+  populationValue: 10
+  spawnWeight: 1
+  minPackSpawn: 1
+  maxPackSpawn: 1
+  creatureDrops: []
+  tentacles: 6
+  damage: 1
+  rotationSpeed: 500
+  maxMoveSpeed: 3
+  acceleration: 5
+  deceleration: 2
+  range: 1
+  aggressionThreshold: 1
+  tentacleList:
+  - segmentSizes:
+    - 0.2
+    - 0.15
+    - 0.06
+    - 0.01
+    setDistance: 0.06
+    acceleration: 5
+    maxMoveSpeed: 5
+    deceleration: 5
+    pullStrength: 0.5
+    wiggleFrequency: 0
+    wiggleAmplitude: 0
+    endTarget: 1
+  - segmentSizes:
+    - 0.2
+    - 0.15
+    - 0.06
+    - 0.01
+    setDistance: 0.06
+    acceleration: 20
+    maxMoveSpeed: 5
+    deceleration: 5
+    pullStrength: 0.5
+    wiggleFrequency: 0
+    wiggleAmplitude: 0
+    endTarget: 1
+  - segmentSizes:
+    - 0.2
+    - 0.15
+    - 0.06
+    - 0.01
+    setDistance: 0.06
+    acceleration: 20
+    maxMoveSpeed: 5
+    deceleration: 5
+    pullStrength: 0.5
+    wiggleFrequency: 0
+    wiggleAmplitude: 0
+    endTarget: 1
+  goldDropRange: {x: 0, y: 0}
+  hostilityMultiplier: 0
+  emptyWeight: 100
