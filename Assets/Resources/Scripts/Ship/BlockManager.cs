@@ -14,6 +14,23 @@ public class BlockData
     public List<GameObject> itemsInBlock;
     public GameObject spawnedItem;
     public Coroutine itemSpawningCoroutine;
+    public List<GameObject> trailObjectList = new List<GameObject>();
+
+    public void ClearAndDestroyTrailObjects()
+    {
+        // Loop through each GameObject in the trailObjectList
+        foreach (GameObject obj in trailObjectList)
+        {
+            if (obj != null)
+            {
+                // Destroy the GameObject
+                Object.Destroy(obj);
+            }
+        }
+
+        // Clear the list after destroying the objects
+        trailObjectList.Clear();
+    }
     // Constructor
     public BlockData(BlockObject blockObject)
     {
@@ -24,6 +41,7 @@ public class BlockData
         this.spawnedItem = null;
         this.itemSpawningCoroutine = null;
         this.directionFadeCoroutine = null;
+        this.trailObjectList = new List<GameObject>();
     }
 
 }
@@ -102,6 +120,11 @@ public class BlockManager : MonoBehaviour
         if (blockData.directionFadeCoroutine != null)
         {
             StopCoroutine(blockData.directionFadeCoroutine);
+        }
+
+        foreach (GameObject item in blockData.itemsInBlock)
+        {
+            SingletonManager.Instance.itemManager.RemoveItem(item);
         }
 
         blockDictionary.Remove(blockInstance);
@@ -239,7 +262,10 @@ public class BlockManager : MonoBehaviour
                     {
                         SingletonManager.Instance.itemManager.RemoveItem(item);
                     }
+
                     blockData.itemsInBlock.Clear();
+                    blockData.ClearAndDestroyTrailObjects();
+
                     foreach (ItemObject resultItem in intersectionList)
                     {
                         blockGameObject.GetComponentInChildren<Light2D>().intensity = 0f;
@@ -256,10 +282,11 @@ public class BlockManager : MonoBehaviour
                     foreach (GameObject itemGameObject in blockData.itemsInBlock)
                     {
                         Vector3 randomEndPosition = GetRandomPositionInShipFromBlock(blockGameObject);
-                        
+
                         SingletonManager.Instance.itemManager.StartItemBounce(itemGameObject, blockGameObject.transform.position, randomEndPosition, SingletonManager.Instance.shipGenerator.shipTilemap.transform);
                     }
 
+                    blockData.ClearAndDestroyTrailObjects();
                     blockData.itemsInBlock.Clear();
                     return;
                 }
@@ -274,6 +301,8 @@ public class BlockManager : MonoBehaviour
             yield return new WaitForSeconds(delay);
             Vector3 spawnPosition = new Vector3(blockGameObject.transform.position.x, blockGameObject.transform.position.y + 0.25f, blockGameObject.transform.position.z);
             blockData.spawnedItem = SingletonManager.Instance.itemManager.CreateItem(spawningItemObject, spawnPosition, blockGameObject.transform);
+
+            SingletonManager.Instance.feedbackManager.ArtifactPlaceFeedback(spawnPosition, 1f);
 
             blockData.itemSpawningCoroutine = null;
         }

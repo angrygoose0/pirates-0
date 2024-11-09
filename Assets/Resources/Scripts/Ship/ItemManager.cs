@@ -269,7 +269,7 @@ public class ItemManager : MonoBehaviour
 
                     if (itemData.itemObject.affectsCannons)
                     {
-                        SingletonManager.Instance.shipGenerator.MakeTrailEffects(blockGameObject.transform);
+                        SingletonManager.Instance.shipGenerator.MakeTrailEffects(blockGameObject);
                     }
 
                     SingletonManager.Instance.blockManager.CanCraftNew(blockGameObject);

@@ -736,30 +736,41 @@ public class ShipGenerator : MonoBehaviour
 
     public GameObject trailPrefab;
 
-    public void MakeTrailEffects(Transform blockTransform)
+    public void MakeTrailEffects(GameObject blockGameObject)
     {
-        // Output or do something with the filtered GameObjects
-        foreach (GameObject cannonBlock in cannonBlocks)
+        if (SingletonManager.Instance.blockManager.blockDictionary.TryGetValue(blockGameObject, out BlockData blockData))
         {
-            StartCoroutine(CreateTrail(blockTransform, cannonBlock.transform));
-        }
+            Color effectColor = SingletonManager.Instance.itemManager.itemDictionary[blockData.itemsInBlock[0]].itemObject.effectColor;
 
+            foreach (GameObject cannonBlock in cannonBlocks)
+            {
+                GameObject trailObject = Instantiate(trailPrefab, blockGameObject.transform.position, Quaternion.identity, shipTilemap.transform);
+                blockData.trailObjectList.Add(trailObject);
+                StartCoroutine(CreateTrail(trailObject, cannonBlock.transform, effectColor));
+            }
+        }
     }
 
-    private IEnumerator CreateTrail(Transform startBlock, Transform endBlock) // get color
+    private IEnumerator CreateTrail(GameObject trailObject, Transform endBlock, Color effectColor) // get color
     {
-        GameObject trailObject = Instantiate(trailPrefab, startBlock.position, Quaternion.identity, shipTilemap.transform);
+        Vector3 startPosition = trailObject.transform.position;
+
         LineRenderer lineRenderer = trailObject.GetComponent<LineRenderer>();
 
         lineRenderer.positionCount = 2;
         lineRenderer.startWidth = 0.005f;
         lineRenderer.endWidth = 0.005f;
 
-        lineRenderer.SetPosition(0, startBlock.position);
-        lineRenderer.SetPosition(1, startBlock.position);
+        lineRenderer.SetPosition(0, startPosition);
+        lineRenderer.SetPosition(1, startPosition);
+
+        lineRenderer.material.SetColor("_GlowColor", effectColor);
+        //lineRenderer.material.SetFloat("_GlowIntensity", 3f);
+
+
 
         float progress = 0.9f;
-        float duration = Vector3.Distance(startBlock.position, endBlock.position);  // Longer distance takes more time
+        float duration = Vector3.Distance(startPosition, endBlock.position);  // Longer distance takes more time
         float accelerationFactor = 50.0f;  // Adjust this factor for more/less acceleration
 
         while (progress < 1f)
@@ -768,7 +779,7 @@ public class ShipGenerator : MonoBehaviour
             progress += Time.deltaTime / duration;
             float acceleratedProgress = Mathf.Pow(progress, accelerationFactor);  // Non-linear curve for acceleration
 
-            Vector3 currentPoint = Vector3.Lerp(startBlock.position, endBlock.position, acceleratedProgress);
+            Vector3 currentPoint = Vector3.Lerp(startPosition, endBlock.position, acceleratedProgress);
             lineRenderer.SetPosition(1, currentPoint);
             yield return null;
         }

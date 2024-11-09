@@ -60,5 +60,5 @@ Material:
     - _Scale: 50
     m_Colors:
     - _SeaColor: {r: 0.05490196, g: 0.09019608, b: 0.3215686, a: 0}
-    - _ShipOffset: {r: 111.26716, g: 2.9533565, b: 0, a: 0}
+    - _ShipOffset: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
