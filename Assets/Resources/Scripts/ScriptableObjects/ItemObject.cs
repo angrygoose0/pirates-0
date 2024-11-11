@@ -84,6 +84,7 @@ public class ItemObject : ScriptableObject
 
     public List<AbilityData> abilityList;
     public ItemAbilityClass activeAbility;
+    public List<GameObject> extraChildren;
 
     public void UseActive(Vector3 position, Direction blockDirection)
     {

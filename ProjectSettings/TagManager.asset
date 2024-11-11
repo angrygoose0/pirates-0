@@ -52,6 +52,9 @@ TagManager:
   - name: creature
     uniqueID: 3698801699
     locked: 0
+  - name: explosions
+    uniqueID: 1237582499
+    locked: 0
   - name: ship
     uniqueID: 3043669347
     locked: 0
@@ -67,9 +70,9 @@ TagManager:
   - name: blocks
     uniqueID: 3292579281
     locked: 0
-  - name: ui
-    uniqueID: 76177347
-    locked: 0
   - name: items
     uniqueID: 3747020255
+    locked: 0
+  - name: ui
+    uniqueID: 76177347
     locked: 0

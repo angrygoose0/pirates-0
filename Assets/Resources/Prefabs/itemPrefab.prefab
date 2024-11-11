@@ -136,7 +136,7 @@ MonoBehaviour:
   m_Intensity: 3
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
-  m_ApplyToSortingLayers: 371b4eb063b56ab5233c77dca7f22343d1c540c4
+  m_ApplyToSortingLayers: d1c540c4371b4eb0233c77dc63b56ab5a7f22343dffd56df
   m_LightCookieSprite: {fileID: 21300000, guid: 28ae1d0505c2f8243b9fb69c9c44abce, type: 3}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0
@@ -304,7 +304,7 @@ LineRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 76177347
-  m_SortingLayer: 8
+  m_SortingLayer: 10
   m_SortingOrder: 0
   m_Positions:
   - {x: 0, y: 0, z: 0}

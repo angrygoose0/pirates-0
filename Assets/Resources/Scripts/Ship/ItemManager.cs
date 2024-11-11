@@ -27,7 +27,7 @@ public class ItemData
         this.itemObject = itemObject;
         this.itemGameObject = itemGameObject;
     }
-    public UnityEngine.Rendering.Universal.Light2D Light => itemGameObject.GetComponent<UnityEngine.Rendering.Universal.Light2D>();
+    public UnityEngine.Rendering.Universal.Light2D lightObject => itemGameObject.GetComponentInChildren<UnityEngine.Rendering.Universal.Light2D>();
     public SpriteRenderer spriteRenderer => itemGameObject.GetComponentInChildren<SpriteRenderer>();
     private Collider2D collider => itemGameObject.GetComponent<Collider2D>();
     public void SetCollider(bool boolean)
@@ -117,11 +117,8 @@ public class ItemManager : MonoBehaviour
                 float intensity = Mathf.Lerp(minIntensity, maxIntensity, t);
 
                 // Set the light intensity on the item's light component
-                Light lightComponent = entry.Key.GetComponent<Light>();
-                if (lightComponent != null)
-                {
-                    lightComponent.intensity = intensity;
-                }
+
+                entry.Value.lightObject.intensity = intensity;
             }
 
             // Wait until the next frame to update all items again
@@ -315,6 +312,12 @@ public class ItemManager : MonoBehaviour
     public GameObject CreateItem(ItemObject createItemObject, Vector3 position, Transform parentTransform)
     {
         GameObject createdItemGameObject = Instantiate(itemPrefab, position, Quaternion.identity);
+
+        foreach (GameObject extraChild in createItemObject.extraChildren)
+        {
+            Instantiate(extraChild, position, Quaternion.identity, createdItemGameObject.transform);
+        }
+
 
         ItemData itemData = new ItemData(createItemObject, createdItemGameObject);
         itemData.NewParent(parentTransform);

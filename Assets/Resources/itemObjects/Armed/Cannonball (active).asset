@@ -24,7 +24,7 @@ MonoBehaviour:
     explosionInverse: 0
     fireAmount: 1
     explosionSpeed: 1000
-    ammoCount: 5
+    ammoCount: 1000
     sprite: {fileID: 21300000, guid: 0d39ea00c1ec2cc46988bb35b30b7dd4, type: 3}
     cameraShake: 2
   goldAmount: 0
@@ -35,5 +35,6 @@ MonoBehaviour:
   glowIntensity: 0
   pulseSpeed: 0
   glowAmplitude: 0.2
+  effectColor: {r: 0, g: 0, b: 0, a: 0}
   abilityList: []
   activeAbility: {fileID: 0}

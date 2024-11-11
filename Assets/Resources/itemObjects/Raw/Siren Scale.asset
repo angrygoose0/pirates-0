@@ -13,17 +13,18 @@ MonoBehaviour:
   m_Name: Siren Scale
   m_EditorClassIdentifier: 
   itemName: 
-  itemSprite: {fileID: 21300000, guid: 90e96c3c7c7d2e34bb318d0d1d9e8a92, type: 3}
+  itemSprite: {fileID: 1902652138, guid: 4afc7d9b0defa8b46811634db8d9edfe, type: 3}
   mass: 5
-  projectileData: []
+  projectile: []
   goldAmount: 0
   spawningItem: {fileID: 0}
-  regenerateTime: 0
   recipes: []
   affectsCannons: 0
   glowColor: {r: 0, g: 1, b: 0.19104314, a: 1}
   glowIntensity: 1
   pulseSpeed: 1
   glowAmplitude: 0.2
+  effectColor: {r: 0, g: 0, b: 0, a: 0}
   abilityList: []
   activeAbility: {fileID: 11400000, guid: f5f196d1140d9fd44bcb7e791676edb4, type: 2}
+  extraChildren: []
