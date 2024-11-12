@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Shark Tooth
   m_EditorClassIdentifier: 
   itemName: Shark Tooth
-  itemSprite: {fileID: -645579380, guid: 4afc7d9b0defa8b46811634db8d9edfe, type: 3}
+  itemSprite: {fileID: 21300000, guid: 154088f6852c7ee428f692c4e2b3de5e, type: 3}
   mass: 5
   projectile: []
   goldAmount: 0
@@ -21,9 +21,11 @@ MonoBehaviour:
   recipes: []
   affectsCannons: 1
   glowColor: {r: 0.39607844, g: 0.14117648, b: 0.14901961, a: 1}
-  glowIntensity: 5
+  glowIntensity: 1
   pulseSpeed: 1
   glowAmplitude: 0.2
   effectColor: {r: 0.39607844, g: 0.14117648, b: 0.14901961, a: 1}
   abilityList: []
   activeAbility: {fileID: 0}
+  extraChildren:
+  - {fileID: 6908038243365246496, guid: ff46fe43d1d613f4b8c54a2eba6d608d, type: 3}

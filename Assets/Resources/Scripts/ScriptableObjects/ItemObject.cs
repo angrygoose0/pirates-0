@@ -73,7 +73,6 @@ public class ItemObject : ScriptableObject
     //public float regenerateTime;
     public List<Recipe> recipes;
     public bool affectsCannons = false;
-    public Color glowColor;
     public int glowIntensity;
     public float pulseSpeed;
     // Set the range for intensity (0.2 == 20% down and 20% up from base)

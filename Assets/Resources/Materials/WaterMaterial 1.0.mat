@@ -45,6 +45,7 @@ Material:
     - _RippleDensity: 0.25
     - _RippleSlimness: 10
     - _RippleSpeed: 1
+    - _Transparency: 0.7
     - _WaterSize: 0.25
     m_Colors:
     - _BaseColor1: {r: 1, g: 1, b: 1, a: 0}

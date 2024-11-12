@@ -10,22 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c2612e6d609656140ad524876ab86968, type: 3}
-  m_Name: COOL
+  m_Name: Mermaid Tear
   m_EditorClassIdentifier: 
   itemName: 
   itemSprite: {fileID: 21300000, guid: d8cf14733b49f654c8fa162bdb04e9e9, type: 3}
-  mass: 10
+  mass: 3
   projectile: []
   goldAmount: 0
   spawningItem: {fileID: 0}
-  recipes:
-  - materials:
-    - {fileID: 11400000, guid: f8e85bfddbcee654d945c1060d1f6758, type: 2}
-    - {fileID: 11400000, guid: 1dd939d623bbf704cb90d8de3d1d16dd, type: 2}
+  recipes: []
   affectsCannons: 0
-  glowColor: {r: 0.12666878, g: 0.9150943, b: 0.11654504, a: 1}
   glowIntensity: 1
   pulseSpeed: 1
   glowAmplitude: 0.2
+  effectColor: {r: 0, g: 0.52291095, b: 0.6415094, a: 1}
   abilityList: []
   activeAbility: {fileID: 0}
+  extraChildren:
+  - {fileID: 6908038243365246496, guid: ff46fe43d1d613f4b8c54a2eba6d608d, type: 3}

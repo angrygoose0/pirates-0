@@ -28,13 +28,12 @@ public class WorldGenerator : MonoBehaviour
 {
     public Tilemap seaTilemap;
     public int chunkSize = 16;
-    public int radius = 50;  // Radius in chunks
+    public int radius = 10;  // Radius in chunks
     public float depthScale = 0.1f;
     public float temperatureScale = 0.1f;
     public float weirdnessScale = 0.05f;
     public List<TileObject> tileObjects; // List of TileObjects
     public int worldSeed;
-    private Vector3 worldCenterPosition;
     private Vector3Int previousCenterChunkPosition;
     public Vector3Int _previousCenterChunkPosition
     {
@@ -94,9 +93,6 @@ public class WorldGenerator : MonoBehaviour
             0
         );
     }
-
-
-
 
 
     void GenerateChunksInRadius(Vector3Int centerChunkPosition)
@@ -205,9 +201,7 @@ public class WorldGenerator : MonoBehaviour
 
     void MaintainChunkRadius()
     {
-        // Get the current center chunk position
-        Vector3 worldCenterPosition = transform.position;
-        Vector3Int currentCenterChunkPosition = WorldToChunkPosition(worldCenterPosition);
+        Vector3Int currentCenterChunkPosition = WorldToChunkPosition(transform.position);
 
         // Only update if the center chunk position has changed
         if (currentCenterChunkPosition != previousCenterChunkPosition)
@@ -220,6 +214,8 @@ public class WorldGenerator : MonoBehaviour
             // Remove chunks that are out of the radius
             RemoveChunksOutOfRadius(currentCenterChunkPosition);
         }
+
+
     }
 
     void RemoveChunksOutOfRadius(Vector3Int centerChunkPosition)

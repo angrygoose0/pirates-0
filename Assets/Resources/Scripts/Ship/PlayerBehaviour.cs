@@ -229,56 +229,50 @@ public class PlayerBehaviour : MonoBehaviour
 
 
 
+    GameObject previousClosestItem = null;
+
     void FindClosestItem()
     {
-        // Reset closest item
+        // Store the current closest item as the previous closest item
+        previousClosestItem = closestItem;
+
+        // Reset closest item and minimum distance
         closestItem = null;
-
-        // Find all items in the scene
-        GameObject[] items = GameObject.FindGameObjectsWithTag("Item");//make sure items inside blocks arent tagged as Item.  # alternate solution
-
-        // Initialize the list
-        List<GameObject> pickupableItems = new List<GameObject>();
-
-        // Loop through each item
-        foreach (GameObject item in items)
-        {
-            // Get the ItemScript component from the item
-            ItemData itemData = SingletonManager.Instance.itemManager.itemDictionary[item];
-
-            // Check if itemScript is not null and itemPickupable is true
-            if (itemData != null && itemData.itemPickupable)
-            {
-                // Add the item to the list
-                pickupableItems.Add(item);
-            }
-        }
-
-        // Initialize the minimum distance with a large number
         float minDistance = Mathf.Infinity;
 
-        // Get the player's position
-        Vector2 playerPosition = new Vector2(transform.position.x, transform.position.y);
-
-        foreach (GameObject item in pickupableItems)
+        foreach (KeyValuePair<GameObject, ItemData> entry in SingletonManager.Instance.itemManager.itemDictionary)
         {
-            // Get the item's position
-            Vector2 itemPosition = new Vector2(item.transform.position.x, item.transform.position.y);
+            if (!entry.Value.itemPickupable)
+            {
+                continue;
+            }
 
-            // Calculate the distance with squashed Y value
-            float distance = Mathf.Sqrt(
-                Mathf.Pow(playerPosition.x - itemPosition.x, 2) +
-                Mathf.Pow((playerPosition.y - itemPosition.y) * 2, 2)
-            );
+            float distance = Vector3.Distance(transform.position, entry.Key.transform.position);
 
-            // If the distance is within the pickup radius and is the closest one found
             if (distance < playerPickupRadius && distance < minDistance)
             {
                 minDistance = distance;
-                closestItem = item;
+                closestItem = entry.Key;
+            }
+        }
+
+        // If the closest item has changed, update the color states
+        if (previousClosestItem != closestItem)
+        {
+            // Turn off white color for the previous closest item
+            if (previousClosestItem != null)
+            {
+                SingletonManager.Instance.itemManager.itemDictionary[previousClosestItem].TurnSpriteWhite(false);
+            }
+
+            // Turn on white color for the new closest item
+            if (closestItem != null)
+            {
+                SingletonManager.Instance.itemManager.itemDictionary[closestItem].TurnSpriteWhite(true);
             }
         }
     }
+
 
     void CalculateFacingTile()
     {
@@ -524,6 +518,7 @@ public class PlayerBehaviour : MonoBehaviour
 
             ItemData itemData = SingletonManager.Instance.itemManager.itemDictionary[equippedItem];
             itemData.NewParent(SingletonManager.Instance.shipGenerator.shipTilemap.transform);
+            itemData.itemPickupable = true;
             equippedItem.transform.position = rb.position;
 
             // Set equippedItem to null as the player no longer has the item equipped
@@ -535,7 +530,7 @@ public class PlayerBehaviour : MonoBehaviour
             if (itemData.itemPickupable == true)
             {
                 equippedItem = closestItem;
-                // Set the new parent for the equipped item
+                itemData.itemPickupable = false;
                 itemData.NewParent(gameObject.transform);
                 itemData.itemTaken = true;
             }

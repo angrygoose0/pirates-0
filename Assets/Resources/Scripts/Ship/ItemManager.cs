@@ -15,6 +15,7 @@ public class ItemData
     public bool beingReeled = false;
     public bool onPayload = false;
 
+
     public bool isActive = false;
     public float inactiveTime = 0f;
     public Coroutine fadeCoroutine;
@@ -27,7 +28,7 @@ public class ItemData
         this.itemObject = itemObject;
         this.itemGameObject = itemGameObject;
     }
-    public UnityEngine.Rendering.Universal.Light2D lightObject => itemGameObject.GetComponentInChildren<UnityEngine.Rendering.Universal.Light2D>();
+    public Light2D lightObject => itemGameObject.GetComponentInChildren<Light2D>();
     public SpriteRenderer spriteRenderer => itemGameObject.GetComponentInChildren<SpriteRenderer>();
     private Collider2D collider => itemGameObject.GetComponent<Collider2D>();
     public void SetCollider(bool boolean)
@@ -50,6 +51,22 @@ public class ItemData
             this.SetCollider(false);
         }
     }
+
+    public void TurnSpriteWhite(bool yes)
+    {
+        if (yes)
+        {
+            spriteRenderer.material.SetFloat("_WhiteAmount", 0.7f);
+            spriteRenderer.material.SetFloat("_PulseSpeed", 3);
+            spriteRenderer.material.SetFloat("_PulseAmplitude", 0.2f);
+        }
+        if (!yes)
+        {
+            spriteRenderer.material.SetFloat("_WhiteAmount", 0f);
+            spriteRenderer.material.SetFloat("_PulseSpeed", 0f);
+            spriteRenderer.material.SetFloat("_PulseAmplitude", 0f);
+        }
+    }
 }
 
 
@@ -67,7 +84,6 @@ public class ItemManager : MonoBehaviour
     private GameObject worldTilemap;
 
     public float inactivityThreshold = 30f;
-
 
     public float fadeDuration = 5f; // Duration of the fading period
     public float fadeTime = 0f;
@@ -119,6 +135,7 @@ public class ItemManager : MonoBehaviour
                 // Set the light intensity on the item's light component
 
                 entry.Value.lightObject.intensity = intensity;
+                entry.Value.lightObject.color = entry.Value.itemObject.effectColor;
             }
 
             // Wait until the next frame to update all items again
@@ -315,7 +332,14 @@ public class ItemManager : MonoBehaviour
 
         foreach (GameObject extraChild in createItemObject.extraChildren)
         {
-            Instantiate(extraChild, position, Quaternion.identity, createdItemGameObject.transform);
+            GameObject newChild = Instantiate(extraChild, position, Quaternion.identity, createdItemGameObject.transform);
+
+            ParticleSystem particleSystem = newChild.GetComponent<ParticleSystem>();
+            if (particleSystem != null)
+            {
+                var main = particleSystem.main;
+                main.startColor = createItemObject.effectColor; // or any other Color, e.g., Color.blue, Color.green, etc.
+            }
         }
 
 
@@ -416,8 +440,8 @@ public class ItemManager : MonoBehaviour
 
         // Get the LineRenderer component
         LineRenderer lineRenderer = itemEffectObject.GetComponent<LineRenderer>();
-        lineRenderer.startWidth = 0.01f;
-        lineRenderer.endWidth = 0.1f;
+        lineRenderer.startWidth = 0.005f;
+        lineRenderer.endWidth = 0.01f;
 
         // Initialize LineRenderer
         List<Vector3> linePoints = new List<Vector3> { startPosition };

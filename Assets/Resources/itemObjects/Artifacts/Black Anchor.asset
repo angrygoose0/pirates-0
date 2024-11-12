@@ -10,22 +10,25 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c2612e6d609656140ad524876ab86968, type: 3}
-  m_Name: Star Dust
+  m_Name: Black Anchor
   m_EditorClassIdentifier: 
   itemName: 
-  itemSprite: {fileID: 0}
+  itemSprite: {fileID: 529532891, guid: b192dfc78a81a6a4d93873a9ff7ef66a, type: 3}
   mass: 1
   projectile: []
   goldAmount: 0
   spawningItem: {fileID: 0}
-  recipes: []
+  recipes:
+  - materials:
+    - {fileID: 11400000, guid: f8e85bfddbcee654d945c1060d1f6758, type: 2}
+    - {fileID: 11400000, guid: 7e6589326f01690458b8f10e43426ed7, type: 2}
   affectsCannons: 0
-  glowColor: {r: 0.94509804, g: 0.9098039, b: 0.6745098, a: 1}
-  glowIntensity: 1
+  glowColor: {r: 0.36279967, g: 0.19971518, b: 0.8301887, a: 1}
+  glowIntensity: 0
   pulseSpeed: 0
   glowAmplitude: 0
-  effectColor: {r: 0.94509804, g: 0.9098039, b: 0.6745098, a: 1}
+  effectColor: {r: 0.3647059, g: 0.2, b: 0.83137256, a: 1}
   abilityList: []
   activeAbility: {fileID: 0}
   extraChildren:
-  - {fileID: 5006110422286491855, guid: bf7ee26cf1d82364dbb5a8eca8130a4d, type: 3}
+  - {fileID: 6663771148228664938, guid: 9232838beaaf9b641ab1fe09cf9f0f76, type: 3}
