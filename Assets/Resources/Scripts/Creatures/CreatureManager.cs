@@ -83,17 +83,19 @@ public class CreatureData
     public float currentDamage;
     public List<EffectData> effects = new List<EffectData>();
     public HealthBar healthBar;
+    public ParticleSystem creatureParticle = null;
+    public ItemObject creatureDrop = null;
 }
 
 public class CreatureManager : MonoBehaviour
 {
     public GameObject trackedObject;
+    public GameObject creatureParticlePrefab;
     public GameObject canvas;
     public Dictionary<GameObject, CreatureData> creatures; // Dictionary of all creatures
     public List<CreatureObject> creatureObjects;
     public int minRadius = 5;
     public int maxRadius = 10;
-    public Material damagedMaterial;
     private ChunkData currentChunk;
     private HashSet<Vector3Int> viableChunks = new HashSet<Vector3Int>();
     private Dictionary<GameObject, ChunkData> creatureChunks = new Dictionary<GameObject, ChunkData>();
@@ -770,11 +772,10 @@ public class CreatureManager : MonoBehaviour
                 GameObject createdItem = SingletonManager.Instance.itemManager.CreateItem(goldItemObject, creaturePosition, worldTilemap.transform);
 
             }
-            ItemObject dropItemObject = creatureData.creatureObject.DetermineDrop();
 
-            if (dropItemObject != null)
+            if ( creatureData.creatureDrop != null)
             {
-                GameObject droppedItem = SingletonManager.Instance.itemManager.CreateItem(dropItemObject, creaturePosition, worldTilemap.transform);
+                GameObject droppedItem = SingletonManager.Instance.itemManager.CreateItem(creatureData.creatureDrop, creaturePosition, worldTilemap.transform);
             }
 
             EffectData strongestNovaEffect = null;
@@ -1022,6 +1023,7 @@ public class CreatureManager : MonoBehaviour
     public CreatureData SpawnCreature(Vector3 worldPosition, CreatureObject randomCreatureObject, ChunkData randomChunk)
     {
         GameObject newCreature = Instantiate(creaturePrefab, worldPosition, Quaternion.identity, SingletonManager.Instance.worldGenerator.seaTilemap.transform);
+        
         GameObject newHealthBar = Instantiate(healthBarPrefab, worldPosition, Quaternion.identity, canvas.transform);
         HealthBar healthBarScript = newHealthBar.GetComponent<HealthBar>();
 
@@ -1039,12 +1041,10 @@ public class CreatureManager : MonoBehaviour
             healthBar = healthBarScript,
         });
 
-
         globalMobCount++;
-
         randomChunk.chunkPopulation += randomCreatureObject.populationValue;
-
         CreatureData creatureData = creatures[newCreature];
+        creatureData.creatureDrop = creatureData.creatureObject.DetermineDrop();
 
 
         List<TentacleValue> tentacleList = randomCreatureObject.tentacleList;
@@ -1107,6 +1107,13 @@ public class CreatureManager : MonoBehaviour
 
                 if (firstSegment)
                 {
+                    if (creatureData.creatureDrop != null)
+                    {
+                        GameObject newCreatureParticle = Instantiate(creatureParticlePrefab, worldPosition, Quaternion.identity, newTentacleSegment.transform);
+                        creatureData.creatureParticle = newCreatureParticle.GetComponent<ParticleSystem>();
+                    }
+                    
+
                     firstSegment = false;
                     healthBarScript.target = newTentacleSegment.transform;
                     tentacleData.lineRenderer = newTentacleSegment.AddComponent<LineRenderer>();

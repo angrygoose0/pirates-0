@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 public class BackgroundGenerator : MonoBehaviour
 {
-    public GameObject anchorObject;      // Reference to the anchor GameObject
     public Tilemap tilemap;              // Reference to the Tilemap component
     public Tile tile;                    // Reference to the Tile asset to place
     public int radius = 10;              // Radius around the anchor within which tiles will be generated
@@ -12,9 +11,13 @@ public class BackgroundGenerator : MonoBehaviour
     private HashSet<Vector3Int> activeTiles = new HashSet<Vector3Int>(); // Tracks currently active tiles
     private Vector3Int lastAnchorPos;
 
+    public float parallaxEffectMultiplier = 0.5f;
+
+
     void Start()
     {
-        if (anchorObject == null || tilemap == null || tile == null)
+
+        if (tilemap == null || tile == null)
         {
             Debug.LogError("Anchor Object, Tilemap, or Tile is not assigned.");
             return;
@@ -31,15 +34,21 @@ public class BackgroundGenerator : MonoBehaviour
         // Only update if the anchor has moved to a new tile position
         if (currentAnchorPos != lastAnchorPos)
         {
+            Vector3 movement = currentAnchorPos - lastAnchorPos;
+            tilemap.transform.position += movement * parallaxEffectMultiplier;
+
             lastAnchorPos = currentAnchorPos;
             UpdateTilemap();
+
         }
+
+        
     }
 
     // Gets the anchor's current position as a tile position
     Vector3Int GetAnchorTilePosition()
     {
-        return tilemap.WorldToCell(anchorObject.transform.position);
+        return tilemap.WorldToCell(transform.position);
     }
 
     // Updates the tilemap to generate and remove tiles around the anchor within the radius
