@@ -330,6 +330,9 @@ public class ItemManager : MonoBehaviour
     {
         GameObject createdItemGameObject = Instantiate(itemPrefab, position, Quaternion.identity);
 
+        float multiplier = 1f;
+        SingletonManager.Instance.feedbackManager.ArtifactPlaceFeedback(feedbackPosition, multiplier, createItemObject.effectColor);
+
         foreach (GameObject extraChild in createItemObject.extraChildren)
         {
             GameObject newChild = Instantiate(extraChild, position, Quaternion.identity, createdItemGameObject.transform);
